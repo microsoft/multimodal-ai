@@ -396,3 +396,41 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+*.zip
+
+
+# Local .terraform directories
+**/.terraform/*
+
+# .tfstate files
+*.tfstate
+*.tfstate.*
+
+# Crash log files
+crash.log
+
+# Exclude all .tfvars files, which are likely to contain sensitive data, such as passwords
+*.tfvars
+
+# Ignore override files as they are usually used to override resources locally and should not be shared
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Include .terraformrc and terraform.rc files as they are likely to contain sensitive data, such as credentials
+.terraformrc
+terraform.rc
+
+# Ignore any plan output files
+*.tfplan
+
+# Ignore any backup files created by Terraform
+*.backup
+
+# Ignore any temporary files created by the editor
+*.swp
+*.bak
+*.tmp
+impl/tf/code/modules/.DS_Store
+impl/tf/code/.terraform.lock.hcl
