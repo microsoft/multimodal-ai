@@ -6,7 +6,9 @@
 #
 aiofiles==24.1.0
     # via quart
-aiohttp==3.9.5
+aiohappyeyeballs==2.3.6
+    # via aiohttp
+aiohttp==3.10.2
     # via
     #   -r requirements.in
     #   microsoft-kiota-authentication-azure
@@ -42,6 +44,8 @@ azure-core==1.30.2
     #   msrest
 azure-core-tracing-opentelemetry==1.0.0b11
     # via azure-monitor-opentelemetry
+azure-functions==1.20.0
+    # via -r requirements.in
 azure-identity==1.17.1
     # via
     #   -r requirements.in
