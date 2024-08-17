@@ -434,3 +434,7 @@ terraform.rc
 *.tmp
 impl/tf/code/modules/.DS_Store
 impl/tf/code/.terraform.lock.hcl
+
+# Ignore the local data directory
+impl/tf/data/text/*
+impl/tf/data/multimedia/*

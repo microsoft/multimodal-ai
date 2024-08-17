@@ -4,7 +4,8 @@ resource "azurerm_cognitive_account" "cognitive_service" {
   resource_group_name = var.resource_group_name
   tags                = var.tags
   identity {
-    type = "SystemAssigned"
+    type = var.user_assigned_identity_id != "" ? "UserAssigned" : "SystemAssigned"
+    identity_ids = var.user_assigned_identity_id != "" ? [var.user_assigned_identity_id] : null
   }
 
   custom_subdomain_name = var.cognitive_service_name
@@ -52,7 +53,8 @@ resource "azurerm_cognitive_account" "cognitive_service" {
 #   })
 # }
 
-resource "azurerm_cognitive_deployment" "gpt-4" {
+resource "azurerm_cognitive_deployment" "gpt-4o" {
+  count = var.cognitive_service_kind == "openai" ? 1 : 0
   name                 = var.gpt_model_name
   cognitive_account_id = azurerm_cognitive_account.cognitive_service.id
 

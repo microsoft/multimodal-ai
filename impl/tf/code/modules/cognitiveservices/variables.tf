@@ -68,9 +68,10 @@ variable "gpt_model_name" {
   description = "Specifies the name of the GPT model."
   type        = string
   sensitive   = false
+  default = ""
   validation {
-    condition     = length(var.gpt_model_name) >= 2
-    error_message = "Please specify a valid name."
+    condition     = var.cognitive_service_kind != "openai" || (var.cognitive_service_kind == "openai" && length(var.gpt_model_name) >= 2)
+    error_message = "Required for openai kind"
   }
 }
 
@@ -78,15 +79,24 @@ variable "gpt_model_version" {
   description = "Specifies the version of the GPT model."
   type        = string
   sensitive   = false
+  default = ""
   validation {
-    condition     = length(var.gpt_model_version) >= 2
-    error_message = "Please specify a valid version."
+    condition     = var.cognitive_service_kind != "openai" || (var.cognitive_service_kind == "openai" && length(var.gpt_model_version) >= 2)
+    error_message = "Required for openai kind"
   }
 }
 
 # Network variables
 variable "subnet_id" {
   description = "Specifies the subnet ID."
+  type        = string
+  sensitive   = false
+}
+
+# Network variables
+variable "user_assigned_identity_id" {
+  description = "Specifies the user assigned identity."
+  default = ""
   type        = string
   sensitive   = false
 }

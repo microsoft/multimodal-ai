@@ -75,6 +75,13 @@ variable "subnet_id" {
   sensitive   = false
 }
 
+variable user_assigned_identity_id {
+  description = "Specifies the user assigned identity."
+  default = ""
+  type        = string
+  sensitive   = false
+}
+
 # Customer-managed key variables
 variable "customer_managed_key" {
   description = "Specifies the customer managed key configurations."
