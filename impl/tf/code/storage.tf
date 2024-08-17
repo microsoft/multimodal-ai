@@ -18,11 +18,39 @@ module "storage_account" {
 }
 
 resource "azurerm_storage_blob" "text_files" {
-  for_each = local.data_files_text
+  for_each = toset([
+    for file in fileset(local.data_files_text, "**") : file
+    if !startswith(file, ".gitkeep")
+  ])
 
   name                   = each.value
   storage_account_name   = module.storage_account.storage_account_name
   storage_container_name = local.container_name_text
   type                   = "Block"
-  source                 = "${path.module}/impl/tf/data/text/${each.value}"
+  source                 = "${local.data_files_text}/${each.value}"
 }
+
+resource "azurerm_storage_blob" "multimedia_files" {
+  for_each = toset([
+    for file in fileset(local.data_files_multimedia, "**") : file
+    if !startswith(file, ".gitkeep")
+  ])
+
+  name                   = each.value
+  storage_account_name   = module.storage_account.storage_account_name
+  storage_container_name = local.container_name_text
+  type                   = "Block"
+  source                 = "${local.data_files_multimedia}/${each.value}"
+}
+
+
+
+# resource "azurerm_storage_blob" "multimedia_files" {
+#   for_each = local.data_files_multimedia
+
+#   name                   = each.value
+#   storage_account_name   = module.storage_account.storage_account_name
+#   storage_container_name = local.container_name_multimedia
+#   type                   = "Block"
+#   source                 = "${path.module}/../data/multimedia/${each.value}"
+# }

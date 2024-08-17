@@ -8,8 +8,8 @@ locals {
   storage_account_name = trim(replace("${local.prefix}-stg001", "-", ""), 24)
   container_name_text = "text"
   container_name_multimedia = "multimedia"
-  data_files_text = fileset("${path.module}/impl/tf/data/text", "*")
-  data_files_multimedia = fileset("${path.module}/impl/tf/data/text", "*")
+  data_files_text = "${path.module}/../data/text"
+  data_files_multimedia = "${path.module}/../data/multimedia"
 
   # Dociment Intelligence
   document_intelligence_name = "${local.prefix}-ai-docintel001"
