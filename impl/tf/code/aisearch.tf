@@ -54,3 +54,14 @@ resource "restapi_object" "ai_search_datasource_mmai_text" {
     module.ai_search
   ]
 }
+
+# resource "restapi_object" "ai_search_datasource_mmai_text" {
+#   path         = "/datasources"
+#   query_string = "api-version=2023-10-01-Preview"
+#   data         = jsonencode(local.mmai_text_datasource_json)
+#   id_attribute = "name" # The ID field on the response
+#   depends_on = [
+#     module.storage_account,
+#     module.ai_search
+#   ]
+# }

@@ -25,8 +25,8 @@ resource "azurerm_search_service" "search_service" {
   customer_managed_key_enforcement_enabled = false
 }
 
-# resource "azurerm_role_assignment" "identity_access_to_search" {
-#   principal_id = var.user_assigned_identity_id
-#   scope        = azurerm_search_service.search_service.id
-#   role_definition_name = "Search Index Data Reader"
-# }
+resource "azurerm_role_assignment" "identity_access_to_search" {
+  principal_id = data.azurerm_user_assigned_identity.user_assigned_identity.principal_id
+  scope        = azurerm_search_service.search_service.id
+  role_definition_name = "Search Index Data Contributor"
+}
