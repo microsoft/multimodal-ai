@@ -9,7 +9,7 @@ module "ai_vision" {
     cognitive_service_name = local.computer_vision_name
     cognitive_service_sku = local.coputer_vision_sku
 
-    user_assigned_identity_id = azurerm_user_assigned_identity.user_assigned_identity.id
+    user_assigned_identity_id = module.user_assigned_identity.user_assigned_identity_id
     subnet_id = null
     customer_managed_key = null
     log_analytics_workspace_id = module.azure_log_analytics.log_analytics_id

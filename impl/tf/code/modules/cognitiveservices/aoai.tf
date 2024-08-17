@@ -5,7 +5,8 @@ resource "azurerm_cognitive_account" "cognitive_service" {
   tags                = var.tags
   identity {
     type = var.user_assigned_identity_id != "" ? "UserAssigned" : "SystemAssigned"
-    identity_ids = var.user_assigned_identity_id != "" ? [var.user_assigned_identity_id] : null
+    # identity_ids = var.user_assigned_identity_id != "" ? [var.user_assigned_identity_id] : null
+    identity_ids = [var.user_assigned_identity_id]
   }
 
   custom_subdomain_name = var.cognitive_service_name

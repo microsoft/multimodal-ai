@@ -12,7 +12,7 @@ module "openai" {
     gpt_model_name =  local.gpt_model_name
     gpt_model_version = local.gpt_model_version
 
-    user_assigned_identity_id = azurerm_user_assigned_identity.user_assigned_identity.id
+    user_assigned_identity_id = module.user_assigned_identity.user_assigned_identity_id
     subnet_id = null
     customer_managed_key = null
     log_analytics_workspace_id = module.azure_log_analytics.log_analytics_id

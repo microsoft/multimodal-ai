@@ -21,6 +21,12 @@ resource "azurerm_search_service" "search_service" {
   partition_count                          = var.search_service_partition_count
   replica_count                            = var.search_service_replica_count
   public_network_access_enabled            = true
-  local_authentication_enabled             = false
+  local_authentication_enabled             = true
   customer_managed_key_enforcement_enabled = false
 }
+
+# resource "azurerm_role_assignment" "identity_access_to_search" {
+#   principal_id = var.user_assigned_identity_id
+#   scope        = azurerm_search_service.search_service.id
+#   role_definition_name = "Search Index Data Reader"
+# }

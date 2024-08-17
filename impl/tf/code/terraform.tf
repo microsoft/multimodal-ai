@@ -4,15 +4,27 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "3.103.1"
+      version = "3.113.0"
     }
     azapi = {
-      source  = "Azure/azapi"
-      version = "1.13.1"
+      source  = "azure/azapi"
+      version = "1.14.0"
     }
-    local = {
-      source  = "hashicorp/local"
-      version = "2.5.1"
+    random = {
+      source  = "hashicorp/random"
+      version = "3.6.2"
+    }
+    time = {
+      source  = "hashicorp/time"
+      version = "0.12.0"
+    }
+    null = {
+      source  = "hashicorp/null"
+      version = "3.2.2"
+    }
+    restapi = {
+      source  = "Mastercard/restapi"
+      version = "1.19.1"
     }
   }
 
@@ -27,4 +39,23 @@ provider "azurerm" {
       prevent_deletion_if_contains_resources = false
     }
   }
+}
+
+provider "azapi" {
+  # Configuration options
+}
+
+provider "restapi" {
+  uri                   = "https://${local.ai_search_name}.search.windows.net"
+  write_returns_object  = true
+  debug                 = true
+
+  headers = {
+    "api-key"       = module.ai_search.search_service_key  # Use the variable
+    "Content-Type"  = "application/json"
+  }
+
+  create_method   = "POST"
+  update_method   = "PUT"
+  destroy_method  = "DELETE"
 }

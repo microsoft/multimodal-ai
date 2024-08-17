@@ -14,8 +14,10 @@ resource azurerm_resource_group "monitoring" {
   location = local.location
 }
 
-resource azurerm_user_assigned_identity "user_assigned_identity" {
-  name                = "${local.prefix}-umi"
-  location            = local.location
+module "user_assigned_identity" {
+  source = "./modules/managedidentity"
+  user_assigned_identity_name = "${local.prefix}-umi"
+  location = local.location
   resource_group_name = azurerm_resource_group.mmai.name
+  tags = var.tags
 }
