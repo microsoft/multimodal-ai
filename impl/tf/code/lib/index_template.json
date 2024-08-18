@@ -1,0 +1,193 @@
+{
+    "name": "${index_name}",
+    "defaultScoringProfile": null,
+    "fields": [
+        {
+            "name": "id",
+            "type": "Edm.String",
+            "searchable": false,
+            "filterable": false,
+            "retrievable": true,
+            "sortable": false,
+            "facetable": false,
+            "key": true,
+            "indexAnalyzer": null,
+            "searchAnalyzer": null,
+            "analyzer": null,
+            "dimensions": null,
+            "vectorSearchProfile": null,
+            "vectorEncoding": null,
+            "synonymMaps": []
+        },
+        {
+            "name": "metadata_storage_last_modified",
+            "type": "Edm.DateTimeOffset",
+            "searchable": false,
+            "filterable": true,
+            "retrievable": true,
+            "sortable": false,
+            "facetable": false,
+            "key": false,
+            "indexAnalyzer": null,
+            "searchAnalyzer": null,
+            "analyzer": null,
+            "dimensions": null,
+            "vectorSearchProfile": null,
+            "vectorEncoding": null,
+            "synonymMaps": []
+        },
+        {
+            "name": "title",
+            "type": "Edm.String",
+            "searchable": true,
+            "filterable": true,
+            "retrievable": true,
+            "sortable": true,
+            "facetable": false,
+            "key": false,
+            "indexAnalyzer": null,
+            "searchAnalyzer": null,
+            "analyzer": null,
+            "dimensions": null,
+            "vectorSearchProfile": null,
+            "vectorEncoding": null,
+            "synonymMaps": []
+        },
+        {
+            "name": "titleVector",
+            "type": "Collection(Edm.Single)",
+            "searchable": true,
+            "retrievable": true,
+            "dimensions": 1536,
+            "vectorSearchProfile": "vector-profile-1"
+        },
+        {
+            "name": "metadata_storage_name",
+            "type": "Edm.String",
+            "searchable": true,
+            "filterable": true,
+            "retrievable": true,
+            "sortable": true,
+            "facetable": false,
+            "key": false,
+            "indexAnalyzer": null,
+            "searchAnalyzer": null,
+            "analyzer": null,
+            "dimensions": null,
+            "vectorSearchProfile": null,
+            "vectorEncoding": null,
+            "synonymMaps": []
+        },
+        {
+            "name": "metadata_storage_path",
+            "type": "Edm.String",
+            "searchable": true,
+            "filterable": true,
+            "retrievable": true,
+            "sortable": true,
+            "facetable": false,
+            "key": false,
+            "indexAnalyzer": null,
+            "searchAnalyzer": null,
+            "analyzer": null,
+            "dimensions": null,
+            "vectorSearchProfile": null,
+            "vectorEncoding": null,
+            "synonymMaps": []
+        },
+        {
+            "name": "metadata_storage_content_md5",
+            "type": "Edm.String",
+            "searchable": true,
+            "filterable": true,
+            "retrievable": true,
+            "sortable": true,
+            "facetable": false,
+            "key": false,
+            "indexAnalyzer": null,
+            "searchAnalyzer": null,
+            "analyzer": null,
+            "dimensions": null,
+            "vectorSearchProfile": null,
+            "vectorEncoding": null,
+            "synonymMaps": []
+        },
+        {
+            "name": "content",
+            "type": "Edm.String",
+            "searchable": true,
+            "filterable": false,
+            "retrievable": true,
+            "sortable": false,
+            "facetable": false,
+            "key": false,
+            "indexAnalyzer": null,
+            "searchAnalyzer": null,
+            "analyzer": null,
+            "dimensions": null,
+            "vectorSearchProfile": null,
+            "vectorEncoding": null,
+            "synonymMaps": []
+        },
+        {
+            "name": "contentVector",
+            "type": "Collection(Edm.Single)",
+            "searchable": true,
+            "retrievable": false,
+            "dimensions": 1536,
+            "vectorSearchProfile": "vector-profile-1"
+        }
+    ],
+    "scoringProfiles": [],
+    "corsOptions": null,
+    "suggesters": [],
+    "analyzers": [],
+    "tokenizers": [],
+    "tokenFilters": [],
+    "charFilters": [],
+    "encryptionKey": null,
+    "similarity": {
+        "@odata.type": "#Microsoft.Azure.Search.BM25Similarity",
+        "k1": null,
+        "b": null
+    },
+    "semantic": {
+        "defaultConfiguration": null,
+        "configurations": [
+            {
+                "name": "mmai-index-text-files-dataource",
+                "prioritizedFields": {
+                    "titleField": {
+                        "fieldName": "title"
+                    },
+                    "prioritizedContentFields": [
+                        {
+                            "fieldName": "content"
+                        }
+                    ],
+                    "prioritizedKeywordsFields": []
+                }
+            }
+        ]
+    },
+    "vectorSearch": {
+        "algorithms": [
+            {
+                "name": "hnsw-1",
+                "kind": "hnsw",
+                "hnswParameters": {
+                    "m": 4,
+                    "efConstruction": 400,
+                    "efSearch": 500,
+                    "metric": "cosine"
+                }
+            }
+        ],
+        "profiles": [
+            {
+                "name": "vector-profile-1",
+                "algorithm": "hnsw-1"
+            }
+        ]
+    }
+}

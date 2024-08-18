@@ -51,7 +51,7 @@ provider "azapi" {
 
 provider "restapi" {
   uri                   = "https://${local.ai_search_name}.search.windows.net"
-  create_returns_object = true
+  # create_returns_object = true
   write_returns_object  = true
   debug                 = true
 

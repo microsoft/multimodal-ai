@@ -18,6 +18,7 @@ module "storage_account" {
 }
 
 resource "azurerm_storage_blob" "text_files" {
+  depends_on = [ module.storage_account ]
   for_each = toset([
     for file in fileset(local.data_files_text, "**") : file
     if !startswith(file, ".gitkeep")
@@ -31,6 +32,7 @@ resource "azurerm_storage_blob" "text_files" {
 }
 
 resource "azurerm_storage_blob" "multimedia_files" {
+  depends_on = [ module.storage_account ]
   for_each = toset([
     for file in fileset(local.data_files_multimedia, "**") : file
     if !startswith(file, ".gitkeep")
@@ -42,15 +44,3 @@ resource "azurerm_storage_blob" "multimedia_files" {
   type                   = "Block"
   source                 = "${local.data_files_multimedia}/${each.value}"
 }
-
-
-
-# resource "azurerm_storage_blob" "multimedia_files" {
-#   for_each = local.data_files_multimedia
-
-#   name                   = each.value
-#   storage_account_name   = module.storage_account.storage_account_name
-#   storage_container_name = local.container_name_multimedia
-#   type                   = "Block"
-#   source                 = "${path.module}/../data/multimedia/${each.value}"
-# }
