@@ -141,17 +141,126 @@ resource "restapi_object" "ai_search_index_mmai_text" {
 }
 
 locals {
+  mmai_text_skillsets_json = {
+    name : "mmai-text-files-skillset",
+    description : "mmai-text-files-skillset",
+    "skills" : [
+      # {
+      #   "@odata.type" : "#Microsoft.Skills.Text.LanguageDetectionSkill",
+      #   "inputs" : [
+      #     {
+      #       "name" : "text",
+      #       "source" : "/document/content"
+      #     }
+      #   ],
+      #   "outputs" : [
+      #     {
+      #       "name" : "languageCode",
+      #       "targetName" : "languageCode"
+      #     }
+      #   ]
+      # },
+      {
+        "@odata.type" : "#Microsoft.Skills.Text.SplitSkill",
+        "textSplitMode" : "pages",
+        "maximumPageLength" : 4000,
+        "inputs" : [
+          {
+            "name" : "text",
+            "source" : "/document/content"
+          },
+          {
+            "name" : "languageCode",
+            "source" : "/document/languageCode"
+          }
+        ],
+        "outputs" : [
+          {
+            "name" : "textItems",
+            "targetName" : "pages"
+          }
+        ]
+      },
+      {
+        "@odata.type" : "#Microsoft.Skills.Text.KeyPhraseExtractionSkill",
+        "context" : "/document/pages/*",
+        "inputs" : [
+          {
+            "name" : "text",
+            "source" : "/document/pages/*"
+          },
+          {
+            "name" : "languageCode",
+            "source" : "/document/languageCode"
+          }
+        ],
+        "outputs" : [
+          {
+            "name" : "keyPhrases",
+            "targetName" : "keyPhrases"
+          }
+        ]
+      },
+      {
+        "@odata.type" : "#Microsoft.Skills.Util.DocumentExtractionSkill",
+        "parsingMode" : "default",
+        "dataToExtract" : "contentAndMetadata",
+        "configuration" : {
+          "imageAction" : "generateNormalizedImages",
+          "normalizedImageMaxWidth" : 2000,
+          "normalizedImageMaxHeight" : 2000
+        },
+        "context" : "/document",
+        "inputs" : [
+          {
+            "name" : "file_data",
+            "source" : "/document/file_data"
+          }
+        ],
+        "outputs" : [
+          {
+            "name" : "content",
+            "targetName" : "extracted_content"
+          },
+          {
+            "name" : "normalized_images",
+            "targetName" : "extracted_normalized_images"
+          }
+        ]
+      }
+    ]
+  }
+}
+
+# Create
+// https://learn.microsoft.com/en-us/rest/api/searchservice/preview-api/create-or-update-indexer
+resource "restapi_object" "ai_search_skillsets_mmai_text" {
+  path         = "/skillsets"
+  query_string = "api-version=2024-07-01"
+  data         = jsonencode(local.mmai_text_skillsets_json)
+  id_attribute = "name" # The ID field on the response
+  depends_on = [
+    module.ai_search,
+    restapi_object.ai_search_datasource_mmai_text,
+    restapi_object.ai_search_index_mmai_text
+  ]
+}
+
+locals {
   mmai_text_indexer_json = {
     name : "mmai-text-files-indexer",
     dataSourceName : "${jsondecode(restapi_object.ai_search_datasource_mmai_text.api_response).name}"
     targetIndexName : "${jsondecode(restapi_object.ai_search_index_mmai_text.api_response).name}"
+    skillsetName : "${jsondecode(restapi_object.ai_search_skillsets_mmai_text.api_response).name}"
     parameters : {
       configuration : {
         indexedFileNameExtensions : ".pdf,.docx,.doc,.pptx,.ppt,.xlsx,.xls,.txt,.rtf,.html,.htm,.xml,.json,.csv"
         imageAction : "none"
         dataToExtract : "contentAndMetadata"
         parsingMode : "default"
-        # imageAction: "generateNormalizedImagePerPage" # "To be implementeed  for generateNormalizedImagePerPage"
+        imageAction : "generateNormalizedImagePerPage"
+        allowSkillsetToReadFileData : true
+
       }
     }
   }
@@ -171,108 +280,68 @@ resource "restapi_object" "ai_search_indexer_mmai_text" {
   ]
 }
 
-locals {
-  mmai_text_skillsets_json = {
-    name : "mmai-text-files-skillset",
-    description : "mmai-text-files-skillset",
-   "skills": [
-    {
-      "@odata.type": "#Microsoft.Skills.Text.LanguageDetectionSkill",
-      "inputs": [
-        {
-          "name": "text",
-          "source": "/document/content"
-        }
-      ],
-      "outputs": [
-        {
-          "name": "languageCode",
-          "targetName": "languageCode"
-        }
-      ]
-    },
-    {
-      "@odata.type": "#Microsoft.Skills.Text.SplitSkill",
-      "textSplitMode": "pages",
-      "maximumPageLength": 4000,
-      "inputs": [
-        {
-          "name": "text",
-          "source": "/document/content"
-        },
-        {
-          "name": "languageCode",
-          "source": "/document/languageCode"
-        }
-      ],
-      "outputs": [
-        {
-          "name": "textItems",
-          "targetName": "pages"
-        }
-      ]
-    },
-    {
-      "@odata.type": "#Microsoft.Skills.Text.KeyPhraseExtractionSkill",
-      "context": "/document/pages/*",
-      "inputs": [
-        {
-          "name": "text",
-          "source": "/document/pages/*"
-        },
-        {
-          "name": "languageCode",
-          "source": "/document/languageCode"
-        }
-      ],
-      "outputs": [
-        {
-          "name": "keyPhrases",
-          "targetName": "keyPhrases"
-        }
-      ]
-    },
-    {
-      "@odata.type": "#Microsoft.Skills.Util.DocumentExtractionSkill",
-      "parsingMode": "default",
-      "dataToExtract": "contentAndMetadata",
-      "configuration": {
-        "imageAction": "generateNormalizedImages",
-        "normalizedImageMaxWidth": 2000,
-        "normalizedImageMaxHeight": 2000
-      },
-      "context": "/document",
-      "inputs": [
-        {
-          "name": "file_data",
-          "source": "/document/file_data"
-        }
-      ],
-      "outputs": [
-        {
-          "name": "content",
-          "targetName": "extracted_content"
-        },
-        {
-          "name": "normalized_images",
-          "targetName": "extracted_normalized_images"
-        }
-      ]
-    }
-  ]
-  }
-}
+# # Reset - https://learn.microsoft.com/en-us/rest/api/searchservice/indexers/reset?view=rest-searchservice-2024-07-01&tabs=HTTP
+# resource "restapi_object" "ai_search_indexer_reset_mmai_text" {
+#   path         = "/indexers/${jsondecode(restapi_object.ai_search_indexer_mmai_text.api_response).name}/reset"
+#   query_string = "api-version=2024-07-01"
 
-# Create
-// https://learn.microsoft.com/en-us/rest/api/searchservice/preview-api/create-or-update-indexer
-resource "restapi_object" "ai_search_skillsets_mmai_text" {
-  path         = "/skillsets"
-  query_string = "api-version=2024-07-01"
-  data         = jsonencode(local.mmai_text_skillsets_json)
-  id_attribute = "name" # The ID field on the response
+#   id_attribute = "/" # The ID field on the response
+#   data = ""
+#   depends_on = [
+#     module.ai_search,
+#     restapi_object.ai_search_datasource_mmai_text,
+#     restapi_object.ai_search_index_mmai_text,
+#     restapi_object.ai_search_skillsets_mmai_text,
+#     restapi_object.ai_search_indexer_mmai_text,
+#   ]
+# }
+
+
+#  Reset - https://learn.microsoft.com/en-us/rest/api/searchservice/indexers/reset?view=rest-searchservice-2024-07-01&tabs=HTTP
+data "http" "ai_search_indexer_mmai_text_reset" {
+  url    = "https://${local.ai_search_name}.search.windows.net/indexers/${jsondecode(restapi_object.ai_search_indexer_mmai_text.api_response).name}/reset?api-version=2024-07-01"
+  method = "POST"
+  request_headers = {
+    "api-key"      = module.ai_search.search_service_key
+    "Content-Type" = "application/json"
+  }
   depends_on = [
     module.ai_search,
     restapi_object.ai_search_datasource_mmai_text,
-    restapi_object.ai_search_index_mmai_text
+    restapi_object.ai_search_index_mmai_text,
+    restapi_object.ai_search_skillsets_mmai_text,
+    restapi_object.ai_search_indexer_mmai_text,
+  ]
+}
+
+# // Run - https://learn.microsoft.com/en-us/rest/api/searchservice/preview-api/run-indexer
+# resource "restapi_object" "ai_search_indexer_run_mmai_text" {
+#   path         = "/indexers/${jsondecode(restapi_object.ai_search_indexer_mmai_text.api_response).name}/run"
+#   query_string = "api-version=2024-07-01"
+#   id_attribute = "name" # The ID field on the response
+#   data = jsonencode(
+#     {
+#       id = "test"
+#     }
+#   )
+#   depends_on = [
+#     module.ai_search,
+#     restapi_object.ai_search_datasource_mmai_text,
+#     restapi_object.ai_search_index_mmai_text,
+#     restapi_object.ai_search_skillsets_mmai_text,
+#     restapi_object.ai_search_indexer_mmai_text,
+#   ]
+# }
+
+#  Reset - https://learn.microsoft.com/en-us/rest/api/searchservice/indexers/reset?view=rest-searchservice-2024-07-01&tabs=HTTP
+data "http" "ai_search_indexer_mmai_text_run" {
+  url    = "https://${local.ai_search_name}.search.windows.net/indexers/${jsondecode(restapi_object.ai_search_indexer_mmai_text.api_response).name}/run?api-version=2024-07-01"
+  method = "POST"
+  request_headers = {
+    "api-key"      = module.ai_search.search_service_key
+    "Content-Type" = "application/json"
+  }
+  depends_on = [
+    data.http.ai_search_indexer_mmai_text_reset
   ]
 }

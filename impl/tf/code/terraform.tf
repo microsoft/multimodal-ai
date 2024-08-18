@@ -26,6 +26,10 @@ terraform {
       source  = "Mastercard/restapi"
       version = "1.19.1"
     }
+    http = {
+      source  = "hashicorp/http"
+      version = "3.4.4"
+    }
   }
 
   backend "local" {
@@ -47,15 +51,20 @@ provider "azapi" {
 
 provider "restapi" {
   uri                   = "https://${local.ai_search_name}.search.windows.net"
+  create_returns_object = true
   write_returns_object  = true
   debug                 = true
 
   headers = {
-    "api-key"       = module.ai_search.search_service_key  # Use the variable
-    "Content-Type"  = "application/json"
+    "api-key"      = module.ai_search.search_service_key # Use the variable
+    "Content-Type" = "application/json"
   }
 
-  create_method   = "POST"
-  update_method   = "PUT"
-  destroy_method  = "DELETE"
+  create_method  = "POST"
+  update_method  = "PUT"
+  destroy_method = "DELETE"
+}
+
+provider "http" {
+  # Configuration options
 }
