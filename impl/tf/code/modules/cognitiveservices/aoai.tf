@@ -19,7 +19,7 @@ resource "azurerm_cognitive_account" "cognitive_service" {
     # "${reverse(split(var.customer_managed_key.key_vault_id, "/"))[0]}.vault.azure.net",
   ]
   kind               = var.cognitive_service_kind
-  local_auth_enabled = false
+  local_auth_enabled = true
   network_acls {
     default_action = "Allow"
     ip_rules       = []
@@ -55,7 +55,7 @@ resource "azurerm_cognitive_account" "cognitive_service" {
 # }
 
 resource "azurerm_cognitive_deployment" "gpt-4o" {
-  count = var.cognitive_service_kind == "openai" ? 1 : 0
+  count = var.cognitive_service_kind == "OpenAI" ? 1 : 0
   name                 = var.gpt_model_name
   cognitive_account_id = azurerm_cognitive_account.cognitive_service.id
 
@@ -63,6 +63,21 @@ resource "azurerm_cognitive_deployment" "gpt-4o" {
     format  = "OpenAI"
     name    = var.gpt_model_name
     version = var.gpt_model_version
+  }
+  scale {
+    type = "Standard"
+  }
+}
+
+resource "azurerm_cognitive_deployment" "text-embedding-3-large" {
+  count = var.cognitive_service_kind == "OpenAI" ? 1 : 0
+  name                 = "text-embedding-3-large"
+  cognitive_account_id = azurerm_cognitive_account.cognitive_service.id
+
+  model {
+    format  = "OpenAI"
+    name    = "text-embedding-3-large"
+    version = 1
   }
   scale {
     type = "Standard"
