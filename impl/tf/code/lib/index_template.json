@@ -54,14 +54,6 @@
             "synonymMaps": []
         },
         {
-            "name": "titleVector",
-            "type": "Collection(Edm.Single)",
-            "searchable": true,
-            "retrievable": true,
-            "dimensions": 1536,
-            "vectorSearchProfile": "vector-profile-1"
-        },
-        {
             "name": "metadata_storage_name",
             "type": "Edm.String",
             "searchable": true,
@@ -130,13 +122,41 @@
             "synonymMaps": []
         },
         {
-            "name": "contentVector",
+            "name": "text_vector",
             "type": "Collection(Edm.Single)",
             "searchable": true,
-            "retrievable": false,
-            "dimensions": 1536,
-            "vectorSearchProfile": "vector-profile-1"
-        }
+            "filterable": false,
+            "retrievable": true,
+            "stored": true,
+            "sortable": false,
+            "facetable": false,
+            "key": false,
+            "indexAnalyzer": null,
+            "searchAnalyzer": null,
+            "analyzer": null,
+            "dimensions": 3072,
+            "vectorSearchProfile": "aoai-text-vector-profile",
+            "vectorEncoding": null,
+            "synonymMaps": []
+          },
+          {
+            "name": "image_vector",
+            "type": "Collection(Edm.Single)",
+            "searchable": true,
+            "filterable": false,
+            "retrievable": true,
+            "stored": true,
+            "sortable": false,
+            "facetable": false,
+            "key": false,
+            "indexAnalyzer": null,
+            "searchAnalyzer": null,
+            "analyzer": null,
+            "dimensions": 1024,
+            "vectorSearchProfile": "aiServicesVision-image-profile",
+            "vectorEncoding": null,
+            "synonymMaps": []
+          }
     ],
     "scoringProfiles": [],
     "corsOptions": null,
@@ -152,10 +172,10 @@
         "b": null
     },
     "semantic": {
-        "defaultConfiguration": null,
+        "defaultConfiguration": "mmai-index-semantic-configuration",
         "configurations": [
             {
-                "name": "mmai-index-text-files-dataource",
+                "name": "mmai-index-semantic-configuration",
                 "prioritizedFields": {
                     "titleField": {
                         "fieldName": "title"
@@ -185,8 +205,38 @@
         ],
         "profiles": [
             {
-                "name": "vector-profile-1",
-                "algorithm": "hnsw-1"
+                "name": "aoai-text-vector-profile",
+                "algorithm": "hnsw-1",
+                "vectorizer":"${index_name}-azureOpenAi-text-vectorizer"
+            },
+            {
+                "name": "aiServicesVision-image-profile",
+                "algorithm": "hnsw-1",
+                "vectorizer":"${index_name}-azureOpenAi-text-vectorizer"
+            }
+        ],
+        "vectorizers": [
+            {
+                "name": "${index_name}-azureOpenAi-text-vectorizer",
+                "kind": "azureOpenAI",
+                "azureOpenAIParameters": {
+                    "resourceUri": "${azureOpenAI_endpoint}",
+                    "deploymentId": "text-embedding-3-large",
+                    "apiKey": "${aoai_api_key}",
+                    "modelName": "text-embedding-3-large",
+                    "authIdentity": null
+                },
+                "customWebApiParameters": null
+            },
+            {
+                "name": "${index_name}-aiServicesVision-image-vectorizer",
+                "kind": "aiServicesVision",
+                "aiServicesVisionParameters": {
+                    "modelVersion": "2023-04-15",
+                    "apiKey": "${cognitive_service_api_key}",
+                    "resourceUri": "${cognitive_service_endpoint}",
+                    "authIdentity": null
+                }
             }
         ]
     }
