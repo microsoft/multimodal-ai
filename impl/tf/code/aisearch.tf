@@ -160,47 +160,47 @@ locals {
       #     }
       #   ]
       # },
-      {
-        "@odata.type" : "#Microsoft.Skills.Text.SplitSkill",
-        "textSplitMode" : "pages",
-        "maximumPageLength" : 4000,
-        "inputs" : [
-          {
-            "name" : "text",
-            "source" : "/document/content"
-          },
-          {
-            "name" : "languageCode",
-            "source" : "/document/languageCode"
-          }
-        ],
-        "outputs" : [
-          {
-            "name" : "textItems",
-            "targetName" : "pages"
-          }
-        ]
-      },
-      {
-        "@odata.type" : "#Microsoft.Skills.Text.KeyPhraseExtractionSkill",
-        "context" : "/document/pages/*",
-        "inputs" : [
-          {
-            "name" : "text",
-            "source" : "/document/pages/*"
-          },
-          {
-            "name" : "languageCode",
-            "source" : "/document/languageCode"
-          }
-        ],
-        "outputs" : [
-          {
-            "name" : "keyPhrases",
-            "targetName" : "keyPhrases"
-          }
-        ]
-      },
+      # {
+      #   "@odata.type" : "#Microsoft.Skills.Text.SplitSkill",
+      #   "textSplitMode" : "pages",
+      #   "maximumPageLength" : 4000,
+      #   "inputs" : [
+      #     {
+      #       "name" : "text",
+      #       "source" : "/document/content"
+      #     },
+      #     {
+      #       "name" : "languageCode",
+      #       "source" : "/document/languageCode"
+      #     }
+      #   ],
+      #   "outputs" : [
+      #     {
+      #       "name" : "textItems",
+      #       "targetName" : "pages"
+      #     }
+      #   ]
+      # },
+      # {
+      #   "@odata.type" : "#Microsoft.Skills.Text.KeyPhraseExtractionSkill",
+      #   "context" : "/document/pages/*",
+      #   "inputs" : [
+      #     {
+      #       "name" : "text",
+      #       "source" : "/document/pages/*"
+      #     },
+      #     {
+      #       "name" : "languageCode",
+      #       "source" : "/document/languageCode"
+      #     }
+      #   ],
+      #   "outputs" : [
+      #     {
+      #       "name" : "keyPhrases",
+      #       "targetName" : "keyPhrases"
+      #     }
+      #   ]
+      # },
       {
         "@odata.type" : "#Microsoft.Skills.Util.DocumentExtractionSkill",
         "parsingMode" : "default",
@@ -247,30 +247,19 @@ resource "restapi_object" "ai_search_skillsets_mmai_text" {
 }
 
 locals {
-  mmai_text_indexer_json = {
-    name : "mmai-text-files-indexer",
-    dataSourceName : "${jsondecode(restapi_object.ai_search_datasource_mmai_text.api_response).name}"
-    targetIndexName : "${jsondecode(restapi_object.ai_search_index_mmai_text.api_response).name}"
-    skillsetName : "${jsondecode(restapi_object.ai_search_skillsets_mmai_text.api_response).name}"
-    parameters : {
-      configuration : {
-        indexedFileNameExtensions : ".pdf,.docx,.doc,.pptx,.ppt,.xlsx,.xls,.txt,.rtf,.html,.htm,.xml,.json,.csv"
-        imageAction : "none"
-        dataToExtract : "contentAndMetadata"
-        parsingMode : "default"
-        imageAction : "generateNormalizedImagePerPage"
-        allowSkillsetToReadFileData : true
-
-      }
-    }
-  }
+  indexer_json = templatefile("${path.module}/lib/indexer_template.json", {
+    indexer_Name =  "mmai-text-files-indexer"
+    dataSourceName = jsondecode(restapi_object.ai_search_datasource_mmai_text.api_response).name
+    targetIndexName = jsondecode(restapi_object.ai_search_index_mmai_text.api_response).name
+    skillsetName = jsondecode(restapi_object.ai_search_skillsets_mmai_text.api_response).name
+  })
 }
 
 // https://learn.microsoft.com/en-us/rest/api/searchservice/preview-api/create-or-update-indexer
 resource "restapi_object" "ai_search_indexer_mmai_text" {
   path         = "/indexers"
   query_string = "api-version=2024-07-01"
-  data         = jsonencode(local.mmai_text_indexer_json)
+  data         = local.indexer_json
   id_attribute = "name" # The ID field on the response
   depends_on = [
     module.ai_search,

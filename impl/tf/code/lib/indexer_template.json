@@ -1,0 +1,61 @@
+{
+    "name": "${indexer_Name}",
+    "description": "${indexer_Name}",
+    "dataSourceName": "${dataSourceName}",
+    "skillsetName": "${skillsetName}",
+    "targetIndexName": "${targetIndexName}",
+    "disabled": null,
+    "schedule": null,
+    "parameters": {
+      "batchSize": null,
+      "maxFailedItems": null,
+      "maxFailedItemsPerBatch": null,
+      "base64EncodeKeys": null,
+      "configuration": {
+        "allowSkillsetToReadFileData": true,
+        "dataToExtract": "contentAndMetadata",
+        "imageAction": "generateNormalizedImagePerPage",
+        "indexedFileNameExtensions": ".pdf,.docx,.doc,.pptx,.ppt,.xlsx,.xls,.txt,.rtf,.html,.htm,.xml,.json,.csv",
+        "parsingMode": "default"
+      }
+    },
+    "fieldMappings": [
+      {
+        "sourceFieldName": "content",
+        "targetFieldName": "content",
+        "mappingFunction": null
+      },
+      {
+        "sourceFieldName": "metadata_storage_path",
+        "targetFieldName": "metadata_storage_path",
+        "mappingFunction": null
+      },
+      {
+        "sourceFieldName": "metadata_storage_last_modified",
+        "targetFieldName": "metadata_storage_last_modified",
+        "mappingFunction": null
+      },
+      {
+        "sourceFieldName": "metadata_storage_name",
+        "targetFieldName": "title",
+        "mappingFunction": null
+      },
+      {
+        "sourceFieldName": "metadata_storage_name",
+        "targetFieldName": "metadata_storage_name",
+        "mappingFunction": null
+      },
+      {
+        "sourceFieldName": "metadata_storage_path",
+        "targetFieldName": "id",
+        "mappingFunction": {
+          "name": "base64Encode",
+          "parameters": {
+            "useHttpServerUtilityUrlTokenEncode": true
+          }
+        }
+      }
+    ],
+    "outputFieldMappings": [],
+    "encryptionKey": null
+  }
