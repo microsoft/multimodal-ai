@@ -13,15 +13,6 @@ module "ai_search" {
   log_analytics_workspace_id     = module.azure_log_analytics.log_analytics_id
   user_assigned_identity_id      = module.user_assigned_identity.user_assigned_identity_id
   subnet_id                      = null
-
-  # cognitive_service_kind = "search"
-  # cognitive_service_name = local.ai_search_name
-  # cognitive_service_sku = local.ai_search_sku
-
-  # user_assigned_identity_id = azurerm_user_assigned_identity.user_assigned_identity.id
-  # subnet_id = null
-  # customer_managed_key = null
-  # log_analytics_workspace_id = module.azure_log_analytics.log_analytics_id
 }
 
 
@@ -48,7 +39,7 @@ resource "restapi_object" "ai_search_datasource_mmai_text" {
   path         = "/datasources"
   query_string = "api-version=2023-10-01-Preview"
   data         = jsonencode(local.mmai_text_datasource_json)
-  id_attribute =  "name"
+  id_attribute = "name"
   depends_on = [
     module.storage_account,
     module.ai_search
@@ -151,7 +142,7 @@ resource "restapi_object" "ai_search_index_mmai_text" {
 
 locals {
   mmai_text_indexer_json = {
-    name :"mmai-text-files-indexer",
+    name : "mmai-text-files-indexer",
     dataSourceName : "${jsondecode(restapi_object.ai_search_datasource_mmai_text.api_response).name}"
     targetIndexName : "${jsondecode(restapi_object.ai_search_index_mmai_text.api_response).name}"
     parameters : {
@@ -159,7 +150,7 @@ locals {
         indexedFileNameExtensions : ".pdf,.docx,.doc,.pptx,.ppt,.xlsx,.xls,.txt,.rtf,.html,.htm,.xml,.json,.csv"
         imageAction : "none"
         dataToExtract : "contentAndMetadata"
-        parsingMode: "default"
+        parsingMode : "default"
         # imageAction: "generateNormalizedImagePerPage" # "To be implementeed  for generateNormalizedImagePerPage"
       }
     }
@@ -172,7 +163,114 @@ resource "restapi_object" "ai_search_indexer_mmai_text" {
   query_string = "api-version=2024-07-01"
   data         = jsonencode(local.mmai_text_indexer_json)
   id_attribute = "name" # The ID field on the response
-  depends_on   = [
+  depends_on = [
+    module.ai_search,
+    restapi_object.ai_search_datasource_mmai_text,
+    restapi_object.ai_search_index_mmai_text,
+    restapi_object.ai_search_skillsets_mmai_text,
+  ]
+}
+
+locals {
+  mmai_text_skillsets_json = {
+    name : "mmai-text-files-skillset",
+    description : "mmai-text-files-skillset",
+   "skills": [
+    {
+      "@odata.type": "#Microsoft.Skills.Text.LanguageDetectionSkill",
+      "inputs": [
+        {
+          "name": "text",
+          "source": "/document/content"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "languageCode",
+          "targetName": "languageCode"
+        }
+      ]
+    },
+    {
+      "@odata.type": "#Microsoft.Skills.Text.SplitSkill",
+      "textSplitMode": "pages",
+      "maximumPageLength": 4000,
+      "inputs": [
+        {
+          "name": "text",
+          "source": "/document/content"
+        },
+        {
+          "name": "languageCode",
+          "source": "/document/languageCode"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "textItems",
+          "targetName": "pages"
+        }
+      ]
+    },
+    {
+      "@odata.type": "#Microsoft.Skills.Text.KeyPhraseExtractionSkill",
+      "context": "/document/pages/*",
+      "inputs": [
+        {
+          "name": "text",
+          "source": "/document/pages/*"
+        },
+        {
+          "name": "languageCode",
+          "source": "/document/languageCode"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "keyPhrases",
+          "targetName": "keyPhrases"
+        }
+      ]
+    },
+    {
+      "@odata.type": "#Microsoft.Skills.Util.DocumentExtractionSkill",
+      "parsingMode": "default",
+      "dataToExtract": "contentAndMetadata",
+      "configuration": {
+        "imageAction": "generateNormalizedImages",
+        "normalizedImageMaxWidth": 2000,
+        "normalizedImageMaxHeight": 2000
+      },
+      "context": "/document",
+      "inputs": [
+        {
+          "name": "file_data",
+          "source": "/document/file_data"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "content",
+          "targetName": "extracted_content"
+        },
+        {
+          "name": "normalized_images",
+          "targetName": "extracted_normalized_images"
+        }
+      ]
+    }
+  ]
+  }
+}
+
+# Create
+// https://learn.microsoft.com/en-us/rest/api/searchservice/preview-api/create-or-update-indexer
+resource "restapi_object" "ai_search_skillsets_mmai_text" {
+  path         = "/skillsets"
+  query_string = "api-version=2024-07-01"
+  data         = jsonencode(local.mmai_text_skillsets_json)
+  id_attribute = "name" # The ID field on the response
+  depends_on = [
     module.ai_search,
     restapi_object.ai_search_datasource_mmai_text,
     restapi_object.ai_search_index_mmai_text
