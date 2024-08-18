@@ -2,40 +2,64 @@
     "name": "${skillset_name}",
     "description": "${skillset_name}",
     "skills": [
-      {
-        "@odata.type": "#Microsoft.Skills.Util.DocumentExtractionSkill",
-        "name": "#1",
-        "description": null,
-        "context": "/document",
-        "parsingMode": "default",
-        "dataToExtract": "contentAndMetadata",
-        "inputs": [
-          {
-            "name": "file_data",
-            "source": "/document/file_data"
-          }
-        ],
-        "outputs": [
-          {
-            "name": "content",
-            "targetName": "extracted_content"
-          },
-          {
-            "name": "normalized_images",
-            "targetName": "extracted_normalized_images"
-          }
-        ],
-        "configuration": {
-          "imageAction": "generateNormalizedImages",
-          "normalizedImageMaxHeight@odata.type": "#Int64",
-          "normalizedImageMaxHeight": 2000,
-          "normalizedImageMaxWidth@odata.type": "#Int64",
-          "normalizedImageMaxWidth": 2000
+        {
+            "@odata.type": "#Microsoft.Skills.Util.DocumentExtractionSkill",
+            "name": "#1",
+            "description": null,
+            "context": "/document",
+            "parsingMode": "default",
+            "dataToExtract": "contentAndMetadata",
+            "inputs": [
+                {
+                    "name": "file_data",
+                    "source": "/document/file_data"
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "content",
+                    "targetName": "extracted_content"
+                },
+                {
+                    "name": "normalized_images",
+                    "targetName": "extracted_normalized_images"
+                }
+            ],
+            "configuration": {
+                "imageAction": "generateNormalizedImages",
+                "normalizedImageMaxHeight@odata.type": "#Int64",
+                "normalizedImageMaxHeight": 2000,
+                "normalizedImageMaxWidth@odata.type": "#Int64",
+                "normalizedImageMaxWidth": 2000
+            }
+        },
+        {
+            "@odata.type": "#Microsoft.Skills.Text.AzureOpenAIEmbeddingSkill",
+            "resourceUri": "${resource_uri}",
+            "apiKey": "${api_key}",
+            "deploymentId": "${deployment_id}",
+            "authIdentity": null,
+            "dimensions": 3072,
+            "modelName": "${model_name}",
+            "name": "aoai-embedding",
+            "description": "",
+            "context": "/document",
+            "inputs": [
+                {
+                    "name": "text",
+                    "source": "/document/file_data"
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "embedding",
+                    "targetName": "embedding"
+                }
+            ]
         }
-      }
     ],
     "cognitiveServices": null,
     "knowledgeStore": null,
     "indexProjections": null,
     "encryptionKey": null
-  }
+}

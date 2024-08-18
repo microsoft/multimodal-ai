@@ -28,6 +28,12 @@ locals {
   gpt_model_name = "gpt-4o"
   gpt_model_version = "2024-05-13"
 
+  # conginative services
+  cognitiveservice_name = "${local.prefix}-cognitive-service-001"
+  cognitiveservice_sku = "S0"
+  cognitiveservice_kind = "CognitiveServices"
+
+
   # AI Search
   ai_search_name = "${local.prefix}-ai-search001"
   ai_search_sku = "standard"
