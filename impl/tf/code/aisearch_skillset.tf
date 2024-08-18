@@ -20,7 +20,3 @@ resource "restapi_object" "ai_search_skillsets_mmai_text" {
     restapi_object.ai_search_index_mmai_text
   ]
 }
-
-output "endpoint" {
-    value = module.openai.cognitive_account_endpoint
-}

@@ -3,14 +3,69 @@
     "defaultScoringProfile": null,
     "fields": [
         {
-            "name": "id",
+            "name": "chunk_id",
             "type": "Edm.String",
-            "searchable": false,
+            "searchable": true,
+            "filterable": true,
+            "retrievable": true,
+            "stored": true,
+            "sortable": true,
+            "facetable": true,
+            "key": true,
+            "indexAnalyzer": null,
+            "searchAnalyzer": null,
+            "analyzer": "keyword",
+            "dimensions": null,
+            "vectorSearchProfile": null,
+            "vectorEncoding": null,
+            "synonymMaps": []
+        },
+        {
+            "name": "chunk",
+            "type": "Edm.String",
+            "searchable": true,
             "filterable": false,
             "retrievable": true,
+            "stored": true,
             "sortable": false,
             "facetable": false,
-            "key": true,
+            "key": false,
+            "indexAnalyzer": null,
+            "searchAnalyzer": null,
+            "analyzer": null,
+            "dimensions": null,
+            "vectorSearchProfile": null,
+            "vectorEncoding": null,
+            "synonymMaps": []
+        },
+        {
+            "name": "text_parent_id",
+            "type": "Edm.String",
+            "searchable": true,
+            "filterable": true,
+            "retrievable": true,
+            "stored": true,
+            "sortable": true,
+            "facetable": true,
+            "key": false,
+            "indexAnalyzer": null,
+            "searchAnalyzer": null,
+            "analyzer": null,
+            "dimensions": null,
+            "vectorSearchProfile": null,
+            "vectorEncoding": null,
+            "synonymMaps": []
+        },
+        {
+            "name": "image_parent_id",
+            "type": "Edm.String",
+            "searchable": true,
+            "filterable": true,
+            "retrievable": true,
+            "stored": true,
+            "sortable": true,
+            "facetable": true,
+            "key": false,
             "indexAnalyzer": null,
             "searchAnalyzer": null,
             "analyzer": null,
@@ -138,8 +193,8 @@
             "vectorSearchProfile": "aoai-text-vector-profile",
             "vectorEncoding": null,
             "synonymMaps": []
-          },
-          {
+        },
+        {
             "name": "image_vector",
             "type": "Collection(Edm.Single)",
             "searchable": true,
@@ -156,7 +211,7 @@
             "vectorSearchProfile": "aiServicesVision-image-profile",
             "vectorEncoding": null,
             "synonymMaps": []
-          }
+        }
     ],
     "scoringProfiles": [],
     "corsOptions": null,
@@ -207,12 +262,12 @@
             {
                 "name": "aoai-text-vector-profile",
                 "algorithm": "hnsw-1",
-                "vectorizer":"${index_name}-azureOpenAi-text-vectorizer"
+                "vectorizer": "${index_name}-azureOpenAi-text-vectorizer"
             },
             {
                 "name": "aiServicesVision-image-profile",
                 "algorithm": "hnsw-1",
-                "vectorizer":"${index_name}-azureOpenAi-text-vectorizer"
+                "vectorizer": "${index_name}-aiServicesVision-image-vectorizer"
             }
         ],
         "vectorizers": [
@@ -226,7 +281,8 @@
                     "modelName": "text-embedding-3-large",
                     "authIdentity": null
                 },
-                "customWebApiParameters": null
+                "customWebApiParameters": null,
+                "aiServicesVisionParameters": null
             },
             {
                 "name": "${index_name}-aiServicesVision-image-vectorizer",
