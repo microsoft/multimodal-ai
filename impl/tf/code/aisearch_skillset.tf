@@ -11,7 +11,7 @@ locals {
 // https://learn.microsoft.com/en-us/rest/api/searchservice/preview-api/create-or-update-indexer
 resource "restapi_object" "ai_search_skillsets_mmai_text" {
   path         = "/skillsets"
-  query_string = "api-version=2024-07-01"
+  query_string = "api-version=2024-05-01-preview"
   data         = local.mmai_text_skillsets_json
   id_attribute = "name" # The ID field on the response
   depends_on = [
