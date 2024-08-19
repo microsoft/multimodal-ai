@@ -18,7 +18,7 @@ module "storage_account" {
 }
 
 resource "azurerm_storage_blob" "text_files" {
-  depends_on = [ module.storage_account ]
+  depends_on = [module.storage_account]
   for_each = toset([
     for file in fileset(local.data_files_text, "**") : file
     if !startswith(file, ".gitkeep")
@@ -32,7 +32,7 @@ resource "azurerm_storage_blob" "text_files" {
 }
 
 resource "azurerm_storage_blob" "multimedia_files" {
-  depends_on = [ module.storage_account ]
+  depends_on = [module.storage_account]
   for_each = toset([
     for file in fileset(local.data_files_multimedia, "**") : file
     if !startswith(file, ".gitkeep")

@@ -1,8 +1,8 @@
 locals {
   mmai_text_datasource_json = templatefile("${path.module}/lib/datasource_blob_template.json", {
-    datasource_name =  "${module.ai_search.search_service_name}-text-blob-datasource",
+    datasource_name                   = "${module.ai_search.search_service_name}-text-blob-datasource",
     storage_account_connection_string = module.storage_account.storage_account_primary_connection_string,
-    container_name = local.container_name_text
+    container_name                    = local.container_name_text
   })
 }
 
