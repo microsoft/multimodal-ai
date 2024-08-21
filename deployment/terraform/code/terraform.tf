@@ -51,7 +51,7 @@ provider "azapi" {
 
 provider "restapi" {
   uri = "https://${local.ai_search_name}.search.windows.net"
-  # create_returns_object = true
+  create_returns_object = true
   write_returns_object = true
   debug                = true
 
@@ -60,8 +60,8 @@ provider "restapi" {
     "Content-Type" = "application/json"
   }
 
-  create_method  = "POST"
-  update_method  = "PUT"
+  create_method  = "POST" #POST
+  update_method  = "PUT" #PUT
   destroy_method = "DELETE"
 }
 
