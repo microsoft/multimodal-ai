@@ -54,6 +54,11 @@ var aoaiSku = 'S0'
 var docIntelKind = 'FormRecognizer'
 var docIntelSku = 'S0'
 
+// AI Search
+var aiSearchSku = 'standard'
+var aiSearchCapacity = 1
+var aiSearchSemanticSearch = 'disabled'
+
 var resourceGroupNames = {
   ai: '${prefixNormalized}-${locationNormalized}-ai'
 }
@@ -62,6 +67,7 @@ var resourceNames = {
   aiVision: '${prefixNormalized}-${locationNormalized}-ai-vision'
   azureOpenAI: '${prefixNormalized}-${locationNormalized}-aoai'
   documentIntelligence: '${prefixNormalized}-${locationNormalized}-docintel'
+  aiSearch: '${prefixNormalized}-${locationNormalized}-aisearch'
 }
 
 // Resources
@@ -106,7 +112,7 @@ module azureAIVision 'modules/cognitiveServices/cognitiveServices.bicep' = {
 
 module documentIntelligence 'modules/cognitiveServices/cognitiveServices.bicep' = {
   name: 'modDocumentIntelligence'
-  scope: resourceGroup(resourceGroupNames.ai)  
+  scope: resourceGroup(resourceGroupNames.ai)
   dependsOn: [
     resourceGroupAI
   ]
@@ -115,6 +121,22 @@ module documentIntelligence 'modules/cognitiveServices/cognitiveServices.bicep' 
     name: resourceNames.documentIntelligence
     sku: docIntelSku
     kind: docIntelKind
+    tags: tags
+  }
+}
+
+module aiSearch 'modules/aiSearch/aiSearch.bicep' = {
+  name: 'modAiSearch'
+  scope: resourceGroup(resourceGroupNames.ai)
+  dependsOn: [
+    resourceGroupAI
+  ]
+  params: {
+    location: location
+    searchName: resourceNames.aiSearch
+    skuName: aiSearchSku
+    skuCapacity: aiSearchCapacity
+    semanticSearch: aiSearchSemanticSearch
     tags: tags
   }
 }

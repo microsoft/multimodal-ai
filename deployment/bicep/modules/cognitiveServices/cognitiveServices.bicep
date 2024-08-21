@@ -33,6 +33,6 @@ resource cognitiveServicesAccount 'Microsoft.CognitiveServices/accounts@2024-04-
     name: sku
   } 
   properties: {
-    publicNetworkAccess: 'Enabled'    
+    publicNetworkAccess: 'Enabled'
   }
 }
