@@ -237,7 +237,7 @@
                     },
                     "prioritizedContentFields": [
                         {
-                            "fieldName": "content"
+                            "fieldName": "chunk"
                         }
                     ],
                     "prioritizedKeywordsFields": []

@@ -4,7 +4,7 @@
     "skills": [
         {
             "@odata.type": "#Microsoft.Skills.Vision.OcrSkill",
-            "name": "#1",
+            "name": "AIVisionOcr",
             "description": null,
             "context": "/document/normalized_images/*",
             "textExtractionAlgorithm": null,
@@ -26,7 +26,7 @@
         },
         {
             "@odata.type": "#Microsoft.Skills.Vision.VectorizeSkill",
-            "name": "#5",
+            "name": "AIVisionVectorizer",
             "description": "An AI Services Vision vectorization skill for images",
             "context": "/document/normalized_images/*",
             "modelVersion": "2023-04-15",
@@ -45,7 +45,7 @@
         },
         {
             "@odata.type": "#Microsoft.Skills.Text.MergeSkill",
-            "name": "#2",
+            "name": "TextMerge",
             "description": null,
             "context": "/document",
             "insertPreTag": " ",
@@ -73,7 +73,7 @@
         },
         {
             "@odata.type": "#Microsoft.Skills.Text.SplitSkill",
-            "name": "#3",
+            "name": "TextSplit",
             "description": "Split skill to chunk documents",
             "context": "/document",
             "defaultLanguageCode": "en",
@@ -96,7 +96,7 @@
         },
         {
             "@odata.type": "#Microsoft.Skills.Text.AzureOpenAIEmbeddingSkill",
-            "name": "#4",
+            "name": "TextEmbeddingAOAI",
             "description": null,
             "context": "/document/pages/*",
             "resourceUri": "${resource_uri}",

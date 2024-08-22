@@ -1,0 +1,16 @@
+{
+    "name": "${datasource_name}",
+    "description": "${datasource_name}",
+    "type": "adlsgen2",
+    "subtype": null,
+    "credentials": {
+      "connectionString": "${storage_account_connection_string}"
+    },
+    "container": {
+      "name": "${container_name}",
+      "query": null
+    },
+    "dataChangeDetectionPolicy": null,
+    "dataDeletionDetectionPolicy": null,
+    "encryptionKey": null
+  }
