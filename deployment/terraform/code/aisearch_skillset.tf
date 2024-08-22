@@ -5,6 +5,7 @@ locals {
     api_key       = module.openai.azurerm_cognitive_account_primary_access_key
     deployment_id = "text-embedding-3-large"
     model_name    = "text-embedding-3-large"
+    target_index_name = "${module.ai_search.search_service_name}-index-text"
   })
 }
 # Create

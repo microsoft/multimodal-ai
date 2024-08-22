@@ -441,3 +441,4 @@ impl/tf/code/.terraform.lock.hcl
 # Ignore the local data directory
 deployment/terraform/data/text/*
 deployment/terraformdata/multimedia/*
+deployment/terraform/code/.terraform.lock.hcl
