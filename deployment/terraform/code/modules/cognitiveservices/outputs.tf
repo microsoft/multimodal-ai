@@ -16,5 +16,5 @@ output "azurerm_cognitive_account_service_id" {
 output "azurerm_cognitive_account_primary_access_key" {
   description = "The base URL of the cognitive service account."
   value       = azurerm_cognitive_account.cognitive_service.primary_access_key
-  sensitive = false
+  sensitive   = false
 }

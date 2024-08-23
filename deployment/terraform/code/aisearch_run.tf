@@ -14,7 +14,7 @@ data "http" "ai_search_indexer_mmai_text_run" {
     restapi_object.ai_search_indexer_mmai_text,
     data.http.ai_search_indexer_mmai_text_reset
 
-    
+
   ]
 }
 

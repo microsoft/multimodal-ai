@@ -13,9 +13,9 @@ resource "azurerm_search_service" "search_service" {
   # }
 
 
-  allowed_ips                 = []
+  allowed_ips = []
   # authentication_failure_mode = "http401WithBearerChallenge"
-  hosting_mode                = "default"
+  hosting_mode = "default"
 
   sku                                      = var.search_service_sku
   partition_count                          = var.search_service_partition_count
@@ -26,7 +26,7 @@ resource "azurerm_search_service" "search_service" {
 }
 
 resource "azurerm_role_assignment" "identity_access_to_search" {
-  principal_id = data.azurerm_user_assigned_identity.user_assigned_identity.principal_id
-  scope        = azurerm_search_service.search_service.id
+  principal_id         = data.azurerm_user_assigned_identity.user_assigned_identity.principal_id
+  scope                = azurerm_search_service.search_service.id
   role_definition_name = "Search Index Data Contributor"
 }

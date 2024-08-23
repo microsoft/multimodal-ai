@@ -75,9 +75,9 @@ variable "subnet_id" {
   sensitive   = false
 }
 
-variable user_assigned_identity_id {
+variable "user_assigned_identity_id" {
   description = "Specifies the user assigned identity."
-  default = ""
+  default     = ""
   type        = string
   sensitive   = false
 }

@@ -1,0 +1,3 @@
+[submodule "azure-search-openai-demo"]
+	path = azure-search-openai-demo
+	url = https://github.com/Azure-Samples/azure-search-openai-demo

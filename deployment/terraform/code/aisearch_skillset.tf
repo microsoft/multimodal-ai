@@ -1,10 +1,10 @@
 locals {
   mmai_text_skillsets_json = templatefile("${path.module}/lib/skillset_template.json", {
-    skillset_name = "${module.ai_search.search_service_name}-text-skillset",
-    resource_uri  = module.openai.cognitive_account_endpoint
-    api_key       = module.openai.azurerm_cognitive_account_primary_access_key
-    deployment_id = "text-embedding-3-large"
-    model_name    = "text-embedding-3-large"
+    skillset_name     = "${module.ai_search.search_service_name}-text-skillset",
+    resource_uri      = module.openai.cognitive_account_endpoint
+    api_key           = module.openai.azurerm_cognitive_account_primary_access_key
+    deployment_id     = "text-embedding-3-large"
+    model_name        = "text-embedding-3-large"
     target_index_name = "${module.ai_search.search_service_name}-index-text"
   })
 }

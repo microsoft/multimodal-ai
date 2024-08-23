@@ -42,30 +42,11 @@ locals {
   ai_search_indexer_name    = "${local.prefix}-ai-search-indexer001"
   ai_search_datasource_name = "${local.prefix}-ai-search-datasource001"
   ai_search_skillset_name   = "${local.prefix}-ai-search-skillset001"
-  # ai_search_synonymmap_name = "${local.prefix}-ai-search-synonymmap001"
-  # ai_search_indexer_schedule = "0 0 * * *"
-  # ai_search_indexer_start_time = "2022-01-01T00:00:00Z"
-  # ai_search_indexer_recurrence_interval = "Day"
-  # ai_search_indexer_recurrence_count = 1
-  # ai_search_indexer_recurrence_end_time = "2022-01-01T00:00:00Z"
-  # ai_search_indexer_data_change_detection_mode = "HighWaterMark"
-  # ai_search_indexer_data_deletion_detection_mode = "SoftDeleteColumn"
-  # ai_search_indexer_data_deletion_detection_column = "isDeleted"
-  # ai_search_indexer_data_deletion_detection_value = "true"
-  # ai_search_indexer_data_deletion_detection_start_time = "2022-01-01T00:00:00Z"
-  # ai_search_indexer_data_deletion_detection_end_time = "2022-01-01T00:00:00Z"
-  # ai_search_indexer_data_deletion_detection_interval = "Day"
-  # ai_search_indexer_data_deletion_detection_recurrence_count = 1
-  # ai_search_indexer_data_deletion_detection_recurrence_end_time = "2022-01-01T00:00:00Z"
-  # ai_search_indexer_data_deletion_detection_recurrence_interval = "Day"
-  # ai_search_indexer_data_deletion_detection_recurrence_start_time = "2022-01-01T00:00:00Z"
-  # ai_search_indexer_data_deletion_detection_recurrence_end_time = "2022-01-01T00:00:00Z"
-  # ai_search_indexer_data_deletion_detection_recurrence_interval = "Day"
-  # ai_search_indexer_data_deletion_detection_recurrence_count = 1
-  # ai_search_indexer_data_deletion_detection_recurrence_start_time = "2022-01-01T00:00:00Z"
-  # ai_search_indexer_data_deletion_detection_recurrence_end_time = "2022-01-01T00:00:00Z"
-  # ai_search_indexer_data_deletion_detection_recurrence_interval = "Day"
-  # ai_search_indexer_data_deletion_detection_recurrence_count = 1
 
+  # App service Frontend
+  app_service_frontend_name = "${local.prefix}-app-service-front001"
+  app_service_backend_name  = "${local.prefix}-app-service-back001"
+  app_service_plan_name     = "${local.prefix}-app-service-plan"
+  app_service_sku           = "P3mv3"
 
 }
