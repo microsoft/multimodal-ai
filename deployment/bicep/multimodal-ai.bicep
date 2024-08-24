@@ -19,8 +19,7 @@ param location string = ''
   'swedencentral'
   'switzerlandnorth'
   'australiaeast'
-  'southeastasia'
-  'eastasia'
+  'southeastasia'  
   'koreacentral'
   'japaneast'
 ])
@@ -63,11 +62,16 @@ var resourceGroupNames = {
   ai: '${prefixNormalized}-${locationNormalized}-ai'
 }
 
+// Cognitive Services
+var cogsvcSku = 'S0'
+var cogsvcKind = 'CognitiveServices'
+
 var resourceNames = {
   aiVision: '${prefixNormalized}-${locationNormalized}-ai-vision'
   azureOpenAI: '${prefixNormalized}-${locationNormalized}-aoai'
   documentIntelligence: '${prefixNormalized}-${locationNormalized}-docintel'
   aiSearch: '${prefixNormalized}-${locationNormalized}-aisearch'
+  cognitiveServices: '${prefixNormalized}-${locationNormalized}-cogsvc'
 }
 
 // Resources
@@ -91,6 +95,21 @@ module azureOpenAI 'modules/cognitiveServices/cognitiveServices.bicep' = {
     name: resourceNames.azureOpenAI
     sku: aoaiSku
     kind: aoaiKind
+    tags: tags
+  }
+}
+
+module azureCognitiveServices 'modules/cognitiveServices/cognitiveServices.bicep' = {
+  name: 'modAzureCognitiveServices'
+  scope: resourceGroup(resourceGroupNames.ai)  
+  dependsOn: [
+    resourceGroupAI
+  ]
+  params: {
+    location: location
+    name: resourceNames.cognitiveServices
+    sku: cogsvcSku
+    kind: cogsvcKind
     tags: tags
   }
 }
