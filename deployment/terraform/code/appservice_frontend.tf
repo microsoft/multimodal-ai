@@ -39,7 +39,7 @@ resource "azurerm_linux_web_app" "web_app_frontend" {
 
 resource "null_resource" "web_app_deployment_frontned" {
 
-  depends_on = [ azurerm_linux_web_app.web_app_frontend ]
+  depends_on = [azurerm_linux_web_app.web_app_frontend]
 
   triggers = {
     file = data.archive_file.frontend.output_base64sha256
