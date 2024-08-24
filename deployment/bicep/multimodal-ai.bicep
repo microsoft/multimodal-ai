@@ -76,7 +76,7 @@ var resourceNames = {
   documentIntelligence: '${prefixNormalized}-${locationNormalized}-docintel'
   aiSearch: '${prefixNormalized}-${locationNormalized}-aisearch'
   cognitiveServices: '${prefixNormalized}-${locationNormalized}-cogsvc'
-  storageAccount: '${prefixNormalized}-${locationNormalized}-stg'
+  storageAccount: take('${prefixNormalized}${locationNormalized}stg',23)
 }
 
 // Resources

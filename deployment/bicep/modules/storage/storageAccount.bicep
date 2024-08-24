@@ -33,11 +33,8 @@ param containerName string
 @sys.description('Tags you would like to be applied to the resource group.')
 param tags object = {}
 
-// Variables
-var storageAccountNameCleaned = take(replace(storageAccountName, '-', ''), 23)
-
 resource storageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' = {
-  name: storageAccountNameCleaned
+  name: storageAccountName
   location: location
   tags: tags
 
