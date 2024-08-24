@@ -102,7 +102,7 @@
             "resourceUri": "${resource_uri}",
             "apiKey": "${api_key}",
             "deploymentId": "${deployment_id}",
-            "dimensions": 3072,
+            "dimensions": 1536,
             "modelName": "${model_name}",
             "inputs": [
                 {

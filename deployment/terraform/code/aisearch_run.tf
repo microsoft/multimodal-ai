@@ -1,6 +1,6 @@
 #  Reset - https://learn.microsoft.com/en-us/rest/api/searchservice/indexers/reset?view=rest-searchservice-2024-07-01&tabs=HTTP
 data "http" "ai_search_indexer_mmai_text_run" {
-  url    = "https://${local.ai_search_name}.search.windows.net/indexers/${jsondecode(restapi_object.ai_search_indexer_mmai_text.api_response).name}/run?api-version=2024-05-01-preview"
+  url    = "https://${local.ai_search_name}.search.windows.net/indexers/${local.ai_search_indexer_name}/run?api-version=2024-05-01-preview"
   method = "POST"
   request_headers = {
     "api-key"      = module.ai_search.search_service_key

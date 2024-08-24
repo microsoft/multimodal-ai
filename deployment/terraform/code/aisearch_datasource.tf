@@ -1,6 +1,6 @@
 locals {
   mmai_text_datasource_json = templatefile("${path.module}/lib/datasource_adlsgen2_template.json", {
-    datasource_name                   = "${module.ai_search.search_service_name}-adlsgen2-datasource",
+    datasource_name                   = local.ai_search_datasource_name,
     storage_account_connection_string = module.storage_account.storage_account_primary_connection_string,
     container_name                    = local.container_name_text
   })

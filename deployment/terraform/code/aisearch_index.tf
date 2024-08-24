@@ -1,10 +1,12 @@
 locals {
   mmai_text_index_json = templatefile("${path.module}/lib/index_template.json", {
-    index_name                 = "${module.ai_search.search_service_name}-index-text"
-    azureOpenAI_endpoint       = module.openai.cognitive_account_endpoint
-    aoai_api_key               = module.openai.azurerm_cognitive_account_primary_access_key
-    cognitive_service_endpoint = module.conginitiveservice.cognitive_account_endpoint
-    cognitive_service_api_key  = module.conginitiveservice.azurerm_cognitive_account_primary_access_key
+    index_name                     = local.ai_search_index_name
+    azureOpenAI_endpoint           = module.openai.cognitive_account_endpoint
+    aoai_api_key                   = module.openai.azurerm_cognitive_account_primary_access_key
+    cognitive_service_endpoint     = module.conginitiveservice.cognitive_account_endpoint
+    cognitive_service_api_key      = module.conginitiveservice.azurerm_cognitive_account_primary_access_key
+    azureOpenAI_text_deployment_id = local.embedding_deployment
+    azureOpenAI_text_model_name    = local.embedding_model
   })
 }
 

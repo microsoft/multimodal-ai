@@ -58,10 +58,10 @@ resource "azurerm_linux_web_app" "web_app_backend" {
     AZURE_OPENAI_EMB_DEPLOYMENT           = local.embedding_deployment
     AZURE_OPENAI_EMB_DIMENSIONS           = "1536"
     AZURE_OPENAI_EMB_MODEL_NAME           = local.embedding_model
-    AZURE_OPENAI_GPT4V_DEPLOYMENT         = "" #local.gpt4v_deployment
-    AZURE_OPENAI_GPT4V_MODEL              = "" #local.gpt4v_model
-    AZURE_OPENAI_SERVICE                  = local.opeanai_name                                   #"cog-i2lzzdw6pvrhi"
-    AZURE_SEARCH_INDEX                    = "${module.ai_search.search_service_name}-index-text" #"gptkbindex"
+    AZURE_OPENAI_GPT4V_DEPLOYMENT         = ""                 #local.gpt4v_deployment
+    AZURE_OPENAI_GPT4V_MODEL              = ""                 #local.gpt4v_model
+    AZURE_OPENAI_SERVICE                  = local.opeanai_name #"cog-i2lzzdw6pvrhi"
+    AZURE_SEARCH_INDEX                    = local.ai_search_index_name
     AZURE_SEARCH_QUERY_LANGUAGE           = "en-us"
     AZURE_SEARCH_QUERY_SPELLER            = "lexicon"
     AZURE_SEARCH_SEMANTIC_RANKER          = "free"
@@ -197,4 +197,38 @@ resource "azurerm_role_assignment" "openai_aisearch_index_data_reader" {
   role_definition_name = "Search Index Data Reader"
   principal_id         = module.openai.azurerm_cognitive_account_principal_id
   principal_type       = "ServicePrincipal"
+}
+
+# Current user - data plane permissions
+
+resource "azurerm_role_assignment" "current_user_openai_contributor" {
+  count                = var.environment == "dev" ? 1 : 0
+  scope                = module.openai.azurerm_cognitive_account_service_id
+  role_definition_name = "Cognitive Services OpenAI Contributor"
+  principal_id         = data.azurerm_client_config.current.object_id
+  principal_type       = "User"
+}
+
+resource "azurerm_role_assignment" "current_user_aivision_contirbutor" {
+  count                = var.environment == "dev" ? 1 : 0
+  scope                = module.ai_vision.azurerm_cognitive_account_service_id
+  role_definition_name = "Cognitive Services Custom Vision Contributor"
+  principal_id         = data.azurerm_client_config.current.object_id
+  principal_type       = "User"
+}
+
+resource "azurerm_role_assignment" "current_user_aisearch_contirbutor" {
+  count                = var.environment == "dev" ? 1 : 0
+  scope                = module.ai_search.search_service_id
+  role_definition_name = "Search Service Contributor"
+  principal_id         = data.azurerm_client_config.current.object_id
+  principal_type       = "User"
+}
+
+resource "azurerm_role_assignment" "current_user_storage_aisearch_search_index_data_reader" {
+  count                = var.environment == "dev" ? 1 : 0
+  scope                = module.ai_search.search_service_id
+  role_definition_name = "Search Index Data Reader"
+  principal_id         = data.azurerm_client_config.current.object_id
+  principal_type       = "User"
 }

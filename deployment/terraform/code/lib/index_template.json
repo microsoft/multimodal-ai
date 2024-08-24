@@ -189,7 +189,7 @@
             "indexAnalyzer": null,
             "searchAnalyzer": null,
             "analyzer": null,
-            "dimensions": 3072,
+            "dimensions": 1536,
             "vectorSearchProfile": "aoai-text-vector-profile",
             "vectorEncoding": null,
             "synonymMaps": []
@@ -207,7 +207,7 @@
             "indexAnalyzer": null,
             "searchAnalyzer": null,
             "analyzer": null,
-            "dimensions": 1024,
+            "dimensions":1024,
             "vectorSearchProfile": "aiServicesVision-image-profile",
             "vectorEncoding": null,
             "synonymMaps": []
@@ -276,9 +276,9 @@
                 "kind": "azureOpenAI",
                 "azureOpenAIParameters": {
                     "resourceUri": "${azureOpenAI_endpoint}",
-                    "deploymentId": "text-embedding-3-large",
+                    "deploymentId": "${azureOpenAI_text_deployment_id}",
                     "apiKey": "${aoai_api_key}",
-                    "modelName": "text-embedding-3-large",
+                    "modelName":"${azureOpenAI_text_model_name}",
                     "authIdentity": null
                 },
                 "customWebApiParameters": null,
