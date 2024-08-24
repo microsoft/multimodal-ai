@@ -43,7 +43,7 @@ var prefixNormalized = toLower(prefix)
 
 // AI Vision
 var aiVisionKind = 'ComputerVision'
-var aiVisionSku = 'F0'
+var aiVisionSku = 'S1'
 
 // Azure OpenAI
 var aoaiKind = 'OpenAI'
@@ -58,13 +58,17 @@ var aiSearchSku = 'standard'
 var aiSearchCapacity = 1
 var aiSearchSemanticSearch = 'disabled'
 
-var resourceGroupNames = {
-  ai: '${prefixNormalized}-${locationNormalized}-ai'
-}
-
 // Cognitive Services
 var cogsvcSku = 'S0'
 var cogsvcKind = 'CognitiveServices'
+
+// Storage Account
+var docsContainerName = 'docs'
+
+var resourceGroupNames = {
+  ai: '${prefixNormalized}-${locationNormalized}-ai-rg'
+  storage: '${prefixNormalized}-${locationNormalized}-storage-rg'
+}
 
 var resourceNames = {
   aiVision: '${prefixNormalized}-${locationNormalized}-ai-vision'
@@ -72,14 +76,27 @@ var resourceNames = {
   documentIntelligence: '${prefixNormalized}-${locationNormalized}-docintel'
   aiSearch: '${prefixNormalized}-${locationNormalized}-aisearch'
   cognitiveServices: '${prefixNormalized}-${locationNormalized}-cogsvc'
+  storageAccount: '${prefixNormalized}-${locationNormalized}-stg'
 }
 
 // Resources
+
+// Resource Group AI
 module resourceGroupAI './modules/resourceGroup/resourceGroup.bicep' = {
   name: 'modResourceGroupAI'
   params: {
     location: location
     resourceGroupName: resourceGroupNames.ai
+    tags: tags
+  }
+}
+
+// Resource Group Storage
+module resourceGroupStorage './modules/resourceGroup/resourceGroup.bicep' = {
+  name: 'modResourceGroupStorage'
+  params: {
+    location: location
+    resourceGroupName: resourceGroupNames.storage
     tags: tags
   }
 }
@@ -157,5 +174,42 @@ module aiSearch 'modules/aiSearch/aiSearch.bicep' = {
     skuCapacity: aiSearchCapacity
     semanticSearch: aiSearchSemanticSearch
     tags: tags
+  }
+}
+
+module storageAccount 'modules/storage/storageAccount.bicep' = {
+  name: 'modStorageAccount'
+  scope: resourceGroup(resourceGroupNames.storage)
+  dependsOn: [
+    resourceGroupStorage
+  ]
+  params: {
+    storageAccountName: resourceNames.storageAccount
+    location: location    
+    tags: tags
+  }
+}
+
+module storageBlobServices 'modules/storage/blobServices.bicep' = {
+  name: 'modStorageBlobServices'
+  scope: resourceGroup(resourceGroupNames.storage)
+  dependsOn: [
+    storageAccount
+  ]
+  params: {
+    storageAccountId: storageAccount.outputs.storageAccountId
+    blobServicesName: 'blobSvcs'
+  }
+}
+
+module storageDocsContainer 'modules/storage/container.bicep' = {
+  name: 'modStorageDocsContainer'
+  scope: resourceGroup(resourceGroupNames.storage)
+  dependsOn: [
+    storageBlobServices
+  ]
+  params: {
+    containerName: docsContainerName
+    blobServicesId: storageBlobServices.outputs.blobServicesId
   }
 }
