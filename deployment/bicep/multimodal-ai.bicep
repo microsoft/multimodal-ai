@@ -19,8 +19,7 @@ param location string = ''
   'swedencentral'
   'switzerlandnorth'
   'australiaeast'
-  'southeastasia'
-  'eastasia'
+  'southeastasia'  
   'koreacentral'
   'japaneast'
 ])
@@ -44,7 +43,7 @@ var prefixNormalized = toLower(prefix)
 
 // AI Vision
 var aiVisionKind = 'ComputerVision'
-var aiVisionSku = 'F0'
+var aiVisionSku = 'S1'
 
 // Azure OpenAI
 var aoaiKind = 'OpenAI'
@@ -59,8 +58,16 @@ var aiSearchSku = 'standard'
 var aiSearchCapacity = 1
 var aiSearchSemanticSearch = 'disabled'
 
+// Cognitive Services
+var cogsvcSku = 'S0'
+var cogsvcKind = 'CognitiveServices'
+
+// Storage Account
+var docsContainerName = 'docs'
+
 var resourceGroupNames = {
-  ai: '${prefixNormalized}-${locationNormalized}-ai'
+  ai: '${prefixNormalized}-${locationNormalized}-ai-rg'
+  storage: '${prefixNormalized}-${locationNormalized}-storage-rg'
 }
 
 var resourceNames = {
@@ -68,14 +75,28 @@ var resourceNames = {
   azureOpenAI: '${prefixNormalized}-${locationNormalized}-aoai'
   documentIntelligence: '${prefixNormalized}-${locationNormalized}-docintel'
   aiSearch: '${prefixNormalized}-${locationNormalized}-aisearch'
+  cognitiveServices: '${prefixNormalized}-${locationNormalized}-cogsvc'
+  storageAccount: take('${prefixNormalized}${locationNormalized}stg',23)
 }
 
 // Resources
+
+// Resource Group AI
 module resourceGroupAI './modules/resourceGroup/resourceGroup.bicep' = {
   name: 'modResourceGroupAI'
   params: {
     location: location
     resourceGroupName: resourceGroupNames.ai
+    tags: tags
+  }
+}
+
+// Resource Group Storage
+module resourceGroupStorage './modules/resourceGroup/resourceGroup.bicep' = {
+  name: 'modResourceGroupStorage'
+  params: {
+    location: location
+    resourceGroupName: resourceGroupNames.storage
     tags: tags
   }
 }
@@ -91,6 +112,21 @@ module azureOpenAI 'modules/cognitiveServices/cognitiveServices.bicep' = {
     name: resourceNames.azureOpenAI
     sku: aoaiSku
     kind: aoaiKind
+    tags: tags
+  }
+}
+
+module azureCognitiveServices 'modules/cognitiveServices/cognitiveServices.bicep' = {
+  name: 'modAzureCognitiveServices'
+  scope: resourceGroup(resourceGroupNames.ai)  
+  dependsOn: [
+    resourceGroupAI
+  ]
+  params: {
+    location: location
+    name: resourceNames.cognitiveServices
+    sku: cogsvcSku
+    kind: cogsvcKind
     tags: tags
   }
 }
@@ -137,6 +173,20 @@ module aiSearch 'modules/aiSearch/aiSearch.bicep' = {
     skuName: aiSearchSku
     skuCapacity: aiSearchCapacity
     semanticSearch: aiSearchSemanticSearch
+    tags: tags
+  }
+}
+
+module storageAccount 'modules/storage/storageAccount.bicep' = {
+  name: 'modStorageAccount'
+  scope: resourceGroup(resourceGroupNames.storage)
+  dependsOn: [
+    resourceGroupStorage
+  ]
+  params: {
+    storageAccountName: resourceNames.storageAccount
+    containerName: docsContainerName
+    location: location    
     tags: tags
   }
 }

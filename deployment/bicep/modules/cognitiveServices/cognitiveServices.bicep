@@ -14,6 +14,7 @@ param sku string
   'OpenAI'
   'ComputerVision'
   'FormRecognizer'
+  'CognitiveServices'
 ])
 param kind string
 
