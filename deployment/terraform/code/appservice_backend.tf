@@ -43,9 +43,9 @@ resource "azurerm_linux_web_app" "web_app_backend" {
     AZURE_ENABLE_GLOBAL_DOCUMENT_ACCESS   = "false"
     AZURE_ENABLE_UNAUTHENTICATED_ACCESS   = "false"
     AZURE_ENFORCE_ACCESS_CONTROL          = "false"
-    AZURE_OPENAI_API_KEY_OVERRIDE         = ""
+    AZURE_OPENAI_API_KEY_OVERRIDE         = module.openai.azurerm_cognitive_account_primary_access_key
     AZURE_OPENAI_API_VERSION              = ""
-    AZURE_OPENAI_CHATGPT_DEPLOYMENT       = "chat"
+    AZURE_OPENAI_CHATGPT_DEPLOYMENT       = local.gpt_model_name #"chat"
     AZURE_OPENAI_CHATGPT_MODEL            = local.gpt_model_name
     AZURE_OPENAI_CUSTOM_URL               = ""
     AZURE_OPENAI_EMB_DEPLOYMENT           = "text-embedding-3-large"
@@ -159,12 +159,15 @@ resource "null_resource" "web_app_deployment_backend" {
   triggers = {
     file = data.archive_file.backend.output_base64sha256
   }
-
   provisioner "local-exec" {
-    command = "az webapp deployment source config-zip --resource-group ${azurerm_resource_group.mmai.name} --name ${local.app_service_backend_name} --src ${data.archive_file.backend.output_path}"
+    command = <<-EOF
+    az webapp deploy --clean --restart \
+    --resource-group ${azurerm_resource_group.mmai.name} \
+    --name ${local.app_service_backend_name} \
+    --src-path ${data.archive_file.backend.output_path}
+  EOF
   }
 }
-
 
 data "azurerm_monitor_diagnostic_categories" "diagnostic_categories_linux_function_app_backend" {
   resource_id = azurerm_linux_web_app.web_app_backend.id
