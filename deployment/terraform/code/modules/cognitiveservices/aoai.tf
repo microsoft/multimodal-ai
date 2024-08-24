@@ -3,11 +3,15 @@ resource "azurerm_cognitive_account" "cognitive_service" {
   location            = var.location
   resource_group_name = var.resource_group_name
   tags                = var.tags
+
   identity {
-    type = var.user_assigned_identity_id != "" ? "UserAssigned" : "SystemAssigned"
-    # identity_ids = var.user_assigned_identity_id != "" ? [var.user_assigned_identity_id] : null
-    identity_ids = [var.user_assigned_identity_id]
+    type = "SystemAssigned"
   }
+  # identity {
+  #   type = var.user_assigned_identity_id != "" ? "UserAssigned" : "SystemAssigned"
+  #   # identity_ids = var.user_assigned_identity_id != "" ? [var.user_assigned_identity_id] : null
+  #   identity_ids = [var.user_assigned_identity_id]
+  # }
 
   custom_subdomain_name = var.cognitive_service_name
   # customer_managed_key {
@@ -54,34 +58,19 @@ resource "azurerm_cognitive_account" "cognitive_service" {
 #   })
 # }
 
-resource "azurerm_cognitive_deployment" "gpt-4o" {
-  count                = var.cognitive_service_kind == "OpenAI" ? 1 : 0
-  name                 = var.gpt_model_name
+
+resource "azurerm_cognitive_deployment" "model_deployment" {
+  for_each             = var.model_deployment
+  name                 = each.key
   cognitive_account_id = azurerm_cognitive_account.cognitive_service.id
 
   model {
     format  = "OpenAI"
-    name    = var.gpt_model_name
-    version = var.gpt_model_version
+    name    = jsondecode(each.value).model
+    version = jsondecode(each.value).version
   }
   scale {
     type     = "Standard"
-    capacity = 10
-  }
-}
-
-resource "azurerm_cognitive_deployment" "text-embedding-3-large" {
-  count                = var.cognitive_service_kind == "OpenAI" ? 1 : 0
-  name                 = "text-embedding-3-large"
-  cognitive_account_id = azurerm_cognitive_account.cognitive_service.id
-
-  model {
-    format  = "OpenAI"
-    name    = "text-embedding-3-large"
-    version = 1
-  }
-  scale {
-    type     = "Standard"
-    capacity = 50
+    capacity = jsondecode(each.value).capacity
   }
 }

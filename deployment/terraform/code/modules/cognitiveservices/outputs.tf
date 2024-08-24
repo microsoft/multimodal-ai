@@ -18,3 +18,9 @@ output "azurerm_cognitive_account_primary_access_key" {
   value       = azurerm_cognitive_account.cognitive_service.primary_access_key
   sensitive   = false
 }
+
+output "azurerm_cognitive_account_principal_id" {
+  description = "The base URL of the cognitive service account."
+  value       = azurerm_cognitive_account.cognitive_service.identity[0].principal_id
+  sensitive   = false
+}

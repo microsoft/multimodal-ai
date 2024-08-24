@@ -25,8 +25,20 @@ locals {
   opeanai_name      = "${local.prefix}-ai-openai001"
   opeanai_sku       = "S0"
   opeanai_kind      = "OpenAI"
-  gpt_model_name    = "gpt-4o"
-  gpt_model_version = "2024-05-13"
+
+  chat_model    = "gpt-35-turbo"
+  chat_deployment = "chat"
+  chat_version = "0301"
+  chat_capacity = 30
+
+  embedding_model    = "text-embedding-ada-002"
+  embedding_deployment = "embedding"
+  embedding_capacity = 30
+  embedding_version = "2"
+
+  gpt4v_model    = "gpt-4o"
+  gpt4v_deployment = "gpt4v"
+  gpt4v_capacity = 10
 
   # conginative services
   cognitiveservice_name = "${local.prefix}-cognitive-service-001"
@@ -44,8 +56,7 @@ locals {
   ai_search_skillset_name   = "${local.prefix}-ai-search-skillset001"
 
   # App service Frontend
-  app_service_frontend_name = "${local.prefix}-app-service-front001"
-  app_service_backend_name  = "${local.prefix}-app-service-back001"
+  app_service_backend_name  = "${local.prefix}-app-service-back002"
   app_service_plan_name     = "${local.prefix}-app-service-plan"
   app_service_sku           = "P3mv3"
 

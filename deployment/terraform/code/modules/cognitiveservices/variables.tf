@@ -64,26 +64,11 @@ variable "log_analytics_workspace_id" {
   }
 }
 
-variable "gpt_model_name" {
-  description = "Specifies the name of the GPT model."
-  type        = string
+variable "model_deployment" {
+  description = "Map of model deployments"
+  type        = map(string)
   sensitive   = false
-  default     = ""
-  validation {
-    condition     = var.cognitive_service_kind != "openai" || (var.cognitive_service_kind == "openai" && length(var.gpt_model_name) >= 2)
-    error_message = "Required for openai kind"
-  }
-}
-
-variable "gpt_model_version" {
-  description = "Specifies the version of the GPT model."
-  type        = string
-  sensitive   = false
-  default     = ""
-  validation {
-    condition     = var.cognitive_service_kind != "openai" || (var.cognitive_service_kind == "openai" && length(var.gpt_model_version) >= 2)
-    error_message = "Required for openai kind"
-  }
+  default = {}
 }
 
 # Network variables
