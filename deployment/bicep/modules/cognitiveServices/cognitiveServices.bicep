@@ -34,6 +34,7 @@ resource cognitiveServicesAccount 'Microsoft.CognitiveServices/accounts@2024-04-
     name: sku
   } 
   properties: {
+    customSubDomainName: name
     publicNetworkAccess: 'Enabled'
   }
 }
