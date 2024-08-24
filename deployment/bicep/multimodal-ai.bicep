@@ -185,31 +185,8 @@ module storageAccount 'modules/storage/storageAccount.bicep' = {
   ]
   params: {
     storageAccountName: resourceNames.storageAccount
+    containerName: docsContainerName
     location: location    
     tags: tags
-  }
-}
-
-module storageBlobServices 'modules/storage/blobServices.bicep' = {
-  name: 'modStorageBlobServices'
-  scope: resourceGroup(resourceGroupNames.storage)
-  dependsOn: [
-    storageAccount
-  ]
-  params: {
-    storageAccountId: storageAccount.outputs.storageAccountId
-    blobServicesName: 'blobSvcs'
-  }
-}
-
-module storageDocsContainer 'modules/storage/container.bicep' = {
-  name: 'modStorageDocsContainer'
-  scope: resourceGroup(resourceGroupNames.storage)
-  dependsOn: [
-    storageBlobServices
-  ]
-  params: {
-    containerName: docsContainerName
-    blobServicesId: storageBlobServices.outputs.blobServicesId
   }
 }
