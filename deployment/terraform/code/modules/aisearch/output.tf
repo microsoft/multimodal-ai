@@ -16,3 +16,8 @@ output "search_service_key" {
   sensitive   = true
 }
 
+output "search_service_identity_id" {
+  value       = azurerm_search_service.search_service.identity[0].principal_id
+  description = "Specifies the principal id of the search service."
+  sensitive   = false
+}

@@ -14,3 +14,24 @@ module "ai_search" {
   user_assigned_identity_id      = module.user_assigned_identity.user_assigned_identity_id
   subnet_id                      = null
 }
+
+resource "azurerm_role_assignment" "aisearch_openai_contributor" {
+  scope                = module.openai.azurerm_cognitive_account_service_id
+  role_definition_name = "Cognitive Services OpenAI Contributor"
+  principal_id         = module.ai_search.search_service_identity_id
+  principal_type       = "ServicePrincipal"
+}
+
+resource "azurerm_role_assignment" "aisearch_openai_user" {
+  scope                = module.openai.azurerm_cognitive_account_service_id
+  role_definition_name = "Cognitive Services OpenAI User"
+  principal_id         = module.ai_search.search_service_identity_id
+  principal_type       = "ServicePrincipal"
+}
+
+resource "azurerm_role_assignment" "aisearch_storage_blob_contirbutor" {
+  scope                = module.storage_account.storage_account_id
+  role_definition_name = "Storage Blob Data Contributor"
+  principal_id         = module.ai_search.search_service_identity_id
+  principal_type       = "ServicePrincipal"
+}

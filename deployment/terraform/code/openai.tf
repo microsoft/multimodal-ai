@@ -14,11 +14,14 @@ module "openai" {
     "${local.embedding_deployment}" = jsonencode({ model = local.embedding_model, capacity = local.embedding_capacity, version = local.embedding_version})
   }
 
-  # gpt_model_name    = local.gpt_model_name
-  # gpt_model_version = local.gpt_model_version
-
-  user_assigned_identity_id  = module.user_assigned_identity.user_assigned_identity_id
   subnet_id                  = null
   customer_managed_key       = null
   log_analytics_workspace_id = module.azure_log_analytics.log_analytics_id
+}
+
+resource "azurerm_role_assignment" "openai_storage_blob_contirbutor" {
+  scope                = module.storage_account.storage_account_id
+  role_definition_name = "Storage Blob Data Contributor"
+  principal_id         = module.openai.azurerm_cognitive_account_principal_id
+  principal_type       = "ServicePrincipal"
 }
