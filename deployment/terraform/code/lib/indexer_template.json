@@ -41,8 +41,18 @@
         "mappingFunction": null
       },
       {
-        "sourceFieldName": "metadata_storage_name",
-        "targetFieldName": "metadata_storage_name",
+        "sourceFieldName": "metadata_storage_content_md5",
+        "targetFieldName": "metadata_storage_content_md5",
+        "mappingFunction": null
+      },
+      {
+        "sourceFieldName": "metadata_author",
+        "targetFieldName": "metadata_author",
+        "mappingFunction": null
+      },
+      {
+        "sourceFieldName": "metadata_content_type",
+        "targetFieldName": "metadata_content_type",
         "mappingFunction": null
       },
       {

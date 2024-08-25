@@ -39,7 +39,7 @@
             "outputs": [
                 {
                     "name": "vector",
-                    "targetName": "image_vector"
+                    "targetName": "imageEmbedding"
                 }
             ]
         },
@@ -113,11 +113,35 @@
             "outputs": [
                 {
                     "name": "embedding",
-                    "targetName": "text_vector"
+                    "targetName": "embedding"
                 }
             ],
             "authIdentity": null
-        }
+        },
+        {
+            "@odata.type": "#Microsoft.Skills.Text.AzureOpenAIEmbeddingSkill",
+            "name": "ImageEmebeddingAOAI",
+            "description": null,
+            "context": "/document/normalized_images/*",
+            "resourceUri": "${resource_uri}",
+            "apiKey": "${api_key}",
+            "deploymentId": "${deployment_id}",
+            "dimensions": 1536,
+            "modelName": "${model_name}",
+            "inputs": [
+              {
+                "name": "text",
+                "source": "/document/normalized_images/*/text"
+              }
+            ],
+            "outputs": [
+              {
+                "name": "embedding",
+                "targetName": "embedding"
+              }
+            ],
+            "authIdentity": null
+          }
     ],
     "cognitiveServices": null,
     "knowledgeStore": null,
@@ -129,8 +153,8 @@
                 "sourceContext": "/document/pages/*",
                 "mappings": [
                     {
-                        "name": "text_vector",
-                        "source": "/document/pages/*/text_vector",
+                        "name": "embedding",
+                        "source": "/document/pages/*/embedding",
                         "sourceContext": null,
                         "inputs": []
                     },
@@ -160,8 +184,14 @@
                 "sourceContext": "/document/normalized_images/*",
                 "mappings": [
                     {
-                        "name": "image_vector",
-                        "source": "/document/normalized_images/*/image_vector",
+                        "name": "imageEmbedding",
+                        "source": "/document/normalized_images/*/imageEmbedding",
+                        "sourceContext": null,
+                        "inputs": []
+                    },
+                    {
+                        "name": "pageNumber",
+                        "source": "/document/normalized_images/*/pageNumber",
                         "sourceContext": null,
                         "inputs": []
                     },

@@ -95,23 +95,23 @@ resource "azurerm_linux_web_app" "web_app_backend" {
   }
 }
 
-# resource "null_resource" "web_app_deployment_backend" {
+resource "null_resource" "web_app_deployment_backend" {
 
-#   depends_on = [azurerm_linux_web_app.web_app_backend]
+  depends_on = [azurerm_linux_web_app.web_app_backend]
 
-#   triggers = {
-#     file = data.archive_file.backend.output_base64sha256
-#   }
-#   provisioner "local-exec" {
-#     command = <<-EOF
-#     az webapp deploy --clean --restart \
-#     --resource-group ${azurerm_resource_group.mmai.name} \
-#     --name ${local.app_service_backend_name} \
-#     --type zip \
-#     --src-path ${data.archive_file.backend.output_path}
-# EOF
-#   }
-# }
+  triggers = {
+    file = data.archive_file.backend.output_base64sha256
+  }
+  provisioner "local-exec" {
+    command = <<-EOF
+    az webapp deploy --clean --restart \
+    --resource-group ${azurerm_resource_group.mmai.name} \
+    --name ${local.app_service_backend_name} \
+    --type zip \
+    --src-path ${data.archive_file.backend.output_path}
+EOF
+  }
+}
 
 data "azurerm_monitor_diagnostic_categories" "diagnostic_categories_linux_function_app_backend" {
   resource_id = azurerm_linux_web_app.web_app_backend.id
