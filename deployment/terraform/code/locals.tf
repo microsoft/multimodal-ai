@@ -26,9 +26,9 @@ locals {
   opeanai_sku       = "S0"
   opeanai_kind      = "OpenAI"
 
-  chat_model    = "gpt-35-turbo"
+  chat_model    = "gpt-4o"
   chat_deployment = "chat"
-  chat_version = "0301"
+  chat_version = "2024-05-13"
   chat_capacity = 30
 
   embedding_model    = "text-embedding-ada-002"
