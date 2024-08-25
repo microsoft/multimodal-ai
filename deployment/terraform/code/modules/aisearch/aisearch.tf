@@ -24,6 +24,7 @@ resource "azurerm_search_service" "search_service" {
   local_authentication_enabled             = true
   customer_managed_key_enforcement_enabled = false
   authentication_failure_mode              = "http403"
+  semantic_search_sku                      = "standard"
 }
 
 resource "azurerm_role_assignment" "identity_access_to_search" {
