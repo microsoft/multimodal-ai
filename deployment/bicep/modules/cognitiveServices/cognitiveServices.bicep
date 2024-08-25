@@ -38,3 +38,5 @@ resource cognitiveServicesAccount 'Microsoft.CognitiveServices/accounts@2024-04-
     publicNetworkAccess: 'Enabled'
   }
 }
+
+output cognitiveServicesAccountId string = cognitiveServicesAccount.id

@@ -8,6 +8,9 @@ param prefix string = ''
 @sys.description('Azure Region where the resources will be created.')
 param location string = ''
 
+@sys.description('Azure OpenAI deployments to be created.')
+param aoaiDeployments array = []
+
 @sys.description('Azure Region where AI Vision will be deployed. Supported for AI Vision multimodal embeddings API 2024-02-01 is limited to certain regions.')
 @sys.allowed([
   'eastus'
@@ -115,6 +118,22 @@ module azureOpenAI 'modules/cognitiveServices/cognitiveServices.bicep' = {
     tags: tags
   }
 }
+
+@batchSize(1)
+module azureOpenAIModelDeployments 'modules/aoai/aoaiDeployment.bicep' = [for deployment in aoaiDeployments: {
+  name: 'aoai-deployment-${deployment.name}'
+  scope: resourceGroup(resourceGroupNames.ai)
+  dependsOn: [
+    azureOpenAI
+  ]
+  params: {    
+    name: deployment.name
+    version: deployment.model.version
+    format: deployment.model.format
+    capacity: deployment.sku.capacity
+    cognitiveServicesAccountId: azureOpenAI.outputs.cognitiveServicesAccountId
+  }
+}]
 
 module azureCognitiveServices 'modules/cognitiveServices/cognitiveServices.bicep' = {
   name: 'modAzureCognitiveServices'
