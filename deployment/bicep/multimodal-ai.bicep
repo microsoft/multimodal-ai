@@ -80,6 +80,7 @@ var resourceNames = {
   aiSearch: '${prefixNormalized}-${locationNormalized}-aisearch'
   cognitiveServices: '${prefixNormalized}-${locationNormalized}-cogsvc'
   storageAccount: take('${prefixNormalized}${locationNormalized}stg',23)
+  aiSearchDeploymentScriptIdentity: '${prefixNormalized}-${locationNormalized}-aisearch-depscript-umi'
 }
 
 // Resources
@@ -180,6 +181,18 @@ module documentIntelligence 'modules/cognitiveServices/cognitiveServices.bicep' 
   }
 }
 
+module aiSearchDeploymentScriptIdentity 'modules/managedIdentities/managedIdentity.bicep' = {
+  name: 'modAISearchDeploymentScriptIdentity'
+  scope: resourceGroup(resourceGroupNames.ai)
+  dependsOn: [
+    resourceGroupAI
+  ]
+  params: {
+    name: resourceNames.aiSearchDeploymentScriptIdentity
+    location: location    
+  }
+}
+
 module aiSearch 'modules/aiSearch/aiSearch.bicep' = {
   name: 'modAiSearch'
   scope: resourceGroup(resourceGroupNames.ai)
@@ -192,6 +205,7 @@ module aiSearch 'modules/aiSearch/aiSearch.bicep' = {
     skuName: aiSearchSku
     skuCapacity: aiSearchCapacity
     semanticSearch: aiSearchSemanticSearch
+    managedIdentityPrincipalId: aiSearchDeploymentScriptIdentity.outputs.managedIdentityPrincipalId
     tags: tags
   }
 }
