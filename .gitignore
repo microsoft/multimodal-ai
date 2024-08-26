@@ -6,6 +6,16 @@
 # macOS
 .DS_Store
 
+# VSCode
+.vs
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+.vscode/settings.json
+
 # User-specific files
 *.rsuser
 *.suo
