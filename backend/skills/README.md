@@ -2,9 +2,8 @@
 
 ```json
 {
-  "@odata.context": "https://gptkb-7zsanbip5xnfk.search.windows.net/$metadata#skillsets/$entity",
-  "@odata.etag": "\"0x8DCC386E11C36F9\"",
-  "name": "gptkbindex-skillset",
+  "@odata.context": "https://[host].search.windows.net/$metadata#skillsets/$entity",
+  "name": "my-skillset",
   "description": "Skillset to chunk documents and generate embeddings",
   "skills": [
     {
@@ -31,12 +30,8 @@
       "name": "pdf_text_image_merge_skill",
       "description": "A custom skill that combines image embeddings with corresponding PDF pages and stores the images",
       "context": "/document",
-      "uri": "https://4f46-88-152-244-248.ngrok-free.app/api/pdf_text_image_merge_skill",
+      "uri": "https://[host]/api/pdf_text_image_merge_skill",
       "httpMethod": "POST",
-      "timeout": "PT1M",
-      "batchSize": 4,
-      "degreeOfParallelism": 4,
-      "authResourceId": null,
       "inputs": [
         {
           "name": "imageEmbedding",
@@ -52,17 +47,13 @@
           "name": "enrichedPages",
           "targetName": "enrichedPages"
         }
-      ],
-      "httpHeaders": {},
-      "authIdentity": null
+      ]
     },
     {
       "@odata.type": "#Microsoft.Skills.Text.AzureOpenAIEmbeddingSkill",
       "name": "#3",
       "description": "Skill to generate embeddings via Azure OpenAI",
       "context": "/document/enrichedPages/*",
-      "resourceUri": "https://cog-7zsanbip5xnfk.openai.azure.com",
-      "apiKey": null,
       "deploymentId": "embedding",
       "dimensions": 1536,
       "modelName": "text-embedding-ada-002",
@@ -160,7 +151,6 @@
     "parameters": {
       "projectionMode": "skipIndexingParentDocuments"
     }
-  },
-  "encryptionKey": null
+  }
 }
 ```
