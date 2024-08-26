@@ -61,6 +61,10 @@ var aiSearchSku = 'standard'
 var aiSearchCapacity = 1
 var aiSearchSemanticSearch = 'disabled'
 
+// AI Search - Data source
+var aiSearchDataSourceName = 'docs'
+var aiSearchDataSourceType = 'azureblob'
+
 // Cognitive Services
 var cogsvcSku = 'S0'
 var cogsvcKind = 'CognitiveServices'
@@ -223,7 +227,7 @@ module aiSearch 'modules/aiSearch/aiSearch.bicep' = {
   }
 }
 
-module aiSearchRoleDef 'modules/rbac/roleDef-searchIndexDataContributor.bicep' = {
+module aiSearchRoleDef 'modules/rbac/roleDef-searchServiceContributor.bicep' = {
   name: 'modAISearchRoleDef'
   scope: resourceGroup(resourceGroupNames.ai)
   dependsOn: [    
@@ -269,5 +273,28 @@ module storageRoleAssignment 'modules/rbac/roleAssignment.bicep' = {
   params: {
     managedIdentityPrincipalId: aiSearch.outputs.searchResourcePrincipalId
     roleDefinitionId: storageRoleDef.outputs.roleDefinitionId
+  }
+}
+
+// Azure AI Search Configuration
+
+// Create data source
+module aiSearchDataSource 'modules/aiSearch/aiSearch-datasource.bicep' = {
+  name: 'modAiSearchDataSource'
+  scope: resourceGroup(resourceGroupNames.ai)
+  dependsOn: [
+    aiSearch
+    storageAccount
+    storageRoleAssignment
+    aiSearchRoleAssignment
+  ]
+  params: {
+    location: location
+    dataSourceName: aiSearchDataSourceName
+    dataSourceType: aiSearchDataSourceType
+    aiSearchEndpoint: 'https://${aiSearch.outputs.searchResourceName}.search.windows.net'
+    storageAccountResourceId: storageAccount.outputs.storageAccountId
+    containerName: docsContainerName
+    managedIdentityId: aiSearchDeploymentScriptIdentity.outputs.managedIdentityId
   }
 }
