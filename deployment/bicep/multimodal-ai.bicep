@@ -181,6 +181,20 @@ module documentIntelligence 'modules/cognitiveServices/cognitiveServices.bicep' 
   }
 }
 
+module storageAccount 'modules/storage/storageAccount.bicep' = {
+  name: 'modStorageAccount'
+  scope: resourceGroup(resourceGroupNames.storage)
+  dependsOn: [
+    resourceGroupStorage
+  ]
+  params: {
+    storageAccountName: resourceNames.storageAccount
+    containerName: docsContainerName
+    location: location    
+    tags: tags
+  }
+}
+
 module aiSearchDeploymentScriptIdentity 'modules/managedIdentities/managedIdentity.bicep' = {
   name: 'modAISearchDeploymentScriptIdentity'
   scope: resourceGroup(resourceGroupNames.ai)
@@ -204,22 +218,56 @@ module aiSearch 'modules/aiSearch/aiSearch.bicep' = {
     searchName: resourceNames.aiSearch
     skuName: aiSearchSku
     skuCapacity: aiSearchCapacity
-    semanticSearch: aiSearchSemanticSearch
-    managedIdentityPrincipalId: aiSearchDeploymentScriptIdentity.outputs.managedIdentityPrincipalId
+    semanticSearch: aiSearchSemanticSearch    
     tags: tags
   }
 }
 
-module storageAccount 'modules/storage/storageAccount.bicep' = {
-  name: 'modStorageAccount'
-  scope: resourceGroup(resourceGroupNames.storage)
-  dependsOn: [
-    resourceGroupStorage
+module aiSearchRoleDef 'modules/rbac/roleDef-searchIndexDataContributor.bicep' = {
+  name: 'modAISearchRoleDef'
+  scope: resourceGroup(resourceGroupNames.ai)
+  dependsOn: [    
+    aiSearch
+    aiSearchDeploymentScriptIdentity
   ]
   params: {
-    storageAccountName: resourceNames.storageAccount
-    containerName: docsContainerName
-    location: location    
-    tags: tags
+    aiSearchId: aiSearch.outputs.searchResourceId
+  }
+}
+
+module aiSearchRoleAssignment 'modules/rbac/roleAssignment.bicep' = {
+  name: 'modAISearchRoleAssignment'
+  scope: resourceGroup(resourceGroupNames.ai)
+  dependsOn: [
+    aiSearchRoleDef
+  ]
+  params: {
+    managedIdentityPrincipalId: aiSearchDeploymentScriptIdentity.outputs.managedIdentityPrincipalId
+    roleDefinitionId: aiSearchRoleDef.outputs.roleDefinitionId
+  }
+}
+
+// Role Assignments
+module storageRoleDef 'modules/rbac/roleDef-blobDataReader.bicep' = {
+  name: 'modStorageRoleDef'
+  scope: resourceGroup(resourceGroupNames.storage)
+  dependsOn: [
+    storageAccount
+    aiSearch
+  ]
+  params: {
+    storageAccountId: storageAccount.outputs.storageAccountId    
+  }
+}
+
+module storageRoleAssignment 'modules/rbac/roleAssignment.bicep' = {
+  name: 'modStorageRoleAssignment'
+  scope: resourceGroup(resourceGroupNames.storage)
+  dependsOn: [
+    storageRoleDef
+  ]
+  params: {
+    managedIdentityPrincipalId: aiSearch.outputs.searchResourcePrincipalId
+    roleDefinitionId: storageRoleDef.outputs.roleDefinitionId
   }
 }
