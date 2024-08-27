@@ -70,30 +70,6 @@
         }
       ],
       "authIdentity": null
-    },
-    {
-      "@odata.type": "#Microsoft.Skills.Custom.WebApiSkill",
-      "name": "image_store_skill",
-      "description": "A custom skill stores base64 encoded images to a blob storage",
-      "context": "/document",
-      "uri": " https://[host]/api/image_store_skill",
-      "httpMethod": "POST",
-      "inputs": [
-        {
-          "name": "images",
-          "source": "/document/normalized_images/*"
-        },
-        {
-          "name": "filename",
-          "source": "/document/metadata_storage_name"
-        }
-      ],
-      "outputs": [
-        {
-          "name": "urls",
-          "targetName": "urls"
-        }
-      ]
     }
   ],
   "cognitiveServices": {
@@ -101,7 +77,24 @@
     "description": null,
     "key": null
   },
-  "knowledgeStore": null,
+  "knowledgeStore": {
+    "storageConnectionString": "ResourceId=/subscriptions/{subscription-ID}/resourceGroups/{resource-group-name}/providers/Microsoft.Storage/storageAccounts/storage-account-name};",
+    "projections": [
+      {
+        "tables": [],
+        "objects": [],
+        "files": [
+          {
+            "storageContainer": "images",
+            "source": "/document/normalized_images/*"
+          }
+        ]
+      }
+    ],
+    "parameters": {
+      "synthesizeGeneratedKeyName": true
+    }
+  },
   "indexProjections": {
     "selectors": [
       {
