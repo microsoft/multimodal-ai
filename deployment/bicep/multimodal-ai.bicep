@@ -8,8 +8,20 @@ param prefix string = ''
 @sys.description('Azure Region where the resources will be created.')
 param location string = ''
 
+param aoaiKind string
+param aoaiSku string
 @sys.description('Azure OpenAI deployments to be created.')
 param aoaiDeployments array = []
+
+param cogsvcSku string
+param cogsvcKind string
+
+param aiSearchSku string
+param aiSearchCapacity int
+param aiSearchSemanticSearch string
+
+param aiVisionKind string
+param aiVisionSku string
 
 @sys.description('Azure Region where AI Vision will be deployed. Supported for AI Vision multimodal embeddings API 2024-02-01 is limited to certain regions.')
 @sys.allowed([
@@ -28,6 +40,9 @@ param aoaiDeployments array = []
 ])
 param aiVisionlocation string
 
+param docIntelKind string
+param docIntelSku string
+
 @sys.description('Azure Region where Document Intelligence will be deployed. Support for API 2024-07-31-preview is limited to certain regions.')
 @sys.allowed([
   'eastus'  
@@ -44,30 +59,9 @@ param tags object = {}
 var locationNormalized = toLower(location)
 var prefixNormalized = toLower(prefix)
 
-// AI Vision
-var aiVisionKind = 'ComputerVision'
-var aiVisionSku = 'S1'
-
-// Azure OpenAI
-var aoaiKind = 'OpenAI'
-var aoaiSku = 'S0'
-
-// Document Intelligence
-var docIntelKind = 'FormRecognizer'
-var docIntelSku = 'S0'
-
-// AI Search
-var aiSearchSku = 'standard'
-var aiSearchCapacity = 1
-var aiSearchSemanticSearch = 'disabled'
-
 // AI Search - Data source
 var aiSearchDataSourceName = 'docs'
 var aiSearchDataSourceType = 'azureblob'
-
-// Cognitive Services
-var cogsvcSku = 'S0'
-var cogsvcKind = 'CognitiveServices'
 
 // Storage Account
 var docsContainerName = 'docs'

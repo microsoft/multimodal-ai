@@ -1,17 +1,31 @@
 using './multimodal-ai.bicep'
 
-param prefix = 'mmai'
+param prefix = 'mmai15'
 param location = 'eastus'
-param aiVisionlocation = 'eastus'
-param docIntelLocation = 'eastus'
-param tags = {}
 
+param aiVisionlocation = 'eastus'
+param aiVisionKind = 'ComputerVision'
+param aiVisionSku = 'S1'
+
+param docIntelLocation = 'eastus'
+param docIntelKind = 'FormRecognizer'
+param docIntelSku = 'S0'
+
+param aiSearchSku = 'standard'
+param aiSearchCapacity = 1
+param aiSearchSemanticSearch = 'standard'
+
+param cogsvcSku = 'S0'
+param cogsvcKind = 'CognitiveServices'
+
+param aoaiKind = 'OpenAI'
+param aoaiSku = 'S0'
 param aoaiDeployments = [
   {
-    name: 'text-embedding-3-large'    
+    name: 'text-embedding-ada-002'    
     model: {
       format: 'OpenAI'      
-      version: '1'
+      version: '2'
     }
     sku: {
       capacity: 30      
@@ -38,3 +52,5 @@ param aoaiDeployments = [
     }    
   }
 ]
+
+param tags = {}
