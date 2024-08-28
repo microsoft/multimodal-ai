@@ -36,7 +36,7 @@ $body = @"
 "@
 
 $aiSearchRequest = @{
-    Uri = "$($aiSearchEndpoint)/datasources?api-version=2024-07-01"
+    Uri = "https://$($aiSearchEndpoint).search.windows.net/datasources?api-version=2024-07-01"
     Headers = @{
         Authorization = "Bearer $($token)"
         'Content-Type' = 'application/json'

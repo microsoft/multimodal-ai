@@ -292,7 +292,7 @@ module aiSearchDataSource 'modules/aiSearch/aiSearch-datasource.bicep' = {
     location: location
     dataSourceName: aiSearchDataSourceName
     dataSourceType: aiSearchDataSourceType
-    aiSearchEndpoint: 'https://${aiSearch.outputs.searchResourceName}.search.windows.net'
+    aiSearchEndpoint: last(split(aiSearch.outputs.searchResourceId, '/'))
     storageAccountResourceId: storageAccount.outputs.storageAccountId
     containerName: docsContainerName
     managedIdentityId: aiSearchDeploymentScriptIdentity.outputs.managedIdentityId
