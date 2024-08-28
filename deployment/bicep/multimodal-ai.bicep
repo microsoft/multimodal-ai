@@ -3,10 +3,10 @@ targetScope = 'subscription'
 // Parameters
 @sys.description('Prefix for the resources to be created')
 @maxLength(8)
-param prefix string = ''
+param prefix string
 
 @sys.description('Azure Region where the resources will be created.')
-param location string = ''
+param location string
 
 // Azure OpenAI Parameters
 param aoaiKind string
@@ -57,6 +57,9 @@ param docIntelSku string
 ])
 param docIntelLocation string
 
+@sys.description('Specifies the container name to be created in the storage account for documents.')
+param storageAccountDocsContainerName string
+
 @sys.description('Specifies the tags which will be applied to all resources.')
 param tags object = {}
 
@@ -67,9 +70,6 @@ var prefixNormalized = toLower(prefix)
 // AI Search - Data source
 var aiSearchDataSourceName = 'docs'
 var aiSearchDataSourceType = 'azureblob'
-
-// Storage Account
-var docsContainerName = 'docs'
 
 var resourceGroupNames = {
   ai: '${prefixNormalized}-${locationNormalized}-ai-rg'
@@ -192,7 +192,7 @@ module storageAccount 'modules/storage/storageAccount.bicep' = {
   ]
   params: {
     storageAccountName: resourceNames.storageAccount
-    containerName: docsContainerName
+    containerName: storageAccountDocsContainerName
     location: location    
     tags: tags
   }
@@ -293,7 +293,7 @@ module aiSearchDataSource 'modules/aiSearch/aiSearch-datasource.bicep' = {
     dataSourceType: aiSearchDataSourceType
     aiSearchEndpoint: last(split(aiSearch.outputs.searchResourceId, '/'))
     storageAccountResourceId: storageAccount.outputs.storageAccountId
-    containerName: docsContainerName
+    containerName: storageAccountDocsContainerName
     managedIdentityId: aiSearchDeploymentScriptIdentity.outputs.managedIdentityId
   }
 }

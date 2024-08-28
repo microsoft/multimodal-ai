@@ -1,6 +1,6 @@
 using './multimodal-ai.bicep'
 
-param prefix = 'mmai15'
+param prefix = 'mmai16'
 param location = 'eastus'
 
 param aiVisionlocation = 'eastus'
@@ -17,6 +17,8 @@ param aiSearchSemanticSearch = 'standard'
 
 param cogsvcSku = 'S0'
 param cogsvcKind = 'CognitiveServices'
+
+param storageAccountDocsContainerName = 'docs'
 
 param aoaiKind = 'OpenAI'
 param aoaiSku = 'S0'
