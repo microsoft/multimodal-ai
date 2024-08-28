@@ -61,6 +61,10 @@ var aiSearchSku = 'standard'
 var aiSearchCapacity = 1
 var aiSearchSemanticSearch = 'disabled'
 
+// AI Search - Data source
+var aiSearchDataSourceName = 'docs'
+var aiSearchDataSourceType = 'azureblob'
+
 // Cognitive Services
 var cogsvcSku = 'S0'
 var cogsvcKind = 'CognitiveServices'
@@ -80,6 +84,7 @@ var resourceNames = {
   aiSearch: '${prefixNormalized}-${locationNormalized}-aisearch'
   cognitiveServices: '${prefixNormalized}-${locationNormalized}-cogsvc'
   storageAccount: take('${prefixNormalized}${locationNormalized}stg',23)
+  aiSearchDeploymentScriptIdentity: '${prefixNormalized}-${locationNormalized}-aisearch-depscript-umi'
 }
 
 // Resources
@@ -180,22 +185,6 @@ module documentIntelligence 'modules/cognitiveServices/cognitiveServices.bicep' 
   }
 }
 
-module aiSearch 'modules/aiSearch/aiSearch.bicep' = {
-  name: 'modAiSearch'
-  scope: resourceGroup(resourceGroupNames.ai)
-  dependsOn: [
-    resourceGroupAI
-  ]
-  params: {
-    location: location
-    searchName: resourceNames.aiSearch
-    skuName: aiSearchSku
-    skuCapacity: aiSearchCapacity
-    semanticSearch: aiSearchSemanticSearch
-    tags: tags
-  }
-}
-
 module storageAccount 'modules/storage/storageAccount.bicep' = {
   name: 'modStorageAccount'
   scope: resourceGroup(resourceGroupNames.storage)
@@ -207,5 +196,105 @@ module storageAccount 'modules/storage/storageAccount.bicep' = {
     containerName: docsContainerName
     location: location    
     tags: tags
+  }
+}
+
+module aiSearchDeploymentScriptIdentity 'modules/managedIdentities/managedIdentity.bicep' = {
+  name: 'modAISearchDeploymentScriptIdentity'
+  scope: resourceGroup(resourceGroupNames.ai)
+  dependsOn: [
+    resourceGroupAI
+  ]
+  params: {
+    name: resourceNames.aiSearchDeploymentScriptIdentity
+    location: location    
+  }
+}
+
+module aiSearch 'modules/aiSearch/aiSearch.bicep' = {
+  name: 'modAiSearch'
+  scope: resourceGroup(resourceGroupNames.ai)
+  dependsOn: [
+    resourceGroupAI
+  ]
+  params: {
+    location: location
+    searchName: resourceNames.aiSearch
+    skuName: aiSearchSku
+    skuCapacity: aiSearchCapacity
+    semanticSearch: aiSearchSemanticSearch    
+    tags: tags
+  }
+}
+
+module aiSearchRoleDef 'modules/rbac/roleDef-searchServiceContributor.bicep' = {
+  name: 'modAISearchRoleDef'
+  scope: resourceGroup(resourceGroupNames.ai)
+  dependsOn: [    
+    aiSearch
+    aiSearchDeploymentScriptIdentity
+  ]
+  params: {
+    aiSearchId: aiSearch.outputs.searchResourceId
+  }
+}
+
+module aiSearchRoleAssignment 'modules/rbac/roleAssignment.bicep' = {
+  name: 'modAISearchRoleAssignment'
+  scope: resourceGroup(resourceGroupNames.ai)
+  dependsOn: [
+    aiSearchRoleDef
+  ]
+  params: {
+    managedIdentityPrincipalId: aiSearchDeploymentScriptIdentity.outputs.managedIdentityPrincipalId
+    roleDefinitionId: aiSearchRoleDef.outputs.roleDefinitionId
+  }
+}
+
+// Role Assignments
+module storageRoleDef 'modules/rbac/roleDef-blobDataReader.bicep' = {
+  name: 'modStorageRoleDef'
+  scope: resourceGroup(resourceGroupNames.storage)
+  dependsOn: [
+    storageAccount
+    aiSearch
+  ]
+  params: {
+    storageAccountId: storageAccount.outputs.storageAccountId    
+  }
+}
+
+module storageRoleAssignment 'modules/rbac/roleAssignment.bicep' = {
+  name: 'modStorageRoleAssignment'
+  scope: resourceGroup(resourceGroupNames.storage)
+  dependsOn: [
+    storageRoleDef
+  ]
+  params: {
+    managedIdentityPrincipalId: aiSearch.outputs.searchResourcePrincipalId
+    roleDefinitionId: storageRoleDef.outputs.roleDefinitionId
+  }
+}
+
+// Azure AI Search Configuration
+
+// Create data source
+module aiSearchDataSource 'modules/aiSearch/aiSearch-datasource.bicep' = {
+  name: 'modAiSearchDataSource'
+  scope: resourceGroup(resourceGroupNames.ai)
+  dependsOn: [
+    aiSearch
+    storageAccount
+    storageRoleAssignment
+    aiSearchRoleAssignment
+  ]
+  params: {
+    location: location
+    dataSourceName: aiSearchDataSourceName
+    dataSourceType: aiSearchDataSourceType
+    aiSearchEndpoint: last(split(aiSearch.outputs.searchResourceId, '/'))
+    storageAccountResourceId: storageAccount.outputs.storageAccountId
+    containerName: docsContainerName
+    managedIdentityId: aiSearchDeploymentScriptIdentity.outputs.managedIdentityId
   }
 }

@@ -38,5 +38,9 @@ resource searchResource 'Microsoft.Search/searchServices@2024-06-01-preview' = {
     partitionCount: skuCapacity
     replicaCount: skuCapacity
     semanticSearch: semanticSearch
+    disableLocalAuth: true
   }
 }
+
+output searchResourceId string = searchResource.id
+output searchResourcePrincipalId string = searchResource.identity.principalId
