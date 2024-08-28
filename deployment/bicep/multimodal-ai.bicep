@@ -3,13 +3,29 @@ targetScope = 'subscription'
 // Parameters
 @sys.description('Prefix for the resources to be created')
 @maxLength(8)
-param prefix string = ''
+param prefix string
 
 @sys.description('Azure Region where the resources will be created.')
-param location string = ''
+param location string
 
+// Azure OpenAI Parameters
+param aoaiKind string
+param aoaiSku string
 @sys.description('Azure OpenAI deployments to be created.')
 param aoaiDeployments array = []
+
+// Azure Cognitive Services Parameters
+param cogsvcSku string
+param cogsvcKind string
+
+// Azure AI Search Parameters
+param aiSearchSku string
+param aiSearchCapacity int
+param aiSearchSemanticSearch string
+
+// Azure AI Vision Parameters
+param aiVisionKind string
+param aiVisionSku string
 
 @sys.description('Azure Region where AI Vision will be deployed. Supported for AI Vision multimodal embeddings API 2024-02-01 is limited to certain regions.')
 @sys.allowed([
@@ -28,6 +44,10 @@ param aoaiDeployments array = []
 ])
 param aiVisionlocation string
 
+// Document Intelligence Parameters
+param docIntelKind string
+param docIntelSku string
+
 @sys.description('Azure Region where Document Intelligence will be deployed. Support for API 2024-07-31-preview is limited to certain regions.')
 @sys.allowed([
   'eastus'  
@@ -37,6 +57,9 @@ param aiVisionlocation string
 ])
 param docIntelLocation string
 
+@sys.description('Specifies the container name to be created in the storage account for documents.')
+param storageAccountDocsContainerName string
+
 @sys.description('Specifies the tags which will be applied to all resources.')
 param tags object = {}
 
@@ -44,33 +67,9 @@ param tags object = {}
 var locationNormalized = toLower(location)
 var prefixNormalized = toLower(prefix)
 
-// AI Vision
-var aiVisionKind = 'ComputerVision'
-var aiVisionSku = 'S1'
-
-// Azure OpenAI
-var aoaiKind = 'OpenAI'
-var aoaiSku = 'S0'
-
-// Document Intelligence
-var docIntelKind = 'FormRecognizer'
-var docIntelSku = 'S0'
-
-// AI Search
-var aiSearchSku = 'standard'
-var aiSearchCapacity = 1
-var aiSearchSemanticSearch = 'disabled'
-
 // AI Search - Data source
 var aiSearchDataSourceName = 'docs'
 var aiSearchDataSourceType = 'azureblob'
-
-// Cognitive Services
-var cogsvcSku = 'S0'
-var cogsvcKind = 'CognitiveServices'
-
-// Storage Account
-var docsContainerName = 'docs'
 
 var resourceGroupNames = {
   ai: '${prefixNormalized}-${locationNormalized}-ai-rg'
@@ -193,7 +192,7 @@ module storageAccount 'modules/storage/storageAccount.bicep' = {
   ]
   params: {
     storageAccountName: resourceNames.storageAccount
-    containerName: docsContainerName
+    containerName: storageAccountDocsContainerName
     location: location    
     tags: tags
   }
@@ -294,7 +293,7 @@ module aiSearchDataSource 'modules/aiSearch/aiSearch-datasource.bicep' = {
     dataSourceType: aiSearchDataSourceType
     aiSearchEndpoint: last(split(aiSearch.outputs.searchResourceId, '/'))
     storageAccountResourceId: storageAccount.outputs.storageAccountId
-    containerName: docsContainerName
+    containerName: storageAccountDocsContainerName
     managedIdentityId: aiSearchDeploymentScriptIdentity.outputs.managedIdentityId
   }
 }
