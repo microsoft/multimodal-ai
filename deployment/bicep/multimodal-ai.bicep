@@ -8,18 +8,22 @@ param prefix string = ''
 @sys.description('Azure Region where the resources will be created.')
 param location string = ''
 
+// Azure OpenAI Parameters
 param aoaiKind string
 param aoaiSku string
 @sys.description('Azure OpenAI deployments to be created.')
 param aoaiDeployments array = []
 
+// Azure Cognitive Services Parameters
 param cogsvcSku string
 param cogsvcKind string
 
+// Azure AI Search Parameters
 param aiSearchSku string
 param aiSearchCapacity int
 param aiSearchSemanticSearch string
 
+// Azure AI Vision Parameters
 param aiVisionKind string
 param aiVisionSku string
 
@@ -40,6 +44,7 @@ param aiVisionSku string
 ])
 param aiVisionlocation string
 
+// Document Intelligence Parameters
 param docIntelKind string
 param docIntelSku string
 
