@@ -20,6 +20,9 @@ param cogsvcKind = 'CognitiveServices'
 
 param storageAccountDocsContainerName = 'docs'
 
+// sample function app from Kevin Saye.  Should replace with real app
+param azureFunctionUri = 'https://kevinsay.blob.core.windows.net/msft/msdeploy.zip?sp=r&st=2024-08-28T17:22:30Z&se=2025-01-30T02:22:30Z&spr=https&sv=2022-11-02&sr=b&sig=vLsMu7nPj2XO53l7RajRhQvSHTKYsx8qj4KXXGgGc7g%3D'
+
 param aoaiKind = 'OpenAI'
 param aoaiSku = 'S0'
 param aoaiDeployments = [
