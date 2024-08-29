@@ -68,7 +68,7 @@ var locationNormalized = toLower(location)
 var prefixNormalized = toLower(prefix)
 
 // Datasource configuration for Azure AI Search.
-var dataSourceBlob = loadJsonContent('library/datasource_blob.json')
+var dataSourceBlob = loadJsonContent('../library/datasource_blob.json')
 
 var resourceGroupNames = {
   ai: '${prefixNormalized}-${locationNormalized}-ai-rg'
