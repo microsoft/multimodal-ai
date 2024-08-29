@@ -40,6 +40,8 @@ param docIntelLocation string
 @sys.description('Specifies the tags which will be applied to all resources.')
 param tags object = {}
 
+param aoaiTextEmbeddingModelForAiSearch string
+
 // Variables
 var locationNormalized = toLower(location)
 var prefixNormalized = toLower(prefix)
@@ -64,6 +66,9 @@ var aiSearchSemanticSearch = 'disabled'
 // AI Search - Data source
 var aiSearchDataSourceName = 'docs'
 var aiSearchDataSourceType = 'azureblob'
+
+// AI Search - Index
+var aiSearchIndexName = '${prefixNormalized}index'
 
 // Cognitive Services
 var cogsvcSku = 'S0'
@@ -296,5 +301,22 @@ module aiSearchDataSource 'modules/aiSearch/aiSearch-datasource.bicep' = {
     storageAccountResourceId: storageAccount.outputs.storageAccountId
     containerName: docsContainerName
     managedIdentityId: aiSearchDeploymentScriptIdentity.outputs.managedIdentityId
+  }
+}
+
+// Create AI Search index
+module aiSearchIndex 'modules/aiSearch/aiSearch-index.bicep' = {
+  name: 'modAiSearchIndex'
+  scope: resourceGroup(resourceGroupNames.ai)
+  dependsOn: [
+    aiSearch
+  ]
+  params: {
+    location: location
+    aiSearchEndpoint: last(split(aiSearch.outputs.searchResourceId, '/'))
+    indexName: aiSearchIndexName
+    azureOpenAIEndpoint: 'https://${azureOpenAI.name}.openai.azure.com/'
+    azureOpenAITextModelName: aoaiTextEmbeddingModelForAiSearch
+    cognitiveServicesEndpoint: 'https://${azureCognitiveServices.name}.cognitiveservices.azure.com'
   }
 }

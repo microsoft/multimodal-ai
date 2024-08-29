@@ -5,8 +5,19 @@ param location = 'eastus'
 param aiVisionlocation = 'eastus'
 param docIntelLocation = 'eastus'
 param tags = {}
+param aoaiTextEmbeddingModelForAiSearch = 'text-embedding-ada-002'
 
 param aoaiDeployments = [
+  {
+    name: 'text-embedding-ada-002'    
+    model: {
+      format: 'OpenAI'      
+      version: '2'
+    }
+    sku: {
+      capacity: 30      
+    }
+  }
   {
     name: 'text-embedding-3-large'    
     model: {
