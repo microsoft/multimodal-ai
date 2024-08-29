@@ -71,36 +71,9 @@ var prefixNormalized = toLower(prefix)
 
 // Datasource configuration for Azure AI Search.
 var dataSourceBlob = loadJsonContent('../library/datasource_blob.json')
-// AI Vision
-var aiVisionKind = 'ComputerVision'
-var aiVisionSku = 'S1'
-
-// Azure OpenAI
-var aoaiKind = 'OpenAI'
-var aoaiSku = 'S0'
-
-// Document Intelligence
-var docIntelKind = 'FormRecognizer'
-var docIntelSku = 'S0'
-
-// AI Search
-var aiSearchSku = 'standard'
-var aiSearchCapacity = 1
-var aiSearchSemanticSearch = 'disabled'
-
-// AI Search - Data source
-var aiSearchDataSourceName = 'docs'
-var aiSearchDataSourceType = 'azureblob'
 
 // AI Search - Index
 var aiSearchIndexName = '${prefixNormalized}index'
-
-// Cognitive Services
-var cogsvcSku = 'S0'
-var cogsvcKind = 'CognitiveServices'
-
-// Storage Account
-var docsContainerName = 'docs'
 
 var resourceGroupNames = {
   ai: '${prefixNormalized}-${locationNormalized}-ai-rg'

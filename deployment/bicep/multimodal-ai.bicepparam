@@ -22,8 +22,8 @@ param storageAccountDocsContainerName = 'docs'
 
 param aoaiKind = 'OpenAI'
 param aoaiSku = 'S0'
-param tags = {}
 param aoaiTextEmbeddingModelForAiSearch = 'text-embedding-ada-002'
+param tags = {}
 
 param aoaiDeployments = [
   {
@@ -57,5 +57,3 @@ param aoaiDeployments = [
     }
   }
 ]
-
-param tags = {}
