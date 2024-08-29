@@ -41,15 +41,13 @@ foreach ($key in $replacements.Keys) {
 $tokenRequest = Get-AzAccessToken -ResourceUrl "https://search.azure.com/"
 $token = $tokenRequest.token
 
-Write-Debug "Bearer $($token)"
-
 $aiSearchRequest = @{
     Uri = "https://$($aiSearchEndpoint).search.windows.net/indexes?api-version=2024-07-01"
     Headers = @{
         Authorization = "Bearer $($token)"
         'Content-Type' = 'application/json'
         }
-    Body = $body
+    Body = $jsonContent
     Method = 'POST'
     }
     

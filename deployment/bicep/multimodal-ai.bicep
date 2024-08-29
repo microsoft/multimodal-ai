@@ -318,5 +318,6 @@ module aiSearchIndex 'modules/aiSearch/aiSearch-index.bicep' = {
     azureOpenAIEndpoint: 'https://${azureOpenAI.name}.openai.azure.com/'
     azureOpenAITextModelName: aoaiTextEmbeddingModelForAiSearch
     cognitiveServicesEndpoint: 'https://${azureCognitiveServices.name}.cognitiveservices.azure.com'
+    managedIdentityId: aiSearchDeploymentScriptIdentity.outputs.managedIdentityId
   }
 }

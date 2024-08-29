@@ -17,10 +17,19 @@ param azureOpenAITextModelName string
 @sys.description('Cognitive services account to use for AI Vision')
 param cognitiveServicesEndpoint string
 
+@sys.description('Managed Identity Id to be used for the deployment script')
+param managedIdentityId string
+
 resource aiSearchDataSource 'Microsoft.Resources/deploymentScripts@2023-08-01' = {
   name: 'aiSearchIndex'
   location: location
   kind: 'AzurePowerShell'
+  identity: {
+    type: 'UserAssigned'
+    userAssignedIdentities: {
+      '${managedIdentityId}': {}
+    }
+  }
   properties: {
     azPowerShellVersion: '8.3'
     retentionInterval: 'PT1H'
