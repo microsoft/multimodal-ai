@@ -20,10 +20,10 @@ param kind string = 'StorageV2'
   'Premium_ZRS'
   'Standard_GRS'
   'Standard_GZRS'
-  'Standard_LRS'  
+  'Standard_LRS'
   'Standard_RAGRS'
   'Standard_RAGZRS'
-  'Standard_ZRS'  
+  'Standard_ZRS'
 ])
 param sku string = 'Standard_LRS'
 
@@ -55,7 +55,7 @@ resource blobServices 'Microsoft.Storage/storageAccounts/blobServices@2023-05-01
   name: 'default'
   parent: storageAccount
   properties: {
-    
+
     defaultServiceVersion: '2020-10-02'
     containerDeleteRetentionPolicy: {
       enabled: true

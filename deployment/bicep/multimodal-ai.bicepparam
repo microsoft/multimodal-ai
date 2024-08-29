@@ -24,34 +24,34 @@ param aoaiKind = 'OpenAI'
 param aoaiSku = 'S0'
 param aoaiDeployments = [
   {
-    name: 'text-embedding-ada-002'    
+    name: 'text-embedding-ada-002'
     model: {
-      format: 'OpenAI'      
+      format: 'OpenAI'
       version: '2'
     }
     sku: {
-      capacity: 30      
+      capacity: 30
     }
   }
   {
-    name: 'gpt-4o'    
+    name: 'gpt-4o'
     model: {
-      format: 'OpenAI'      
+      format: 'OpenAI'
       version: '2024-05-13'
     }
     sku: {
-      capacity: 20      
-    }    
+      capacity: 20
+    }
   }
   {
     name: 'gpt-35-turbo'
     model: {
-      format: 'OpenAI'      
+      format: 'OpenAI'
       version: '0613'
     }
     sku: {
-      capacity: 60      
-    }    
+      capacity: 60
+    }
   }
 ]
 

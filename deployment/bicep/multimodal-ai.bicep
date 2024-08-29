@@ -38,7 +38,7 @@ param aiVisionSku string
   'swedencentral'
   'switzerlandnorth'
   'australiaeast'
-  'southeastasia'  
+  'southeastasia'
   'koreacentral'
   'japaneast'
 ])
@@ -50,10 +50,10 @@ param docIntelSku string
 
 @sys.description('Azure Region where Document Intelligence will be deployed. Support for API 2024-07-31-preview is limited to certain regions.')
 @sys.allowed([
-  'eastus'  
-  'westus2'  
+  'eastus'
+  'westus2'
   'westeurope'
-  'northcentralus'  
+  'northcentralus'
 ])
 param docIntelLocation string
 
@@ -110,7 +110,7 @@ module resourceGroupStorage './modules/resourceGroup/resourceGroup.bicep' = {
 
 module azureOpenAI 'modules/cognitiveServices/cognitiveServices.bicep' = {
   name: 'modAzureOpenAI'
-  scope: resourceGroup(resourceGroupNames.ai)  
+  scope: resourceGroup(resourceGroupNames.ai)
   dependsOn: [
     resourceGroupAI
   ]
@@ -130,7 +130,7 @@ module azureOpenAIModelDeployments 'modules/aoai/aoaiDeployment.bicep' = [for de
   dependsOn: [
     azureOpenAI
   ]
-  params: {    
+  params: {
     name: deployment.name
     version: deployment.model.version
     format: deployment.model.format
@@ -141,7 +141,7 @@ module azureOpenAIModelDeployments 'modules/aoai/aoaiDeployment.bicep' = [for de
 
 module azureCognitiveServices 'modules/cognitiveServices/cognitiveServices.bicep' = {
   name: 'modAzureCognitiveServices'
-  scope: resourceGroup(resourceGroupNames.ai)  
+  scope: resourceGroup(resourceGroupNames.ai)
   dependsOn: [
     resourceGroupAI
   ]
@@ -156,7 +156,7 @@ module azureCognitiveServices 'modules/cognitiveServices/cognitiveServices.bicep
 
 module azureAIVision 'modules/cognitiveServices/cognitiveServices.bicep' = {
   name: 'modAzureAIVision'
-  scope: resourceGroup(resourceGroupNames.ai)  
+  scope: resourceGroup(resourceGroupNames.ai)
   dependsOn: [
     resourceGroupAI
   ]
@@ -193,7 +193,7 @@ module storageAccount 'modules/storage/storageAccount.bicep' = {
   params: {
     storageAccountName: resourceNames.storageAccount
     containerName: storageAccountDocsContainerName
-    location: location    
+    location: location
     tags: tags
   }
 }
@@ -206,7 +206,7 @@ module aiSearchDeploymentScriptIdentity 'modules/managedIdentities/managedIdenti
   ]
   params: {
     name: resourceNames.aiSearchDeploymentScriptIdentity
-    location: location    
+    location: location
   }
 }
 
@@ -221,7 +221,7 @@ module aiSearch 'modules/aiSearch/aiSearch.bicep' = {
     searchName: resourceNames.aiSearch
     skuName: aiSearchSku
     skuCapacity: aiSearchCapacity
-    semanticSearch: aiSearchSemanticSearch    
+    semanticSearch: aiSearchSemanticSearch
     tags: tags
   }
 }
@@ -229,7 +229,7 @@ module aiSearch 'modules/aiSearch/aiSearch.bicep' = {
 module aiSearchRoleDef 'modules/rbac/roleDef-searchServiceContributor.bicep' = {
   name: 'modAISearchRoleDef'
   scope: resourceGroup(resourceGroupNames.ai)
-  dependsOn: [    
+  dependsOn: [
     aiSearch
     aiSearchDeploymentScriptIdentity
   ]
@@ -259,7 +259,7 @@ module storageRoleDef 'modules/rbac/roleDef-blobDataReader.bicep' = {
     aiSearch
   ]
   params: {
-    storageAccountId: storageAccount.outputs.storageAccountId    
+    storageAccountId: storageAccount.outputs.storageAccountId
   }
 }
 
