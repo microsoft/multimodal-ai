@@ -292,7 +292,7 @@ module aiSearchDataSource 'modules/aiSearch/aiSearch-datasource.bicep' = {
     dataSourceType: dataSourceBlob.type
     aiSearchEndpoint: last(split(aiSearch.outputs.searchResourceId, '/'))
     storageAccountResourceId: storageAccount.outputs.storageAccountId
-    containerName: dataSourceBlob.container.name    
+    containerName: dataSourceBlob.container.name
     managedIdentityId: aiSearchDeploymentScriptIdentity.outputs.managedIdentityId
   }
 }
