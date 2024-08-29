@@ -1,0 +1,50 @@
+name: Lint and Test
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  lint:
+    name: Lint and Test
+    runs-on: [ubuntu-latest]
+    continue-on-error: false
+
+    steps:
+      # Setup Python 3.11
+      - name: Setup Python 3.11
+        id: python_setup
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      # Setup Terraform
+      - name: Setup Terraform
+        id: terraform_setup
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.9.2"
+          terraform_wrapper: true
+
+      # Checkout repository
+      - name: Check Out Repository
+        id: checkout_repository
+        uses: actions/checkout@v4
+
+      # Run Linting
+      - name: Run Linting
+        id: linting
+        run: |
+          echo "Install dependencies"
+          python3 -m pip install -r requirements.txt -q
+
+          echo "Initialize Git"
+          git init
+          git add *
+
+          echo "Run pre-commit"
+          python3 -m pre_commit install --install-hooks
+          python3 -m pre_commit run --all-files --verbose
