@@ -698,7 +698,7 @@ async def processDocs(auth_claims: Dict[str, Any]):
 
 
     print(f"File processing started")
-    
+
     try:
         if not request.is_json:
             return jsonify({"error": "request must be json"}), 415
@@ -754,7 +754,7 @@ async def processDocs(auth_claims: Dict[str, Any]):
 
         AZURE_OPENAI_EMB_DIMENSIONS = os.getenv("AZURE_OPENAI_EMB_DIMENSIONS", "")
         if AZURE_OPENAI_EMB_DIMENSIONS:
-            argumentList += ["--openaidimensions"] 
+            argumentList += ["--openaidimensions"]
             argumentList += [AZURE_OPENAI_EMB_DIMENSIONS]
 
         USE_LOCAL_PDF_PARSER = os.getenv("USE_LOCAL_PDF_PARSER", "").lower() == "true"
@@ -767,97 +767,97 @@ async def processDocs(auth_claims: Dict[str, Any]):
 
         AZURE_TENANT_ID = os.getenv("AZURE_TENANT_ID", "")
         if AZURE_TENANT_ID:
-            argumentList += ["--tenantid"] 
+            argumentList += ["--tenantid"]
             argumentList += [AZURE_TENANT_ID]
 
         USE_FEATURE_INT_VECTORIZATION = os.getenv("USE_FEATURE_INT_VECTORIZATION", "").lower() == "true"
         if USE_FEATURE_INT_VECTORIZATION:
-            argumentList += ["--useintvectorization"] 
+            argumentList += ["--useintvectorization"]
             argumentList += [USE_FEATURE_INT_VECTORIZATION]
 
         AZURE_OPENAI_API_KEY = os.getenv("AZURE_OPENAI_API_KEY", "")
         OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
         if AZURE_OPENAI_API_KEY:
-            argumentList += ["--openaikey"] 
+            argumentList += ["--openaikey"]
             argumentList += [AZURE_OPENAI_API_KEY]
         elif OPENAI_API_KEY:
-            argumentList += ["--openaikey"] 
+            argumentList += ["--openaikey"]
             argumentList += [OPENAI_API_KEY]
 
 
         AZURE_SUBSCRIPTION_ID = os.getenv("AZURE_SUBSCRIPTION_ID", "")
         if AZURE_SUBSCRIPTION_ID:
-            argumentList += ["--subscriptionid"] 
+            argumentList += ["--subscriptionid"]
             argumentList += [AZURE_SUBSCRIPTION_ID]
 
         AZURE_STORAGE_ACCOUNT = os.getenv("AZURE_STORAGE_ACCOUNT", "")
         if AZURE_STORAGE_ACCOUNT:
-            argumentList += ["--storageaccount"] 
+            argumentList += ["--storageaccount"]
             argumentList += [AZURE_STORAGE_ACCOUNT]
 
         AZURE_STORAGE_CONTAINER = os.getenv("AZURE_STORAGE_CONTAINER", "")
         if AZURE_STORAGE_CONTAINER:
-            argumentList += ["--container"] 
+            argumentList += ["--container"]
             argumentList += [AZURE_STORAGE_CONTAINER]
 
         AZURE_STORAGE_RESOURCE_GROUP = os.getenv("AZURE_STORAGE_RESOURCE_GROUP", "")
         if AZURE_STORAGE_RESOURCE_GROUP:
-            argumentList += ["--storageresourcegroup"] 
+            argumentList += ["--storageresourcegroup"]
             argumentList += [AZURE_STORAGE_RESOURCE_GROUP]
 
         AZURE_SEARCH_SERVICE = os.getenv("AZURE_SEARCH_SERVICE", "")
         if AZURE_SEARCH_SERVICE:
-            argumentList += ["--searchservice"] 
+            argumentList += ["--searchservice"]
             argumentList += [AZURE_SEARCH_SERVICE]
 
         AZURE_SEARCH_INDEX = os.getenv("AZURE_SEARCH_INDEX", "")
         if AZURE_SEARCH_INDEX:
-            argumentList += ["--index"] 
+            argumentList += ["--index"]
             argumentList += [AZURE_SEARCH_INDEX]
 
         OPENAI_HOST = os.getenv("OPENAI_HOST", "")
         if OPENAI_HOST:
-            argumentList += ["--openaihost"] 
+            argumentList += ["--openaihost"]
             argumentList += [OPENAI_HOST]
 
         AZURE_OPENAI_EMB_MODEL_NAME = os.getenv("AZURE_OPENAI_EMB_MODEL_NAME", "")
         if AZURE_OPENAI_EMB_MODEL_NAME:
-            argumentList += ["--openaimodelname"] 
+            argumentList += ["--openaimodelname"]
             argumentList += [AZURE_OPENAI_EMB_MODEL_NAME]
 
         AZURE_OPENAI_SERVICE = os.getenv("AZURE_OPENAI_SERVICE", "")
         if AZURE_OPENAI_SERVICE:
-            argumentList += ["--openaiservice"] 
+            argumentList += ["--openaiservice"]
             argumentList += [AZURE_OPENAI_SERVICE]
 
         AZURE_OPENAI_EMB_DEPLOYMENT = os.getenv("AZURE_OPENAI_EMB_DEPLOYMENT", "")
         if AZURE_OPENAI_EMB_DEPLOYMENT:
-            argumentList += ["--openaideployment"] 
+            argumentList += ["--openaideployment"]
             argumentList += [AZURE_OPENAI_EMB_DEPLOYMENT]
 
         AZURE_OPENAI_CUSTOM_URL = os.getenv("AZURE_OPENAI_CUSTOM_URL", "")
         if AZURE_OPENAI_CUSTOM_URL:
-            argumentList += ["--openaicustomurl"] 
+            argumentList += ["--openaicustomurl"]
             argumentList += [AZURE_OPENAI_CUSTOM_URL]
 
         OPENAI_ORGANIZATION = os.getenv("OPENAI_ORGANIZATION", "")
         if AZURE_SUBSCRIPTION_ID:
-            argumentList += ["--openaiorg"] 
+            argumentList += ["--openaiorg"]
             argumentList += [OPENAI_ORGANIZATION]
 
         AZURE_DOCUMENTINTELLIGENCE_SERVICE = os.getenv("AZURE_DOCUMENTINTELLIGENCE_SERVICE", "")
         if AZURE_DOCUMENTINTELLIGENCE_SERVICE:
-            argumentList += ["--documentintelligenceservice"] 
+            argumentList += ["--documentintelligenceservice"]
             argumentList += [AZURE_DOCUMENTINTELLIGENCE_SERVICE]
 
         AZURE_DOCUMENTINTELLIGENCE_KEY = os.getenv("AZURE_DOCUMENTINTELLIGENCE_KEY", "")
         if AZURE_DOCUMENTINTELLIGENCE_KEY:
-            argumentList += ["--documentintelligencekey"] 
+            argumentList += ["--documentintelligencekey"]
             argumentList += [AZURE_DOCUMENTINTELLIGENCE_KEY]
 
         SEARCH_KEY = os.getenv("SEARCH_KEY", "")
         if SEARCH_KEY:
-            argumentList += ["--searchkey"] 
+            argumentList += ["--searchkey"]
             argumentList += [SEARCH_KEY]
 
         print('-'*60)
@@ -873,4 +873,3 @@ async def processDocs(auth_claims: Dict[str, Any]):
         print('-'*60)
         traceback.print_exc()
         return error_response(error, "/process")
-

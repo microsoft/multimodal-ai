@@ -2,13 +2,13 @@
 param (
     #The Azure AI Search endpoint
     [parameter(mandatory=$true)][string] $aiSearchEndpoint,
-    
+
     #Resource Id of the storage account
     [parameter(mandatory=$true)][string] $storageAccountResourceId,
-    
+
     #Name of the data source
     [parameter(mandatory=$true)][string] $dataSourceName,
-    
+
     #Supported data source type. Supported values include: "azureblob", "azuretable", "azuresql", "cosmosdb"
     [parameter(mandatory=$true)][string] $dataSourceType,
 
@@ -44,7 +44,7 @@ $aiSearchRequest = @{
     Body = $body
     Method = 'POST'
     }
-    
+
 $Response = Invoke-WebRequest @aiSearchRequest
 [Newtonsoft.Json.Linq.JObject]::Parse($Response.Content).ToString()
 
