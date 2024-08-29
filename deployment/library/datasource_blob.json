@@ -1,18 +1,18 @@
 {
-    "name": "docs-datasource",
-    "description": "Datasource for blob storage",
-    "type": "azureblob",
-    "subtype": null,
-    "credentials": {
-      "connectionString": ""
-    },
-    "container": {
-      "name": "docs",
-      "query": null
-    },
-    "dataChangeDetectionPolicy": null,
-    "dataDeletionDetectionPolicy": {
-      "@odata.type": "#Microsoft.Azure.Search.NativeBlobSoftDeleteDeletionDetectionPolicy"
-    },
-    "encryptionKey": null
-  }
+  "name": "docs-datasource",
+  "description": "Datasource for blob storage",
+  "type": "azureblob",
+  "subtype": null,
+  "credentials": {
+    "connectionString": ""
+  },
+  "container": {
+    "name": "docs",
+    "query": null
+  },
+  "dataChangeDetectionPolicy": null,
+  "dataDeletionDetectionPolicy": {
+    "@odata.type": "#Microsoft.Azure.Search.NativeBlobSoftDeleteDeletionDetectionPolicy"
+  },
+  "encryptionKey": null
+}
