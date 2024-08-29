@@ -31,7 +31,7 @@ resource cognitiveServicesAccount 'Microsoft.CognitiveServices/accounts@2024-04-
 resource aoaiDeployment 'Microsoft.CognitiveServices/accounts/deployments@2024-04-01-preview' = {
   name: name
   parent: cognitiveServicesAccount
-  
+
   sku: {
     capacity: capacity
     name: skuName
@@ -41,7 +41,7 @@ resource aoaiDeployment 'Microsoft.CognitiveServices/accounts/deployments@2024-0
       format: format
       name: name
       version: version
-    }        
+    }
     versionUpgradeOption: 'OnceNewDefaultVersionAvailable'
   }
 }

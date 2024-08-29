@@ -12,5 +12,3 @@ async def main(req: func.HttpRequest, context: func.Context) -> func.HttpRespons
     ret = await func.AsgiMiddleware(qapp).handle_async(req, context)
     await close_clients()
     return ret
-
-

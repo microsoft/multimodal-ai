@@ -73,7 +73,7 @@ async def transform_value(value):
         parser = DocumentAnalysisParser(
             endpoint=f"https://{document_intelligence_service}.cognitiveservices.azure.com/",
             credential=credential)
-        
+
         splitter=SentenceTextSplitter()
 
         processor = Processor(file_parser=parser, file_splitter=splitter)
