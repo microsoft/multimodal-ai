@@ -20,6 +20,8 @@ param cognitiveServicesEndpoint string
 @sys.description('Managed Identity Id to be used for the deployment script')
 param managedIdentityId string
 
+var jsonTemplate = loadFileAsBase64('../../../library/index_template.json')
+
 resource aiSearchDataSource 'Microsoft.Resources/deploymentScripts@2023-08-01' = {
   name: 'aiSearchIndex'
   location: location
@@ -34,7 +36,7 @@ resource aiSearchDataSource 'Microsoft.Resources/deploymentScripts@2023-08-01' =
     azPowerShellVersion: '8.3'
     retentionInterval: 'PT1H'
     timeout: 'PT1H'
-    arguments: '-aiSearchEndpoint ${aiSearchEndpoint} -indexName ${indexName} -azureOpenAIEndpoint ${azureOpenAIEndpoint} -azureOpenAITextDeploymentId ${azureOpenAITextModelName} -azureOpenAITextModelName ${azureOpenAITextModelName} -cognitiveServicesEndpoint ${cognitiveServicesEndpoint}'
+    arguments: '-aiSearchEndpoint ${aiSearchEndpoint} -indexName ${indexName} -azureOpenAIEndpoint ${azureOpenAIEndpoint} -azureOpenAITextDeploymentId ${azureOpenAITextModelName} -azureOpenAITextModelName ${azureOpenAITextModelName} -cognitiveServicesEndpoint ${cognitiveServicesEndpoint} -jsonTemplate ${jsonTemplate}'
     scriptContent: loadTextContent('../../scripts/aisearch-create-index.ps1')
     cleanupPreference: 'OnSuccess'
   }

@@ -1,25 +1,26 @@
 # PowerShell script to create a new index in Azure AI Search
 param (
     #The Azure AI Search endpoint
-    [parameter(mandatory=$true)][string] $aiSearchEndpoint,
-    
-    #index name Id of the storage account
-    [parameter(mandatory=$true)][string] $indexName,
-    
+    [parameter(mandatory = $true)][string] $aiSearchEndpoint,
+
+    #index name
+    [parameter(mandatory = $true)][string] $indexName,
+
     #Azure OpenAI endpoint
-    [parameter(mandatory=$true)][string] $azureOpenAIEndpoint,
-    
+    [parameter(mandatory = $true)][string] $azureOpenAIEndpoint,
+
     #Azure OpenAI deployment id
-    [parameter(mandatory=$true)][string] $azureOpenAITextDeploymentId,
+    [parameter(mandatory = $true)][string] $azureOpenAITextDeploymentId,
 
     #Azure OpenAI model name to create embeddings
-    [parameter(mandatory=$true)][string] $azureOpenAITextModelName,
+    [parameter(mandatory = $true)][string] $azureOpenAITextModelName,
 
-    #Name of the table, view, collection, or blob container you wish to index
-    [parameter(mandatory=$true)][string] $cognitiveServicesEndpoint
+    #Cognitive services endpoint for AI vision
+    [parameter(mandatory = $true)][string] $cognitiveServicesEndpoint,
+
+    #Json content of the payload template
+    [parameter(mandatory = $true)][string] $jsonTemplate
 )
-
-$jsonTemplatePath = "..\..\library\index_template.json"
 
 $replacements = @{
     "index_name"                     = "$indexName"
@@ -29,27 +30,26 @@ $replacements = @{
     "cognitive_services_endpoint"    = "$cognitiveServicesEndpoint"
 }
 
-# Read the JSON template file
-$jsonContent = Get-Content -Path $jsonTemplatePath -Raw
+$jsonTemplate = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($jsonTemplate))
 
 # Replace placeholders with their corresponding values
 foreach ($key in $replacements.Keys) {
     $placeholder = "\$\{$key\}"
-    $jsonContent = $jsonContent -replace $placeholder, $replacements[$key]
+    $jsonTemplate = $jsonTemplate -replace $placeholder, $replacements[$key]
 }
 
 $tokenRequest = Get-AzAccessToken -ResourceUrl "https://search.azure.com/"
 $token = $tokenRequest.token
 
 $aiSearchRequest = @{
-    Uri = "https://$($aiSearchEndpoint).search.windows.net/indexes?api-version=2024-07-01"
+    Uri     = "https://$($aiSearchEndpoint).search.windows.net/indexes/?api-version=2024-05-01-preview"
     Headers = @{
-        Authorization = "Bearer $($token)"
+        Authorization  = "Bearer $($token)"
         'Content-Type' = 'application/json'
-        }
-    Body = $jsonContent
-    Method = 'POST'
     }
+    Body    = $jsonTemplate
+    Method  = 'POST'
+}
 
 $Response = Invoke-WebRequest @aiSearchRequest
 [Newtonsoft.Json.Linq.JObject]::Parse($Response.Content).ToString()
