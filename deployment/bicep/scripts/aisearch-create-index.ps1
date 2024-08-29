@@ -50,7 +50,7 @@ $aiSearchRequest = @{
     Body = $jsonContent
     Method = 'POST'
     }
-    
+
 $Response = Invoke-WebRequest @aiSearchRequest
 [Newtonsoft.Json.Linq.JObject]::Parse($Response.Content).ToString()
 
