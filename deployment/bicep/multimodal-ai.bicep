@@ -60,6 +60,9 @@ param docIntelLocation string
 @sys.description('Specifies the container name to be created in the storage account for documents.')
 param storageAccountDocsContainerName string
 
+@sys.description('Specifies the container name to be created in the storage account for images.')
+param storageAccountImagesContainerName string
+
 @sys.description('Specifies the tags which will be applied to all resources.')
 param tags object = {}
 
@@ -69,8 +72,8 @@ param aoaiTextEmbeddingModelForAiSearch string
 var locationNormalized = toLower(location)
 var prefixNormalized = toLower(prefix)
 
-// AI Search - Index
 var aiSearchIndexName = '${prefixNormalized}index'
+var aiSearchSkillsetName = '${prefix}-skillset'
 
 var resourceGroupNames = {
   ai: '${prefixNormalized}-${locationNormalized}-ai-rg'
@@ -311,6 +314,32 @@ module aiSearchIndex 'modules/aiSearch/aiSearch-index.bicep' = {
     azureOpenAIEndpoint: 'https://${azureOpenAI.name}.openai.azure.com/'
     azureOpenAITextModelName: aoaiTextEmbeddingModelForAiSearch
     cognitiveServicesEndpoint: 'https://${azureCognitiveServices.name}.cognitiveservices.azure.com'
+    managedIdentityId: aiSearchDeploymentScriptIdentity.outputs.managedIdentityId
+  }
+}
+
+// Create AI Search skillset
+module aiSearchSkillset 'modules/aiSearch/aiSearch-skillset.bicep' = {
+  name: 'modAiSearchSkillset'
+  scope: resourceGroup(resourceGroupNames.ai)
+  dependsOn: [
+    aiSearch
+    storageAccount
+    storageRoleAssignment
+    aiSearchRoleAssignment
+    azureCognitiveServices
+  ]
+  params: {
+    location: location
+    aiSearchEndpoint: last(split(aiSearch.outputs.searchResourceId, '/'))
+    indexName: aiSearchIndexName
+    skillsetName: aiSearchSkillsetName
+    azureOpenAIEndpoint: 'https://${azureOpenAI.name}.openai.azure.com/'
+    azureOpenAITextModelName: aoaiTextEmbeddingModelForAiSearch
+    knowledgeStoreStorageResourceUri: storageAccount.outputs.storageAccountId
+    knowledgeStoreStorageContainer: storageAccountImagesContainerName
+    pdfMergeCustomSkillEndpoint: 'https://TODO/When/Function/Is/Created'
+    cognitiveServicesAccountId: azureCognitiveServices.outputs.cognitiveServicesAccountId
     managedIdentityId: aiSearchDeploymentScriptIdentity.outputs.managedIdentityId
   }
 }
