@@ -1,0 +1,158 @@
+{
+    "name": "${skillset_name}",
+    "description": "${skillset_name}",
+    "skills": [
+      {
+        "@odata.type": "#Microsoft.Skills.Vision.VectorizeSkill",
+        "name": "azure_ai_vision_image_embedding_skill",
+        "description": "Skill to generate embeddings for image via Azure AI Vision",
+        "context": "/document/normalized_images/*",
+        "modelVersion": "2023-04-15",
+        "inputs": [
+          {
+            "name": "image",
+            "source": "/document/normalized_images/*"
+          }
+        ],
+        "outputs": [
+          {
+            "name": "vector",
+            "targetName": "imageEmbedding"
+          }
+        ]
+      },
+      {
+        "@odata.type": "#Microsoft.Skills.Custom.WebApiSkill",
+        "name": "pdf_text_image_merge_skill",
+        "description": "A custom skill that uses Document Intelligence service to parse PDF files and then combines image embeddings with corresponding PDF pages",
+        "context": "/document",
+        "uri": "${pdf_text_image_merge_skill_url}",
+        "httpMethod": "POST",
+        "timeout": "PT1M",
+        "batchSize": 4,
+        "degreeOfParallelism": 4,
+        "authResourceId": null,
+        "inputs": [
+          {
+            "name": "imageEmbedding",
+            "source": "/document/normalized_images/*/imageEmbedding"
+          },
+          {
+            "name": "url",
+            "source": "/document/metadata_storage_path"
+          }
+        ],
+        "outputs": [
+          {
+            "name": "enrichedPages",
+            "targetName": "enrichedPages"
+          }
+        ],
+        "httpHeaders": {},
+        "authIdentity": null
+      },
+      {
+        "@odata.type": "#Microsoft.Skills.Text.AzureOpenAIEmbeddingSkill",
+        "name": "azure_openai_text_embedding_skill",
+        "description": "Skill to generate embeddings via Azure OpenAI",
+        "context": "/document/enrichedPages/*",
+        "resourceUri": "${azureOpenAI_resource_uri}",
+        "apiKey": null,
+        "deploymentId": "${azureOpenAI_text_deployment_id}",
+        "dimensions": 1536,
+        "modelName": "${azureOpenAI_text_model_name}",
+        "inputs": [
+          {
+            "name": "text",
+            "source": "/document/enrichedPages/*/content"
+          }
+        ],
+        "outputs": [
+          {
+            "name": "embedding",
+            "targetName": "embedding"
+          }
+        ],
+        "authIdentity": null
+      }
+    ],
+    "cognitiveServices": {
+      "@odata.type": "#Microsoft.Azure.Search.CognitiveServicesByKey",
+      "description": null,
+      "key": null
+    },
+    "knowledgeStore": {
+      "storageConnectionString": "ResourceId=/subscriptions/${subscriptionId}/resourceGroups/${resourceGroup}/providers/Microsoft.Storage/storageAccounts/${storageAccountName};",
+      "identity": null,
+      "projections": [
+        {
+          "tables": [],
+          "objects": [],
+          "files": [
+            {
+              "storageContainer": "images",
+              "referenceKeyName": null,
+              "generatedKeyName": "/document/metadata_storage_name",
+              "source": "/document/normalized_images/*",
+              "sourceContext": null,
+              "inputs": []
+            }
+          ]
+        }
+      ],
+      "parameters": {
+        "synthesizeGeneratedKeyName": true
+      }
+    },
+    "indexProjections": {
+      "selectors": [
+        {
+          "targetIndexName": "${index_name}",
+          "parentKeyFieldName": "parent_id",
+          "sourceContext": "/document/enrichedPages/*",
+          "mappings": [
+            {
+              "name": "content",
+              "source": "/document/enrichedPages/*/content",
+              "sourceContext": null,
+              "inputs": []
+            },
+            {
+              "name": "embedding",
+              "source": "/document/enrichedPages/*/embedding",
+              "sourceContext": null,
+              "inputs": []
+            },
+            {
+              "name": "sourcepage",
+              "source": "/document/enrichedPages/*/sourcepage",
+              "sourceContext": null,
+              "inputs": []
+            },
+            {
+              "name": "sourcefile",
+              "source": "/document/enrichedPages/*/sourcefile",
+              "sourceContext": null,
+              "inputs": []
+            },
+            {
+              "name": "storageUrl",
+              "source": "/document/enrichedPages/*/storageUrl",
+              "sourceContext": null,
+              "inputs": []
+            },
+            {
+              "name": "imageEmbedding",
+              "source": "/document/enrichedPages/*/imageEmbedding",
+              "sourceContext": null,
+              "inputs": []
+            }
+          ]
+        }
+      ],
+      "parameters": {
+        "projectionMode": "skipIndexingParentDocuments"
+      }
+    },
+    "encryptionKey": null
+  }
