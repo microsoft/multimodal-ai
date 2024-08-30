@@ -1,4 +1,4 @@
-// This file is used to create a deployment script to create an index in Azure AI Search service.
+// This file is used to create a deployment script to create an indexer in Azure AI Search service.
 @sys.description('Location of the Azure AI Search service.')
 param location string
 
@@ -21,7 +21,7 @@ var dataSourceName = '${containerName}-datasource'
 var indexerName = '${indexName}-indexer'
 var jsonTemplate = loadFileAsBase64('../../../library/indexer_template.json')
 
-resource aiSearchDataSource 'Microsoft.Resources/deploymentScripts@2023-08-01' = {
+resource aiSearchIndexer 'Microsoft.Resources/deploymentScripts@2023-08-01' = {
   name: 'aiSearchIndexer'
   location: location
   kind: 'AzurePowerShell'
