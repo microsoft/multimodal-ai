@@ -63,9 +63,14 @@ param storageAccountDocsContainerName string
 @sys.description('Specifies the tags which will be applied to all resources.')
 param tags object = {}
 
+param aoaiTextEmbeddingModelForAiSearch string
+
 // Variables
 var locationNormalized = toLower(location)
 var prefixNormalized = toLower(prefix)
+
+// AI Search - Index
+var aiSearchIndexName = '${prefixNormalized}index'
 
 var resourceGroupNames = {
   ai: '${prefixNormalized}-${locationNormalized}-ai-rg'
@@ -288,6 +293,24 @@ module aiSearchDataSource 'modules/aiSearch/aiSearch-datasource.bicep' = {
     aiSearchEndpoint: last(split(aiSearch.outputs.searchResourceId, '/'))
     storageAccountResourceId: storageAccount.outputs.storageAccountId
     containerName: storageAccountDocsContainerName
+    managedIdentityId: aiSearchDeploymentScriptIdentity.outputs.managedIdentityId
+  }
+}
+
+// Create AI Search index
+module aiSearchIndex 'modules/aiSearch/aiSearch-index.bicep' = {
+  name: 'modAiSearchIndex'
+  scope: resourceGroup(resourceGroupNames.ai)
+  dependsOn: [
+    aiSearch
+  ]
+  params: {
+    location: location
+    aiSearchEndpoint: last(split(aiSearch.outputs.searchResourceId, '/'))
+    indexName: aiSearchIndexName
+    azureOpenAIEndpoint: 'https://${azureOpenAI.name}.openai.azure.com/'
+    azureOpenAITextModelName: aoaiTextEmbeddingModelForAiSearch
+    cognitiveServicesEndpoint: 'https://${azureCognitiveServices.name}.cognitiveservices.azure.com'
     managedIdentityId: aiSearchDeploymentScriptIdentity.outputs.managedIdentityId
   }
 }
