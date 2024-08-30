@@ -1,4 +1,4 @@
-# PowerShell script to create a new index in Azure AI Search
+# PowerShell script to create a new indexer in Azure AI Search
 param (
     #Name of the data source
     [parameter(mandatory = $true)][string] $dataSourceName,
