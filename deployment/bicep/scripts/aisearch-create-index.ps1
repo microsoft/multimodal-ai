@@ -50,7 +50,7 @@ $aiSearchRequest = @{
     Body    = $jsonTemplate
     Method  = 'PUT'
 }
-Write-Output "hello"
+
 $Response = Invoke-WebRequest @aiSearchRequest
 
 # Check if the response content is not empty
