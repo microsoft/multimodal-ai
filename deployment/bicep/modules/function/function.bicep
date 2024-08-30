@@ -105,3 +105,5 @@ resource functionApp 'Microsoft.Web/sites@2022-03-01' = {
 //     principalType: 'ServicePrincipal'
 //   }
 // }
+
+output pdfTextImageMergeSkillEndpoint string = 'https://${functionApp.properties.defaultHostName}/api/pdf_text_image_merge_skill'
