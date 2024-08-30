@@ -44,6 +44,9 @@ $aiSearchRequest = @{
     }
 
 $Response = Invoke-WebRequest @aiSearchRequest
-[Newtonsoft.Json.Linq.JObject]::Parse($Response.Content).ToString()
 
-$output = $Response | ConvertFrom-Json
+# Check if the response content is not empty
+if (-not [string]::IsNullOrEmpty($Response.Content)) {
+    # Parse and output JSON if content is not empty
+    [Newtonsoft.Json.Linq.JObject]::Parse($Response.Content).ToString()
+}
