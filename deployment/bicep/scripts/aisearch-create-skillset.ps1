@@ -19,7 +19,7 @@ param (
     [parameter(mandatory = $true)][string] $azureOpenAITextModelName,
 
     #AI services multi-service account key
-    [parameter(mandatory = $true)][Security.SecureString] $aiMultiServiceAccountKey,
+    [parameter(mandatory = $true)][string] $aiMultiServiceAccountKey,
 
     #Endpoint for the pdf merge custom skill
     [parameter(mandatory = $true)][string] $pdfMergeCustomSkillEndpoint,
@@ -41,7 +41,7 @@ $replacements = @{
     "azureOpenAI_text_deployment_id"            = "$azureOpenAITextDeploymentId"
     "azureOpenAI_text_model_name"               = "$azureOpenAITextModelName"
     "pdf_text_image_merge_skill_url"            = "$pdfMergeCustomSkillEndpoint"
-    "cognitiveServices_multiService_accountKey" = "$(ConvertFrom-SecureString -SecureString $secureString -AsPlainText $aiMultiServiceAccountKey)"
+    "cognitiveServices_multiService_accountKey" = "$aiMultiServiceAccountKey"
     "storage_account_resource_uri"              = "$knowledgeStoreStorageResourceUri"
     "storage_account_image_container_name"      = "$knowledgeStoreStorageContainer"
 }

@@ -60,7 +60,7 @@ resource aiSearchDataSource 'Microsoft.Resources/deploymentScripts@2023-08-01' =
     retentionInterval: 'PT1H'
     timeout: 'PT1H'
     arguments: '-aiSearchEndpoint ${aiSearchEndpoint} -indexName ${indexName} -skillsetName ${skillsetName} -azureOpenAIEndpoint ${azureOpenAIEndpoint} -azureOpenAITextDeploymentId ${azureOpenAITextModelName} -azureOpenAITextModelName ${azureOpenAITextModelName} -aiMultiServiceAccountKey ${aiMultiServiceAccountKey} -pdfMergeCustomSkillEndpoint ${pdfMergeCustomSkillEndpoint} -knowledgeStoreStorageResourceUri ${knowledgeStoreStorageResourceUri} -knowledgeStoreStorageContainer ${knowledgeStoreStorageContainer} -jsonTemplate ${jsonTemplate}'
-    scriptContent: loadTextContent('../../scripts/aisearch-create-index.ps1')
+    scriptContent: loadTextContent('../../scripts/aisearch-create-skillset.ps1')
     cleanupPreference: 'OnSuccess'
   }
 }

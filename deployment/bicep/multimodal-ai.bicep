@@ -332,7 +332,7 @@ module aiSearchSkillset 'modules/aiSearch/aiSearch-skillset.bicep' = {
   params: {
     location: location
     aiSearchEndpoint: last(split(aiSearch.outputs.searchResourceId, '/'))
-    indexName: aiSearchIndexName
+    indexName: aiSearchIndex.outputs.resourceName
     skillsetName: aiSearchSkillsetName
     azureOpenAIEndpoint: 'https://${azureOpenAI.name}.openai.azure.com/'
     azureOpenAITextModelName: aoaiTextEmbeddingModelForAiSearch
