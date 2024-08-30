@@ -45,6 +45,11 @@ $aiSearchRequest = @{
 
 $Response = Invoke-WebRequest @aiSearchRequest
 
+# Check if the response HTTP status code is not successful
+if ($Response.StatusCode -lt 200 -or $Response.StatusCode -ge 300) {
+    throw "Request failed with status code: $($Response.StatusCode) - $($Response.StatusDescription)"
+}
+
 # Check if the response content is not empty
 if (-not [string]::IsNullOrEmpty($Response.Content)) {
     # Parse and output JSON if content is not empty
