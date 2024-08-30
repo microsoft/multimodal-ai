@@ -41,4 +41,3 @@ resource aiSearchIndex 'Microsoft.Resources/deploymentScripts@2023-08-01' = {
     cleanupPreference: 'OnSuccess'
   }
 }
-
