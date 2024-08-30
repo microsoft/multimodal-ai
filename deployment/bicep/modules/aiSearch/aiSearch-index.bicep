@@ -22,7 +22,7 @@ param managedIdentityId string
 
 var jsonTemplate = loadFileAsBase64('../../../library/index_template.json')
 
-resource aiSearchDataSource 'Microsoft.Resources/deploymentScripts@2023-08-01' = {
+resource aiSearchIndex 'Microsoft.Resources/deploymentScripts@2023-08-01' = {
   name: 'aiSearchIndex'
   location: location
   kind: 'AzurePowerShell'

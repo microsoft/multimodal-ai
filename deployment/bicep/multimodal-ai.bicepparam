@@ -19,6 +19,7 @@ param cogsvcSku = 'S0'
 param cogsvcKind = 'CognitiveServices'
 
 param storageAccountDocsContainerName = 'docs'
+param storageAccountImagesContainerName = 'images'
 
 // Replace with real app
 param azureFunctionUri = ''
