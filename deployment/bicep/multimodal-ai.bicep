@@ -63,6 +63,9 @@ param storageAccountDocsContainerName string
 @sys.description('Specifies the tags which will be applied to all resources.')
 param tags object = {}
 
+@sys.description('Specifies the URI of the MSDeploy Package for the Azure Function.')
+param azureFunctionUri string = ''
+
 // Variables
 var locationNormalized = toLower(location)
 var prefixNormalized = toLower(prefix)
@@ -307,5 +310,25 @@ module aiSearchDataSource 'modules/aiSearch/aiSearch-datasource.bicep' = {
     storageAccountResourceId: storageAccount.outputs.storageAccountId
     containerName: storageAccountDocsContainerName
     managedIdentityId: aiSearchDeploymentScriptIdentity.outputs.managedIdentityId
+  }
+}
+
+module azureFunction 'modules/function/function.bicep' = {
+  name: 'modAzureFunction'
+  scope: resourceGroup(resourceGroupNames.ai)
+  dependsOn: [
+    resourceGroupAI
+    storageAccount
+  ]
+  params: {
+    location: location
+    appServiceCapacity: appServicePlan.capacity
+    appServiceFamily: appServicePlan.family
+    appServiceName: appServicePlan.name
+    appServiceSize: appServicePlan.size
+    appServiceTier: appServicePlan.tier
+    azureFunctionName: resourceNames.functionApp
+    azureFunctionZipUri: resourceNames.functionAppUri
+    azureFunctionStorageName: resourceNames.functionStorageAccountName
   }
 }
