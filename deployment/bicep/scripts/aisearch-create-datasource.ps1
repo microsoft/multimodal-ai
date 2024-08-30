@@ -34,16 +34,19 @@ $tokenRequest = Get-AzAccessToken -ResourceUrl "https://search.azure.com/"
 $token = $tokenRequest.token
 
 $aiSearchRequest = @{
-    Uri = "https://$($aiSearchEndpoint).search.windows.net/datasources?api-version=2024-07-01"
+    Uri = "https://$($aiSearchEndpoint).search.windows.net/datasources/$($dataSourceName)?api-version=2024-07-01"
     Headers = @{
         Authorization = "Bearer $($token)"
         'Content-Type' = 'application/json'
         }
     Body = $jsonTemplate
-    Method = 'POST'
+    Method = 'PUT'
     }
 
 $Response = Invoke-WebRequest @aiSearchRequest
-[Newtonsoft.Json.Linq.JObject]::Parse($Response.Content).ToString()
 
-$output = $Response | ConvertFrom-Json
+# Check if the response content is not empty
+if (-not [string]::IsNullOrEmpty($Response.Content)) {
+    # Parse and output JSON if content is not empty
+    [Newtonsoft.Json.Linq.JObject]::Parse($Response.Content).ToString()
+}
