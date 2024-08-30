@@ -1,0 +1,14 @@
+{
+    "name": "${datasource_name}",
+    "description": "${datasource_description}",
+    "type": "azureblob",    
+    "credentials": {
+        "connectionString": "${storage_account_connection_string}"
+    },
+    "container": {
+        "name": "${container_name}"        
+    },    
+    "dataDeletionDetectionPolicy": {
+        "@odata.type": "#Microsoft.Azure.Search.NativeBlobSoftDeleteDeletionDetectionPolicy"
+    }    
+}

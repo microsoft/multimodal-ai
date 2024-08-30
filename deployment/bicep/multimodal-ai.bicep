@@ -67,9 +67,6 @@ param tags object = {}
 var locationNormalized = toLower(location)
 var prefixNormalized = toLower(prefix)
 
-// Datasource configuration for Azure AI Search.
-var dataSourceBlob = loadJsonContent('../library/datasource_blob.json')
-
 var resourceGroupNames = {
   ai: '${prefixNormalized}-${locationNormalized}-ai-rg'
   storage: '${prefixNormalized}-${locationNormalized}-storage-rg'
@@ -288,11 +285,9 @@ module aiSearchDataSource 'modules/aiSearch/aiSearch-datasource.bicep' = {
   ]
   params: {
     location: location
-    dataSourceName: dataSourceBlob.name
-    dataSourceType: dataSourceBlob.type
     aiSearchEndpoint: last(split(aiSearch.outputs.searchResourceId, '/'))
     storageAccountResourceId: storageAccount.outputs.storageAccountId
-    containerName: dataSourceBlob.container.name
+    containerName: storageAccountDocsContainerName
     managedIdentityId: aiSearchDeploymentScriptIdentity.outputs.managedIdentityId
   }
 }
