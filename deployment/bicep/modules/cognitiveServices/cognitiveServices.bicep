@@ -40,3 +40,4 @@ resource cognitiveServicesAccount 'Microsoft.CognitiveServices/accounts@2024-04-
 }
 
 output cognitiveServicesAccountId string = cognitiveServicesAccount.id
+output cognitiveServicesAccountName string = cognitiveServicesAccount.name
