@@ -65,6 +65,7 @@ param tags object = {}
 
 @sys.description('Specifies the URI of the MSDeploy Package for the Azure Function.')
 param azureFunctionUri string = ''
+
 param aoaiTextEmbeddingModelForAiSearch string
 
 // Variables
