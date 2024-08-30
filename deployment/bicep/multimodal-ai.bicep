@@ -324,6 +324,7 @@ module aiSearchSkillset 'modules/aiSearch/aiSearch-skillset.bicep' = {
   scope: resourceGroup(resourceGroupNames.ai)
   dependsOn: [
     aiSearch
+    aiSearchIndex
     storageAccount
     storageRoleAssignment
     aiSearchRoleAssignment
@@ -332,11 +333,11 @@ module aiSearchSkillset 'modules/aiSearch/aiSearch-skillset.bicep' = {
   params: {
     location: location
     aiSearchEndpoint: last(split(aiSearch.outputs.searchResourceId, '/'))
-    indexName: aiSearchIndex.outputs.resourceName
+    indexName: aiSearchIndexName
     skillsetName: aiSearchSkillsetName
     azureOpenAIEndpoint: 'https://${azureOpenAI.name}.openai.azure.com/'
     azureOpenAITextModelName: aoaiTextEmbeddingModelForAiSearch
-    knowledgeStoreStorageResourceUri: storageAccount.outputs.storageAccountId
+    knowledgeStoreStorageResourceUri: 'ResourceId=${storageAccount.outputs.storageAccountId}'
     knowledgeStoreStorageContainer: storageAccountImagesContainerName
     pdfMergeCustomSkillEndpoint: 'https://TODO/When/Function/Is/Created'
     cognitiveServicesAccountId: azureCognitiveServices.outputs.cognitiveServicesAccountId

@@ -45,8 +45,8 @@ var aiMultiServiceAccountKey = cognitiveServicesAccount.listKeys().key1
 
 var jsonTemplate = loadFileAsBase64('../../../library/skillset_template.json')
 
-resource aiSearchDataSource 'Microsoft.Resources/deploymentScripts@2023-08-01' = {
-  name: 'aiSearchIndex'
+resource aiSearchSkillset 'Microsoft.Resources/deploymentScripts@2023-08-01' = {
+  name: 'aiSearchSkillset'
   location: location
   kind: 'AzurePowerShell'
   identity: {
