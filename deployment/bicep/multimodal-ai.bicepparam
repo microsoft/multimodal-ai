@@ -1,6 +1,6 @@
 using './multimodal-ai.bicep'
 
-param prefix = 'mmai16'
+param prefix = 'mmai83'
 param location = 'eastus'
 
 param aiVisionlocation = 'eastus'
@@ -25,37 +25,38 @@ param azureFunctionUri = 'https://kevinsay.blob.core.windows.net/msft/msdeploy.z
 
 param aoaiKind = 'OpenAI'
 param aoaiSku = 'S0'
+param aoaiTextEmbeddingModelForAiSearch = 'text-embedding-ada-002'
+param tags = {}
+
 param aoaiDeployments = [
   {
-    name: 'text-embedding-ada-002'    
+    name: 'text-embedding-ada-002'
     model: {
-      format: 'OpenAI'      
+      format: 'OpenAI'
       version: '2'
     }
     sku: {
-      capacity: 30      
+      capacity: 30
     }
   }
   {
-    name: 'gpt-4o'    
+    name: 'gpt-4o'
     model: {
-      format: 'OpenAI'      
+      format: 'OpenAI'
       version: '2024-05-13'
     }
     sku: {
-      capacity: 20      
-    }    
+      capacity: 20
+    }
   }
   {
     name: 'gpt-35-turbo'
     model: {
-      format: 'OpenAI'      
+      format: 'OpenAI'
       version: '0613'
     }
     sku: {
-      capacity: 60      
-    }    
+      capacity: 60
+    }
   }
 ]
-
-param tags = {}

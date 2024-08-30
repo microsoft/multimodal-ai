@@ -38,7 +38,7 @@ param aiVisionSku string
   'swedencentral'
   'switzerlandnorth'
   'australiaeast'
-  'southeastasia'  
+  'southeastasia'
   'koreacentral'
   'japaneast'
 ])
@@ -50,10 +50,10 @@ param docIntelSku string
 
 @sys.description('Azure Region where Document Intelligence will be deployed. Support for API 2024-07-31-preview is limited to certain regions.')
 @sys.allowed([
-  'eastus'  
-  'westus2'  
+  'eastus'
+  'westus2'
   'westeurope'
-  'northcentralus'  
+  'northcentralus'
 ])
 param docIntelLocation string
 
@@ -63,16 +63,18 @@ param storageAccountDocsContainerName string
 @sys.description('Specifies the tags which will be applied to all resources.')
 param tags object = {}
 
+
 @sys.description('Specifies the URI of the MSDeploy Package for the Azure Function.')
 param azureFunctionUri string = ''
+
+param aoaiTextEmbeddingModelForAiSearch string
 
 // Variables
 var locationNormalized = toLower(location)
 var prefixNormalized = toLower(prefix)
 
-// AI Search - Data source
-var aiSearchDataSourceName = 'docs'
-var aiSearchDataSourceType = 'azureblob'
+// AI Search - Index
+var aiSearchIndexName = '${prefixNormalized}index'
 
 var resourceGroupNames = {
   ai: '${prefixNormalized}-${locationNormalized}-ai-rg'
@@ -125,7 +127,7 @@ module resourceGroupStorage './modules/resourceGroup/resourceGroup.bicep' = {
 
 module azureOpenAI 'modules/cognitiveServices/cognitiveServices.bicep' = {
   name: 'modAzureOpenAI'
-  scope: resourceGroup(resourceGroupNames.ai)  
+  scope: resourceGroup(resourceGroupNames.ai)
   dependsOn: [
     resourceGroupAI
   ]
@@ -145,7 +147,7 @@ module azureOpenAIModelDeployments 'modules/aoai/aoaiDeployment.bicep' = [for de
   dependsOn: [
     azureOpenAI
   ]
-  params: {    
+  params: {
     name: deployment.name
     version: deployment.model.version
     format: deployment.model.format
@@ -156,7 +158,7 @@ module azureOpenAIModelDeployments 'modules/aoai/aoaiDeployment.bicep' = [for de
 
 module azureCognitiveServices 'modules/cognitiveServices/cognitiveServices.bicep' = {
   name: 'modAzureCognitiveServices'
-  scope: resourceGroup(resourceGroupNames.ai)  
+  scope: resourceGroup(resourceGroupNames.ai)
   dependsOn: [
     resourceGroupAI
   ]
@@ -171,7 +173,7 @@ module azureCognitiveServices 'modules/cognitiveServices/cognitiveServices.bicep
 
 module azureAIVision 'modules/cognitiveServices/cognitiveServices.bicep' = {
   name: 'modAzureAIVision'
-  scope: resourceGroup(resourceGroupNames.ai)  
+  scope: resourceGroup(resourceGroupNames.ai)
   dependsOn: [
     resourceGroupAI
   ]
@@ -208,7 +210,7 @@ module storageAccount 'modules/storage/storageAccount.bicep' = {
   params: {
     storageAccountName: resourceNames.storageAccount
     containerName: storageAccountDocsContainerName
-    location: location    
+    location: location
     tags: tags
   }
 }
@@ -221,7 +223,7 @@ module aiSearchDeploymentScriptIdentity 'modules/managedIdentities/managedIdenti
   ]
   params: {
     name: resourceNames.aiSearchDeploymentScriptIdentity
-    location: location    
+    location: location
   }
 }
 
@@ -236,7 +238,7 @@ module aiSearch 'modules/aiSearch/aiSearch.bicep' = {
     searchName: resourceNames.aiSearch
     skuName: aiSearchSku
     skuCapacity: aiSearchCapacity
-    semanticSearch: aiSearchSemanticSearch    
+    semanticSearch: aiSearchSemanticSearch
     tags: tags
   }
 }
@@ -244,7 +246,7 @@ module aiSearch 'modules/aiSearch/aiSearch.bicep' = {
 module aiSearchRoleDef 'modules/rbac/roleDef-searchServiceContributor.bicep' = {
   name: 'modAISearchRoleDef'
   scope: resourceGroup(resourceGroupNames.ai)
-  dependsOn: [    
+  dependsOn: [
     aiSearch
     aiSearchDeploymentScriptIdentity
   ]
@@ -274,7 +276,7 @@ module storageRoleDef 'modules/rbac/roleDef-blobDataReader.bicep' = {
     aiSearch
   ]
   params: {
-    storageAccountId: storageAccount.outputs.storageAccountId    
+    storageAccountId: storageAccount.outputs.storageAccountId
   }
 }
 
@@ -304,14 +306,13 @@ module aiSearchDataSource 'modules/aiSearch/aiSearch-datasource.bicep' = {
   ]
   params: {
     location: location
-    dataSourceName: aiSearchDataSourceName
-    dataSourceType: aiSearchDataSourceType
     aiSearchEndpoint: last(split(aiSearch.outputs.searchResourceId, '/'))
     storageAccountResourceId: storageAccount.outputs.storageAccountId
     containerName: storageAccountDocsContainerName
     managedIdentityId: aiSearchDeploymentScriptIdentity.outputs.managedIdentityId
   }
 }
+
 
 module azureFunction 'modules/function/function.bicep' = {
   name: 'modAzureFunction'
@@ -330,5 +331,23 @@ module azureFunction 'modules/function/function.bicep' = {
     azureFunctionName: resourceNames.functionApp
     azureFunctionZipUri: resourceNames.functionAppUri
     azureFunctionStorageName: resourceNames.functionStorageAccountName
+  }
+}
+
+// Create AI Search index
+module aiSearchIndex 'modules/aiSearch/aiSearch-index.bicep' = {
+  name: 'modAiSearchIndex'
+  scope: resourceGroup(resourceGroupNames.ai)
+  dependsOn: [
+    aiSearch
+  ]
+  params: {
+    location: location
+    aiSearchEndpoint: last(split(aiSearch.outputs.searchResourceId, '/'))
+    indexName: aiSearchIndexName
+    azureOpenAIEndpoint: 'https://${azureOpenAI.name}.openai.azure.com/'
+    azureOpenAITextModelName: aoaiTextEmbeddingModelForAiSearch
+    cognitiveServicesEndpoint: 'https://${azureCognitiveServices.name}.cognitiveservices.azure.com'
+    managedIdentityId: aiSearchDeploymentScriptIdentity.outputs.managedIdentityId
   }
 }

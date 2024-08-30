@@ -28,7 +28,7 @@ resource searchResource 'Microsoft.Search/searchServices@2024-06-01-preview' = {
   tags: tags
 
   sku: {
-    name: skuName    
+    name: skuName
   }
   identity: {
     type: 'SystemAssigned'

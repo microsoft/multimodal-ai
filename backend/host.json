@@ -2,16 +2,16 @@
   "version": "2.0",
   "extensions": {
     "http": {
-        "routePrefix": ""
+      "routePrefix": ""
     }
   },
   "logging": {
-  "applicationInsights": {
-    "samplingSettings": {
-      "isEnabled": true,
-      "excludedTypes": "Request"
+    "applicationInsights": {
+      "samplingSettings": {
+        "isEnabled": true,
+        "excludedTypes": "Request"
+      }
     }
-  }
   },
   "extensionBundle": {
     "id": "Microsoft.Azure.Functions.ExtensionBundle",

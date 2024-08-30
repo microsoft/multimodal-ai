@@ -25,14 +25,14 @@ resource cognitiveServicesAccount 'Microsoft.CognitiveServices/accounts@2024-04-
   name: name
   location: location
   tags: tags
-  
+
   kind: kind
   identity: {
     type: 'SystemAssigned'
   }
   sku: {
     name: sku
-  } 
+  }
   properties: {
     customSubDomainName: name
     publicNetworkAccess: 'Enabled'

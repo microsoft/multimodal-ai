@@ -10,7 +10,7 @@ class Processor:
     def __init__(self, file_parser: Parser, file_splitter: TextSplitter):
         self.file_parser = file_parser
         self.file_splitter = file_splitter
-                
+
 
     async def process(self, url) -> Generator[SplitPage, None, None]:
         logging.info(f'Processing file: {url}')

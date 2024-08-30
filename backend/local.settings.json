@@ -43,5 +43,5 @@
     "USE_FEATURE_INT_VECTORIZATION": "false",
     "USE_GPT4V": "true",
     "USE_USER_UPLOAD": "true"
-    }
+  }
 }
