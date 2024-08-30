@@ -309,23 +309,3 @@ module aiSearchDataSource 'modules/aiSearch/aiSearch-datasource.bicep' = {
     managedIdentityId: aiSearchDeploymentScriptIdentity.outputs.managedIdentityId
   }
 }
-
-module azureFunction 'modules/function/function.bicep' = {
-  name: 'modAzureFunction'
-  scope: resourceGroup(resourceGroupNames.ai)
-  dependsOn: [
-    resourceGroupAI
-    storageAccount
-  ]
-  params: {
-    location: location
-    appServiceCapacity: appServicePlan.capacity
-    appServiceFamily: appServicePlan.family
-    appServiceName: appServicePlan.name
-    appServiceSize: appServicePlan.size
-    appServiceTier: appServicePlan.tier
-    azureFunctionName: resourceNames.functionApp
-    azureFunctionZipUri: resourceNames.functionAppUri
-    azureFunctionStorageName: resourceNames.functionStorageAccountName
-  }
-}
