@@ -34,13 +34,13 @@ $tokenRequest = Get-AzAccessToken -ResourceUrl "https://search.azure.com/"
 $token = $tokenRequest.token
 
 $aiSearchRequest = @{
-    Uri = "https://$($aiSearchEndpoint).search.windows.net/datasources?api-version=2024-07-01"
+    Uri = "https://$($aiSearchEndpoint).search.windows.net/datasources/$($dataSourceName)?api-version=2024-07-01"
     Headers = @{
         Authorization = "Bearer $($token)"
         'Content-Type' = 'application/json'
         }
     Body = $jsonTemplate
-    Method = 'POST'
+    Method = 'PUT'
     }
 
 $Response = Invoke-WebRequest @aiSearchRequest
