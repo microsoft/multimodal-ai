@@ -20,6 +20,9 @@ param cogsvcKind = 'CognitiveServices'
 
 param storageAccountDocsContainerName = 'docs'
 
+// Replace with real app
+param azureFunctionUri = ''
+
 param aoaiKind = 'OpenAI'
 param aoaiSku = 'S0'
 param aoaiTextEmbeddingModelForAiSearch = 'text-embedding-ada-002'

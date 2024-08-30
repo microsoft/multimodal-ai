@@ -63,6 +63,10 @@ param storageAccountDocsContainerName string
 @sys.description('Specifies the tags which will be applied to all resources.')
 param tags object = {}
 
+
+@sys.description('Specifies the URI of the MSDeploy Package for the Azure Function.')
+param azureFunctionUri string = ''
+
 param aoaiTextEmbeddingModelForAiSearch string
 
 // Variables
@@ -85,6 +89,18 @@ var resourceNames = {
   cognitiveServices: '${prefixNormalized}-${locationNormalized}-cogsvc'
   storageAccount: take('${prefixNormalized}${locationNormalized}stg',23)
   aiSearchDeploymentScriptIdentity: '${prefixNormalized}-${locationNormalized}-aisearch-depscript-umi'
+  appServicePlan: '${prefixNormalized}-${locationNormalized}-appserviceplan'
+  functionApp: '${prefixNormalized}-${locationNormalized}-functionapp'
+  functionAppUri: azureFunctionUri
+  functionStorageAccountName: take('${prefixNormalized}${locationNormalized}functionstg',23)
+}
+
+var appServicePlan = {
+  tier: 'Standard'
+  name: resourceNames.appServicePlan
+  size: 'S1'
+  family: 'S'
+  capacity: 1
 }
 
 // Resources
@@ -294,6 +310,27 @@ module aiSearchDataSource 'modules/aiSearch/aiSearch-datasource.bicep' = {
     storageAccountResourceId: storageAccount.outputs.storageAccountId
     containerName: storageAccountDocsContainerName
     managedIdentityId: aiSearchDeploymentScriptIdentity.outputs.managedIdentityId
+  }
+}
+
+
+module azureFunction 'modules/function/function.bicep' = {
+  name: 'modAzureFunction'
+  scope: resourceGroup(resourceGroupNames.ai)
+  dependsOn: [
+    resourceGroupAI
+    storageAccount
+  ]
+  params: {
+    location: location
+    appServiceCapacity: appServicePlan.capacity
+    appServiceFamily: appServicePlan.family
+    appServiceName: appServicePlan.name
+    appServiceSize: appServicePlan.size
+    appServiceTier: appServicePlan.tier
+    azureFunctionName: resourceNames.functionApp
+    azureFunctionZipUri: resourceNames.functionAppUri
+    azureFunctionStorageName: resourceNames.functionStorageAccountName
   }
 }
 
