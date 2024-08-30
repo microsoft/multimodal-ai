@@ -2,13 +2,6 @@
 @sys.description('Location of the Azure AI Search service.')
 param location string
 
-@sys.description('For for the data source configuration in AI Search.')
-param dataSourceName string
-
-@sys.description('Supported data source type.')
-@sys.allowed(['azureblob', 'azuretable', 'azuresql', 'cosmosdb'])
-param dataSourceType string = 'azureblob'
-
 @sys.description('Azure AI Search endpoint.')
 param aiSearchEndpoint string
 
@@ -20,6 +13,10 @@ param containerName string
 
 @sys.description('Managed Identity Id to be used for the deployment script')
 param managedIdentityId string
+
+// Variable to generate the datasource name
+var dataSourceName = '${containerName}-datasource'
+var jsonTemplate = loadFileAsBase64('../../../library/datasource_blob_template.json')
 
 resource aiSearchDataSource 'Microsoft.Resources/deploymentScripts@2023-08-01' = {
   name: 'aiSearchDataSource'
@@ -35,7 +32,7 @@ resource aiSearchDataSource 'Microsoft.Resources/deploymentScripts@2023-08-01' =
     azPowerShellVersion: '8.3'
     retentionInterval: 'PT1H'
     timeout: 'PT1H'
-    arguments: '-aiSearchEndpoint ${aiSearchEndpoint} -storageAccountResourceId ${storageAccountResourceId} -dataSourceName ${dataSourceName} -dataSourceType ${dataSourceType} -containerName ${containerName}'
+    arguments: '-aiSearchEndpoint ${aiSearchEndpoint} -storageAccountResourceId ${storageAccountResourceId} -dataSourceName ${dataSourceName} -containerName ${containerName} -jsonTemplate ${jsonTemplate}'
     scriptContent: loadTextContent('../../scripts/aisearch-create-datasource.ps1')
     cleanupPreference: 'OnSuccess'
   }

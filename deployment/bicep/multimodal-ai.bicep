@@ -69,9 +69,6 @@ param aoaiTextEmbeddingModelForAiSearch string
 var locationNormalized = toLower(location)
 var prefixNormalized = toLower(prefix)
 
-// Datasource configuration for Azure AI Search.
-var dataSourceBlob = loadJsonContent('../library/datasource_blob.json')
-
 // AI Search - Index
 var aiSearchIndexName = '${prefixNormalized}index'
 
@@ -293,11 +290,9 @@ module aiSearchDataSource 'modules/aiSearch/aiSearch-datasource.bicep' = {
   ]
   params: {
     location: location
-    dataSourceName: dataSourceBlob.name
-    dataSourceType: dataSourceBlob.type
     aiSearchEndpoint: last(split(aiSearch.outputs.searchResourceId, '/'))
     storageAccountResourceId: storageAccount.outputs.storageAccountId
-    containerName: dataSourceBlob.container.name
+    containerName: storageAccountDocsContainerName
     managedIdentityId: aiSearchDeploymentScriptIdentity.outputs.managedIdentityId
   }
 }
