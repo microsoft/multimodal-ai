@@ -71,6 +71,7 @@ var prefixNormalized = toLower(prefix)
 
 // AI Search - Index
 var aiSearchIndexName = '${prefixNormalized}index'
+var aiSearchSkillsetName = '${prefix}-skillset'
 
 var resourceGroupNames = {
   ai: '${prefixNormalized}-${locationNormalized}-ai-rg'
@@ -311,6 +312,24 @@ module aiSearchIndex 'modules/aiSearch/aiSearch-index.bicep' = {
     azureOpenAIEndpoint: 'https://${azureOpenAI.name}.openai.azure.com/'
     azureOpenAITextModelName: aoaiTextEmbeddingModelForAiSearch
     cognitiveServicesEndpoint: 'https://${azureCognitiveServices.name}.cognitiveservices.azure.com'
+    managedIdentityId: aiSearchDeploymentScriptIdentity.outputs.managedIdentityId
+  }
+}
+
+// Create AI Search index
+module aiSearchIndexer 'modules/aiSearch/aiSearch-indexer.bicep' = {
+  name: 'modAiSearchIndexer'
+  scope: resourceGroup(resourceGroupNames.ai)
+  dependsOn: [
+    aiSearch
+  ]
+  params: {
+    location: location
+    aiSearchEndpoint: last(split(aiSearch.outputs.searchResourceId, '/'))
+    indexName: aiSearchIndexName
+    skillsetName : aiSearchSkillsetName
+    //to recreate datasource name in respective bicep file
+    containerName: storageAccountDocsContainerName
     managedIdentityId: aiSearchDeploymentScriptIdentity.outputs.managedIdentityId
   }
 }
