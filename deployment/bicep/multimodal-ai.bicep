@@ -376,7 +376,7 @@ module aiSearchSkillset 'modules/aiSearch/aiSearch-skillset.bicep' = {
     azureOpenAITextModelName: aoaiTextEmbeddingModelForAiSearch
     knowledgeStoreStorageResourceUri: 'ResourceId=${storageAccount.outputs.storageAccountId}'
     knowledgeStoreStorageContainer: storageAccountImagesContainerName
-    pdfMergeCustomSkillEndpoint: 'https://TODO/When/Function/Is/Created'
+    pdfMergeCustomSkillEndpoint: azureFunction.outputs.pdfTextImageMergeSkillEndpoint
     cognitiveServicesAccountId: azureCognitiveServices.outputs.cognitiveServicesAccountId
     managedIdentityId: aiSearchDeploymentScriptIdentity.outputs.managedIdentityId
   }
