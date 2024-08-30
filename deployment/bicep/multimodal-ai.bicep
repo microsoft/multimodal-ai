@@ -63,11 +63,6 @@ param storageAccountDocsContainerName string
 @sys.description('Specifies the tags which will be applied to all resources.')
 param tags object = {}
 
-@sys.description('Specifies the URI of the MSDeploy Package for the Azure Function.')
-param azureFunctionUri string = ''
-
-param aoaiTextEmbeddingModelForAiSearch string
-
 // Variables
 var locationNormalized = toLower(location)
 var prefixNormalized = toLower(prefix)
