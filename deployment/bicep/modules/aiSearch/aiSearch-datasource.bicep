@@ -11,11 +11,12 @@ param storageAccountResourceId string
 @sys.description('Container name in the storage account.')
 param containerName string
 
+@sys.description('Data source name to be created in Azure AI Search service.')
+param dataSourceName string
+
 @sys.description('Managed Identity Id to be used for the deployment script')
 param managedIdentityId string
 
-// Variable to generate the datasource name
-var dataSourceName = '${containerName}-datasource'
 var jsonTemplate = loadFileAsBase64('../../../library/datasource_blob_template.json')
 
 resource aiSearchDataSource 'Microsoft.Resources/deploymentScripts@2023-08-01' = {

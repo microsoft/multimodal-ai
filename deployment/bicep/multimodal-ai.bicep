@@ -92,6 +92,7 @@ var resourceNames = {
   cognitiveServices: '${prefixNormalized}-${locationNormalized}-cogsvc'
   storageAccount: take('${prefixNormalized}${locationNormalized}stg',23)
   aiSearchDeploymentScriptIdentity: '${prefixNormalized}-${locationNormalized}-aisearch-depscript-umi'
+  aiSearchDocsDataSourceName: '${storageAccountDocsContainerName}-datasource'
   appServicePlan: '${prefixNormalized}-${locationNormalized}-appserviceplan'
   functionApp: '${prefixNormalized}-${locationNormalized}-functionapp'
   functionAppUri: azureFunctionUri
@@ -309,6 +310,7 @@ module aiSearchDataSource 'modules/aiSearch/aiSearch-datasource.bicep' = {
   ]
   params: {
     location: location
+    dataSourceName: resourceNames.aiSearchDocsDataSourceName
     aiSearchEndpoint: last(split(aiSearch.outputs.searchResourceId, '/'))
     storageAccountResourceId: storageAccount.outputs.storageAccountId
     containerName: storageAccountDocsContainerName
