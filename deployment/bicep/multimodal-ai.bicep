@@ -398,25 +398,7 @@ module aiSearchIndexer 'modules/aiSearch/aiSearch-indexer.bicep' = {
     aiSearchEndpoint: last(split(aiSearch.outputs.searchResourceId, '/'))
     indexName: aiSearchIndexName
     skillsetName : aiSearchSkillsetName
-    dataSourceName: aiSearchDataSource.outputs.dataSourceName
-    managedIdentityId: aiSearchDeploymentScriptIdentity.outputs.managedIdentityId
-  }
-}
-
-// Create AI Search index
-module aiSearchIndexer 'modules/aiSearch/aiSearch-indexer.bicep' = {
-  name: 'modAiSearchIndexer'
-  scope: resourceGroup(resourceGroupNames.ai)
-  dependsOn: [
-    aiSearch
-  ]
-  params: {
-    location: location
-    aiSearchEndpoint: last(split(aiSearch.outputs.searchResourceId, '/'))
-    indexName: aiSearchIndexName
-    skillsetName : aiSearchSkillsetName
-    //to recreate datasource name in respective bicep file
-    containerName: storageAccountDocsContainerName
+    dataSourceName: resourceNames.aiSearchDocsDataSourceName
     managedIdentityId: aiSearchDeploymentScriptIdentity.outputs.managedIdentityId
   }
 }
