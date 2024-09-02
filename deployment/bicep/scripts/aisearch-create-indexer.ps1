@@ -23,7 +23,7 @@ $replacements = @{
     "datasource_name"                = "$dataSourceName"
     "index_name"                     = "$indexName"
     "indexer_name"                   = "$indexerName"
-    "indexer_description"            = "Data source for indexing documents from Azure Blob Storage"
+    "indexer_description"            = "Indexer for auto indexing documents with $($skillsetName)"
     "skillset_name"                  = "$skillsetName"
 }
 

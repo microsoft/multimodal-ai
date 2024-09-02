@@ -11,13 +11,12 @@ param indexName string
 @sys.description('Name of the Azure AI Search skillset that indexer will use.')
 param skillsetName string
 
-@sys.description('Container name in the storage account that is used as datasource.')
-param containerName string
+@sys.description('Name of datasource.')
+param dataSourceName string
 
 @sys.description('Managed Identity Id to be used for the deployment script')
 param managedIdentityId string
 
-var dataSourceName = '${containerName}-datasource'
 var indexerName = '${indexName}-indexer'
 var jsonTemplate = loadFileAsBase64('../../../library/indexer_template.json')
 

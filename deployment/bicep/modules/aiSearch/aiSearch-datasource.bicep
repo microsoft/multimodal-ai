@@ -38,3 +38,6 @@ resource aiSearchDataSource 'Microsoft.Resources/deploymentScripts@2023-08-01' =
     cleanupPreference: 'OnSuccess'
   }
 }
+
+// Outputs
+output dataSourceName string = aiSearchDataSource.name
