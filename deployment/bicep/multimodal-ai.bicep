@@ -348,9 +348,9 @@ module aiSearchIndex 'modules/aiSearch/aiSearch-index.bicep' = {
     location: location
     aiSearchEndpoint: last(split(aiSearch.outputs.searchResourceId, '/'))
     indexName: aiSearchIndexName
-    azureOpenAIEndpoint: 'https://${azureOpenAI.name}.openai.azure.com/'
+    azureOpenAIEndpoint: 'https://${azureOpenAI.outputs.cognitiveServicesAccountName}.openai.azure.com/'
     azureOpenAITextModelName: aoaiTextEmbeddingModelForAiSearch
-    cognitiveServicesEndpoint: 'https://${azureCognitiveServices.name}.cognitiveservices.azure.com'
+    cognitiveServicesEndpoint: 'https://${azureAIVision.outputs.cognitiveServicesAccountName}.cognitiveservices.azure.com'
     managedIdentityId: aiSearchDeploymentScriptIdentity.outputs.managedIdentityId
   }
 }
