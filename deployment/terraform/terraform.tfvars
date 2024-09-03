@@ -1,2 +1,2 @@
 environment_name = "mmai"
-location = "eastus"
+location         = "eastus"

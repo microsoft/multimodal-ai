@@ -29,5 +29,5 @@ variable "log_analytics_retention_in_days" {
   description = "Specifies the retention in days for the log analytics workspace"
   type        = number
   sensitive   = false
-  default   = 30
+  default     = 30
 }

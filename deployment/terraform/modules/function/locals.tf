@@ -1,7 +1,7 @@
 locals {
   function_application_settings_default = {
-    AzureWebJobsSecretStorageType            = "keyvault"
-    AzureWebJobsSecretStorageKeyVaultUri     = data.azurerm_key_vault.key_vault.vault_uri
+    AzureWebJobsSecretStorageType        = "keyvault"
+    AzureWebJobsSecretStorageKeyVaultUri = data.azurerm_key_vault.key_vault.vault_uri
     # AZURE_FUNCTIONS_ENVIRONMENT              = "Production"
     # WEBSITE_CONTENTSHARE                     = var.function_share_name
     # WEBSITE_CONTENTAZUREFILECONNECTIONSTRING = data.azurerm_storage_account.storage_account.primary_blob_connection_string # "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.key_vault_secret_storage_connection_string.versionless_id})"

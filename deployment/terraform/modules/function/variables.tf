@@ -56,7 +56,7 @@ variable "function_storage_account_id" {
   description = "Specifies the resource id of the storage account."
   type        = string
   sensitive   = false
-  default=null
+  default     = null
   validation {
     condition     = length(split("/", var.function_storage_account_id)) == 9
     error_message = "Please specify a valid name."
@@ -87,7 +87,7 @@ variable "function_user_assigned_identity_id" {
   description = "Specifies the resource id of the user assigned identity."
   type        = string
   sensitive   = false
-  default=null
+  default     = null
   # validation {
   #   condition     = length(split("/", var.function_user_assigned_identity_id)) == 9
   #   error_message = "Please specify a valid resource ID."
@@ -140,7 +140,7 @@ variable "subnet_id" {
   description = "Specifies the subnet ID."
   type        = string
   sensitive   = false
-  default   = null
+  default     = null
 }
 
 # Customer-managed key variables

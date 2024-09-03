@@ -16,10 +16,9 @@ terraform {
 }
 
 
-# Define provider for Azure  
-provider "azurerm" {  
-  features {}  
-  subscription_id = var.subscription_id
+# Define provider for Azure
+provider "azurerm" {
+  features {}
+  subscription_id     = var.subscription_id
   storage_use_azuread = true
-}  
-  
+}

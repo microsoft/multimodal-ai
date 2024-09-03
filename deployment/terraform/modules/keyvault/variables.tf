@@ -74,5 +74,5 @@ variable "subnet_id" {
   description = "Specifies the subnet ID."
   type        = string
   sensitive   = false
-  default = null
+  default     = null
 }

@@ -1,103 +1,103 @@
-variable "subscription_id" {  
-  description = "subscription_id"  
-  type        = string  
-}  
-  
-variable "environment_name" {  
-  description = "Name of the the environment, used to generate a short unique hash used in all resources."  
-  type        = string  
-}  
-  
-variable "location" {  
-  description = "Primary location for all resources."  
-  type        = string  
-}  
-  
-variable "resource_group_name" {  
-  description = "Resource Group Name."  
-  type        = string  
-  default     = ""  
-}  
-  
-variable "backend_service_code_path" {  
-  description = "Backend service code path."  
-  type        = string  
-  default     = "../../backend" 
-}  
+variable "subscription_id" {
+  description = "subscription_id"
+  type        = string
+}
 
-variable "appservice_plan_sku" {  
-  description = "App Service Plan Sku Name."  
-  type        = string  
-  default     = "EP1"  # linux consumption plans does not support website_run_from_package = 1 setting
-}  
-  
-variable "backend_service_name" {  
-  description = "Backend Service Name."  
-  type        = string  
-  default     = ""  
-}  
-  
-variable "application_insights_name" {  
-  description = "Application Insights Name."  
-  type        = string  
-  default     = ""  
-}  
-  
-variable "key_vault_name" {  
-  description = "Key vault Name."  
-  type        = string  
-  default     = ""    
-}  
-  
-variable "key_vault_sku_name" {  
-  description = "Key vault SKU Name."  
-  type        = string  
-  default     = "standard"    
-}  
-  
-variable "log_analytics_workspace_name" {  
-  description = "Log Analytics Name."  
-  type        = string  
-  default     = ""  
-}  
-  
-variable "searchServiceName" {  
-  description = "Search Service Name."  
-  type        = string  
-  default     = ""  
-}  
-  
-variable "searchServiceLocation" {  
-  description = "Search Service Location."  
-  type        = string  
-  default     = ""  
-}  
-  
-variable "searchServiceSkuName" {  
-  description = "Search Service SKU Name."  
-  type        = string  
+variable "environment_name" {
+  description = "Name of the the environment, used to generate a short unique hash used in all resources."
+  type        = string
+}
+
+variable "location" {
+  description = "Primary location for all resources."
+  type        = string
+}
+
+variable "resource_group_name" {
+  description = "Resource Group Name."
+  type        = string
+  default     = ""
+}
+
+variable "backend_service_code_path" {
+  description = "Backend service code path."
+  type        = string
+  default     = "../../backend"
+}
+
+variable "appservice_plan_sku" {
+  description = "App Service Plan Sku Name."
+  type        = string
+  default     = "EP1" # linux consumption plans does not support website_run_from_package = 1 setting
+}
+
+variable "backend_service_name" {
+  description = "Backend Service Name."
+  type        = string
+  default     = ""
+}
+
+variable "application_insights_name" {
+  description = "Application Insights Name."
+  type        = string
+  default     = ""
+}
+
+variable "key_vault_name" {
+  description = "Key vault Name."
+  type        = string
+  default     = ""
+}
+
+variable "key_vault_sku_name" {
+  description = "Key vault SKU Name."
+  type        = string
   default     = "standard"
-}  
-  
- 
-variable "storage_account_name" {  
-  description = "Storage Account Name."  
-  type        = string  
-  default     = ""  
-}  
-  
-variable "storage_container_name_content" {  
-  description = "Storage Container Name."  
-  type        = string  
-  default     = "content"  
-}  
+}
 
-# variable "storage_share_name_function_app" {  
-#   description = "Storage share name for function app to use."  
-#   type        = string  
-#   default     = "funcapp"  
-# }  
-  
+variable "log_analytics_workspace_name" {
+  description = "Log Analytics Name."
+  type        = string
+  default     = ""
+}
+
+variable "searchServiceName" {
+  description = "Search Service Name."
+  type        = string
+  default     = ""
+}
+
+variable "searchServiceLocation" {
+  description = "Search Service Location."
+  type        = string
+  default     = ""
+}
+
+variable "searchServiceSkuName" {
+  description = "Search Service SKU Name."
+  type        = string
+  default     = "standard"
+}
+
+
+variable "storage_account_name" {
+  description = "Storage Account Name."
+  type        = string
+  default     = ""
+}
+
+variable "storage_container_name_content" {
+  description = "Storage Container Name."
+  type        = string
+  default     = "content"
+}
+
+# variable "storage_share_name_function_app" {
+#   description = "Storage share name for function app to use."
+#   type        = string
+#   default     = "funcapp"
+# }
+
 
 variable "azure_auth_tenant_id" {
   description = "AZURE_AUTH_TENANT_ID app service configuration value."
@@ -392,6 +392,3 @@ variable "use_vectors" {
   type        = string
   default     = ""
 }
-
-
-

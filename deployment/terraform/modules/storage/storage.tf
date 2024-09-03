@@ -12,7 +12,7 @@ resource "azurerm_storage_account" "storage" {
   account_replication_type        = "ZRS"
   account_tier                    = "Standard"
   allow_nested_items_to_be_public = false
-  
+
   blob_properties {
     change_feed_enabled = false
     container_delete_retention_policy {
@@ -25,7 +25,7 @@ resource "azurerm_storage_account" "storage" {
     last_access_time_enabled = false
     versioning_enabled       = false
   }
- 
+
   cross_tenant_replication_enabled  = false
   default_to_oauth_authentication   = true
   https_traffic_only_enabled        = true
@@ -35,7 +35,7 @@ resource "azurerm_storage_account" "storage" {
   min_tls_version                   = "TLS1_2"
   network_rules {
     # bypass                     = ["Metrics","Logging","AzureServices"]
-    default_action             = "Allow"
+    default_action = "Allow"
     # ip_rules                   = []
     # virtual_network_subnet_ids = []
     # private_link_access {

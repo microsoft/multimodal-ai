@@ -4,9 +4,9 @@ resource "azurerm_linux_function_app" "linux_function_app" {
   resource_group_name = var.resource_group_name
   tags                = var.tags
   identity {
-    type = var.function_user_assigned_identity_id  != "" && var.function_user_assigned_identity_id  != null ? "SystemAssigned, UserAssigned" : "SystemAssigned"
+    type = var.function_user_assigned_identity_id != "" && var.function_user_assigned_identity_id != null ? "SystemAssigned, UserAssigned" : "SystemAssigned"
     #identity_ids = var.function_user_assigned_identity_id  != "" ? [var.function_user_assigned_identity_id] : []
-    identity_ids = try(var.function_user_assigned_identity_id != "" && var.function_user_assigned_identity_id != null ? [var.function_user_assigned_identity_id] : [],[])
+    identity_ids = try(var.function_user_assigned_identity_id != "" && var.function_user_assigned_identity_id != null ? [var.function_user_assigned_identity_id] : [], [])
   }
 
   app_settings                             = local.function_application_settings
