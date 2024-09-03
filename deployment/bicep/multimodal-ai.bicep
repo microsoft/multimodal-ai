@@ -383,3 +383,22 @@ module aiSearchSkillset 'modules/aiSearch/aiSearch-skillset.bicep' = {
     managedIdentityId: aiSearchDeploymentScriptIdentity.outputs.managedIdentityId
   }
 }
+
+// Create AI Searcher indexer
+module aiSearchIndexer 'modules/aiSearch/aiSearch-indexer.bicep' = {
+  name: 'modAiSearchIndexer'
+  scope: resourceGroup(resourceGroupNames.ai)
+  dependsOn: [
+    aiSearch
+    aiSearchIndex
+    aiSearchSkillset
+  ]
+  params: {
+    location: location
+    aiSearchEndpoint: last(split(aiSearch.outputs.searchResourceId, '/'))
+    indexName: aiSearchIndexName
+    skillsetName : aiSearchSkillsetName
+    dataSourceName: resourceNames.aiSearchDocsDataSourceName
+    managedIdentityId: aiSearchDeploymentScriptIdentity.outputs.managedIdentityId
+  }
+}
