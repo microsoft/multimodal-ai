@@ -1,49 +1,49 @@
-# Resource: Resource Group
-resource "azurerm_resource_group" "resource_group" {
-  name     = var.resource_group_name != "" ? var.resource_group_name : "${local.abbrs.resourcesResourceGroups}${var.environment_name}-${local.resourceToken}"
-  location = var.location
-  tags     = local.tags
-}
-
-# # Resource: App Service Plan
-# resource "azurerm_service_plan" "backendAppServicePlan" {
-#   name                = var.appServicePlanName != "" ? var.appServicePlanName : "${local.abbrs.webServerFarms}${local.resourceToken}"
-#   location            = azurerm_resource_group.rg.location
-#   resource_group_name = azurerm_resource_group.rg.name
-#   tags                = local.tags
-
+# Resource: Resource Group  
+resource "azurerm_resource_group" "resource_group" {  
+  name     = var.resource_group_name != "" ? var.resource_group_name : "${local.abbrs.resourcesResourceGroups}${var.environment_name}-${local.resourceToken}"  
+  location = var.location  
+  tags     = local.tags  
+}  
+  
+# # Resource: App Service Plan  
+# resource "azurerm_service_plan" "backendAppServicePlan" {  
+#   name                = var.appServicePlanName != "" ? var.appServicePlanName : "${local.abbrs.webServerFarms}${local.resourceToken}"  
+#   location            = azurerm_resource_group.rg.location  
+#   resource_group_name = azurerm_resource_group.rg.name  
+#   tags                = local.tags  
+  
 #   sku_name = var.appServicePlanSku
-#   os_type = "Linux"
-# }
-
-# # Resource: App Service (Backend)
-# resource "azurerm_linux_function_app" "backendFunctionApp" {
-#   name                = var.backendServiceName != "" ? var.backendServiceName : "backend-${local.resourceToken}"
-#   location            = azurerm_resource_group.rg.location
-#   resource_group_name = azurerm_resource_group.rg.name
-#   service_plan_id = azurerm_service_plan.backendAppServicePlan.id
+#   os_type = "Linux"  
+# }  
+  
+# # Resource: App Service (Backend)  
+# resource "azurerm_linux_function_app" "backendFunctionApp" {  
+#   name                = var.backendServiceName != "" ? var.backendServiceName : "backend-${local.resourceToken}"  
+#   location            = azurerm_resource_group.rg.location  
+#   resource_group_name = azurerm_resource_group.rg.name  
+#   service_plan_id = azurerm_service_plan.backendAppServicePlan.id  
 #   storage_account_name       = azurerm_storage_account.main.name
 #   storage_account_access_key = azurerm_storage_account.main.primary_access_key
 #   builtin_logging_enabled                  = false
 #   client_certificate_mode                  = "Required"
 #   ftp_publish_basic_authentication_enabled = false
 #   webdeploy_publish_basic_authentication_enabled = false
-#   tags                = merge(local.tags, { "service-name" = "backend" })
-
-#   site_config {
+#   tags                = merge(local.tags, { "service-name" = "backend" })  
+  
+#   site_config {  
 #     application_stack {
 #       python_version = "3.9"
 #     }
-#   }
-
+#   }  
+  
 #   app_settings = {
 #     FUNCTIONS_WORKER_RUNTIME              = "python"
-#     docsBlobStorage                       = azurerm_storage_account.main.primary_connection_string
-#     WEBSITE_RUN_FROM_PACKAGE              = 1
+#     docsBlobStorage                       = azurerm_storage_account.main.primary_connection_string 
+#     WEBSITE_RUN_FROM_PACKAGE              = 1 
 #     SCM_DO_BUILD_DURING_DEPLOYMENT        = true
 #     ENABLE_ORYX_BUILD                     = true
 #     ALLOWED_ORIGIN                        = ""
-#     APPLICATIONINSIGHTS_CONNECTION_STRING = azurerm_application_insights.main.connection_string
+#     APPLICATIONINSIGHTS_CONNECTION_STRING = azurerm_application_insights.main.connection_string 
 #     AZURE_AUTHENTICATION_ISSUER_URI       = "https://login.microsoftonline.com//v2.0"
 #     AZURE_AUTH_TENANT_ID                  = ""
 #     AZURE_CLIENT_APP_ID                   = ""
@@ -99,7 +99,7 @@ resource "azurerm_resource_group" "resource_group" {
 #   identity {
 #     type = "SystemAssigned"
 #   }
-# }
+# }  
 
 
 # # resource "azurerm_function_app_function" "backendFunction" {
@@ -160,83 +160,83 @@ resource "azurerm_resource_group" "resource_group" {
 # # }
 
 
-# # Resource: Storage Account
-# resource "azurerm_storage_account" "main" {
-#   name                     = var.storageAccountName != "" ? var.storageAccountName : substr("${local.abbrs.storageStorageAccounts}${local.resourceToken}",0,24)
-#   resource_group_name      = azurerm_resource_group.rg.name
-#   location                 = azurerm_resource_group.rg.location
-#   tags                     = local.tags
-#   account_tier             = "Standard"
-#   account_replication_type = "LRS"
-
-#   blob_properties {
-#     delete_retention_policy {
-#       days    = 2
-#       permanent_delete_enabled = true
-#     }
-#   }
-
-#   identity {
-#     type = "SystemAssigned"
-#   }
-
-#   network_rules {
-#     default_action = "Deny"
-#   }
-
-# }
-
-# # Storage Container
-# resource "azurerm_storage_container" "main" {
-#   name                  = var.storageContainerName
-#   storage_account_name  = azurerm_storage_account.main.name
-#   container_access_type = "private"
-# }
-
-# # resource "azurerm_storage_container" "deployment_package_container" {
+# # Resource: Storage Account  
+# resource "azurerm_storage_account" "main" {  
+#   name                     = var.storageAccountName != "" ? var.storageAccountName : substr("${local.abbrs.storageStorageAccounts}${local.resourceToken}",0,24)  
+#   resource_group_name      = azurerm_resource_group.rg.name  
+#   location                 = azurerm_resource_group.rg.location  
+#   tags                     = local.tags  
+#   account_tier             = "Standard"  
+#   account_replication_type = "LRS"  
+  
+#   blob_properties {  
+#     delete_retention_policy {  
+#       days    = 2  
+#       permanent_delete_enabled = true  
+#     }  
+#   }  
+  
+#   identity {  
+#     type = "SystemAssigned"  
+#   }  
+  
+#   network_rules {  
+#     default_action = "Deny"  
+#   }  
+  
+# }  
+  
+# # Storage Container  
+# resource "azurerm_storage_container" "main" {  
+#   name                  = var.storageContainerName  
+#   storage_account_name  = azurerm_storage_account.main.name  
+#   container_access_type = "private"  
+# }  
+  
+# # resource "azurerm_storage_container" "deployment_package_container" {  
 # #   name                  = var.storagePackageContainerName
-# #   storage_account_name  = azurerm_storage_account.main.name
-# #   container_access_type = "private"
-# # }
-
-# # Resource: Search Service
-# resource "azurerm_search_service" "main" {
-#   name                = var.searchServiceName != "" ? var.searchServiceName : "${local.abbrs.searchServices}${local.resourceToken}"
-#   resource_group_name = azurerm_resource_group.rg.name
-#   location            = var.searchServiceLocation != "" ? var.searchServiceLocation : azurerm_resource_group.rg.location
-#   sku                 = var.searchServiceSkuName
+# #   storage_account_name  = azurerm_storage_account.main.name  
+# #   container_access_type = "private"  
+# # }  
+  
+# # Resource: Search Service  
+# resource "azurerm_search_service" "main" {  
+#   name                = var.searchServiceName != "" ? var.searchServiceName : "${local.abbrs.searchServices}${local.resourceToken}"  
+#   resource_group_name = azurerm_resource_group.rg.name  
+#   location            = var.searchServiceLocation != "" ? var.searchServiceLocation : azurerm_resource_group.rg.location  
+#   sku                 = var.searchServiceSkuName  
 #   semantic_search_sku         = "free"
 #   identity {
 #     type = "SystemAssigned"
 #   }
 
-# }
-
-# # Resource: Application Insights
-# resource "azurerm_application_insights" "main" {
-#   name                = var.applicationInsightsName != "" ? var.applicationInsightsName : "${local.abbrs.insightsComponents}${local.resourceToken}"
-#   resource_group_name = azurerm_resource_group.rg.name
-#   location            = azurerm_resource_group.rg.location
+# }  
+  
+# # Resource: Application Insights  
+# resource "azurerm_application_insights" "main" {  
+#   name                = var.applicationInsightsName != "" ? var.applicationInsightsName : "${local.abbrs.insightsComponents}${local.resourceToken}"  
+#   resource_group_name = azurerm_resource_group.rg.name  
+#   location            = azurerm_resource_group.rg.location  
 #   application_type    = "web"
 #   workspace_id = azurerm_log_analytics_workspace.main.id
-# }
-
-# # Resource: Log Analytics Workspace
-# resource "azurerm_log_analytics_workspace" "main" {
-#   name                = var.logAnalyticsName != "" ? var.logAnalyticsName : "${local.abbrs.operationalInsightsWorkspaces}${local.resourceToken}"
-#   location            = azurerm_resource_group.rg.location
-#   resource_group_name = azurerm_resource_group.rg.name
-#   retention_in_days   = 30
-#   sku                 = "PerGB2018"
-# }
-
-# # Data Source (Client Configuration)
-# data "azurerm_client_config" "current" {}
-
-# # Random ID Generator
-# resource "random_id" "main" {
-#   keepers = {
-#     env_name = var.environmentName
-#   }
-#   byte_length = 8
-# }
+# }  
+  
+# # Resource: Log Analytics Workspace  
+# resource "azurerm_log_analytics_workspace" "main" {  
+#   name                = var.logAnalyticsName != "" ? var.logAnalyticsName : "${local.abbrs.operationalInsightsWorkspaces}${local.resourceToken}"  
+#   location            = azurerm_resource_group.rg.location  
+#   resource_group_name = azurerm_resource_group.rg.name  
+#   retention_in_days   = 30  
+#   sku                 = "PerGB2018"  
+# }  
+  
+# # Data Source (Client Configuration)  
+# data "azurerm_client_config" "current" {}  
+  
+# # Random ID Generator  
+# resource "random_id" "main" {  
+#   keepers = {  
+#     env_name = var.environmentName  
+#   }  
+#   byte_length = 8  
+# }  
