@@ -293,6 +293,81 @@ module storageRoleAssignment 'modules/rbac/roleAssignment.bicep' = {
   }
 }
 
+module azureOpenAIUserRoleDef 'modules/rbac/roleDef-azureOpenAIUser.bicep' = {
+  name: 'modAzureOpenAIUserRoleDef'
+  scope: resourceGroup(resourceGroupNames.ai)
+  dependsOn: [
+    aiSearch
+    azureOpenAI
+  ]
+  params: {
+    cognitiveServicesAccountId: azureOpenAI.outputs.cognitiveServicesAccountId
+  }
+}
+
+module azureOpenAIRoleAssignment 'modules/rbac/roleAssignment.bicep' = {
+  name: 'modAzureOpenAIRoleAssignment'
+  scope: resourceGroup(resourceGroupNames.ai)
+  dependsOn: [
+    aiSearch
+    azureOpenAI
+  ]
+  params: {
+    managedIdentityPrincipalId: aiSearch.outputs.searchResourcePrincipalId
+    roleDefinitionId: azureOpenAIUserRoleDef.outputs.roleDefinitionId
+  }
+}
+
+module azureAIVisionCognitiveServicesUserRoleDef 'modules/rbac/roleDef-cognitiveServicesUser.bicep' = {
+  name: 'modAzureAIVisionCognitiveServicesUserRoleDef'
+  scope: resourceGroup(resourceGroupNames.ai)
+  dependsOn: [
+    aiSearch
+    azureAIVision
+  ]
+  params: {
+    cognitiveServicesAccountId: azureAIVision.outputs.cognitiveServicesAccountId
+  }
+}
+
+module azureAiVisionRoleAssignment 'modules/rbac/roleAssignment.bicep' = {
+  name: 'modAzureAIVisionRoleAssignment'
+  scope: resourceGroup(resourceGroupNames.ai)
+  dependsOn: [
+    aiSearch
+    azureAIVision
+  ]
+  params: {
+    managedIdentityPrincipalId: aiSearch.outputs.searchResourcePrincipalId
+    roleDefinitionId: azureAIVisionCognitiveServicesUserRoleDef.outputs.roleDefinitionId
+  }
+}
+
+module documentIntelligenceCognitiveServicesUserRoleDef 'modules/rbac/roleDef-cognitiveServicesUser.bicep' = {
+  name: 'modDocumentIntelligenceCognitiveServicesUserRoleDef'
+  scope: resourceGroup(resourceGroupNames.ai)
+  dependsOn: [
+    aiSearch
+    documentIntelligence
+  ]
+  params: {
+    cognitiveServicesAccountId: documentIntelligence.outputs.cognitiveServicesAccountId
+  }
+}
+
+module documentIntelligenceRoleAssignment 'modules/rbac/roleAssignment.bicep' = {
+  name: 'modDocumentIntelligenceRoleAssignment'
+  scope: resourceGroup(resourceGroupNames.ai)
+  dependsOn: [
+    aiSearch
+    documentIntelligence
+  ]
+  params: {
+    managedIdentityPrincipalId: aiSearch.outputs.searchResourcePrincipalId
+    roleDefinitionId: documentIntelligenceCognitiveServicesUserRoleDef.outputs.roleDefinitionId
+  }
+}
+
 // Azure AI Search Configuration
 
 // Create data source
