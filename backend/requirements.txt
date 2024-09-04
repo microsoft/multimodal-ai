@@ -42,6 +42,8 @@ azure-core==1.30.2
     #   msrest
 azure-core-tracing-opentelemetry==1.0.0b11
     # via azure-monitor-opentelemetry
+azure-functions==1.20.0
+    # via -r requirements.in
 azure-identity==1.17.1
     # via
     #   -r requirements.in
@@ -79,7 +81,7 @@ click==8.1.7
     #   flask
     #   quart
     #   uvicorn
-cryptography==42.0.8
+cryptography==43.0.1
     # via
     #   -r requirements.in
     #   azure-identity
