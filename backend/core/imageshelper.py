@@ -20,7 +20,7 @@ class ImageURL(TypedDict, total=False):
 
 async def download_blob_as_base64(blob_container_client: ContainerClient, file_path: str) -> Optional[str]:
     base_name, _ = os.path.splitext(file_path)
-    image_filename = base_name + ".png"
+    image_filename = base_name + ".jpg"
     try:
         blob = await blob_container_client.get_blob_client(image_filename).download_blob()
         if not blob.properties:

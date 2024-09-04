@@ -86,7 +86,7 @@ async def transform_value(value):
             name_part, _ = os.path.splitext(filename)
 
             enriched_page = {
-                "sourcepage": f"{name_part}-{split_page.page_num}.jpeg",
+                "sourcepage": f"{name_part}-{split_page.page_num}.jpg",
                 "sourcefile": filename,
                 "storageUrl": data["url"],
                 "content": split_page.text,

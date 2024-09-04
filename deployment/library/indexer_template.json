@@ -13,8 +13,8 @@
     "base64EncodeKeys": null,
     "configuration": {
       "parsingMode": "default",
-      "excludedFileNameExtensions": "",
-      "indexedFileNameExtensions": "",
+      "excludedFileNameExtensions": ".png, .jpeg, .jpg",
+      "indexedFileNameExtensions": ".pdf",
       "failOnUnsupportedContentType": false,
       "failOnUnprocessableDocument": false,
       "indexStorageMetadataOnlyForOversizedDocuments": false,
