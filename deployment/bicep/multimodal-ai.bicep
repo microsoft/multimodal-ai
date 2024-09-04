@@ -60,9 +60,6 @@ param docIntelLocation string
 @sys.description('Specifies the container name to be created in the storage account for documents.')
 param storageAccountDocsContainerName string
 
-@sys.description('Specifies the container name to be created in the storage account for images.')
-param storageAccountImagesContainerName string
-
 @sys.description('Specifies the tags which will be applied to all resources.')
 param tags object = {}
 
@@ -377,7 +374,7 @@ module aiSearchSkillset 'modules/aiSearch/aiSearch-skillset.bicep' = {
     azureOpenAIEndpoint: 'https://${azureOpenAI.name}.openai.azure.com/'
     azureOpenAITextModelName: aoaiTextEmbeddingModelForAiSearch
     knowledgeStoreStorageResourceUri: 'ResourceId=${storageAccount.outputs.storageAccountId}'
-    knowledgeStoreStorageContainer: storageAccountImagesContainerName
+    knowledgeStoreStorageContainer: storageAccountDocsContainerName
     pdfMergeCustomSkillEndpoint: azureFunction.outputs.pdfTextImageMergeSkillEndpoint
     cognitiveServicesAccountId: azureCognitiveServices.outputs.cognitiveServicesAccountId
     managedIdentityId: aiSearchDeploymentScriptIdentity.outputs.managedIdentityId
