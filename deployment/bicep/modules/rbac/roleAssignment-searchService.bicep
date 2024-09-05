@@ -1,6 +1,9 @@
-// File-New-Tenant Parameters
+// Parameters
 @sys.description('Specifies the Id of the Azure AI Search instance.')
 param aiSearchId string
+
+@sys.description('Managed Identity Principla Id to be assigned access to the search service.')
+param managedIdentityPrincipalId string
 
 // Variables
 var aiSearchName = last(split(aiSearchId, '/'))
@@ -16,4 +19,12 @@ resource roleDefinition 'Microsoft.Authorization/roleDefinitions@2022-04-01' exi
   name: '7ca78c08-252a-4471-8644-bb5ff32d4ba0'
 }
 
-output roleDefinitionId string = roleDefinition.id
+resource roleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid('roleDefinition', roleDefinition.id)
+  properties: {
+    roleDefinitionId: roleDefinition.id
+    principalId: managedIdentityPrincipalId
+    principalType: 'ServicePrincipal'
+  }
+  scope: searchResource
+}
