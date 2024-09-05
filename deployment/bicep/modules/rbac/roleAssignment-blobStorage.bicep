@@ -1,6 +1,9 @@
-// File-New-Tenant Parameters
+// Parameters
 @sys.description('Specifies the Id of the Storage Account instance.')
 param storageAccountId string
+
+@sys.description('Managed Identity Principla Id to be assigned access to the search service.')
+param managedIdentityPrincipalId string
 
 // Variables
 var storageAccountName = last(split(storageAccountId, '/'))
@@ -16,4 +19,12 @@ resource roleDefinition 'Microsoft.Authorization/roleDefinitions@2022-04-01' exi
   name: '2a2b9908-6ea1-4ae2-8e65-a410df84e7d1'
 }
 
-output roleDefinitionId string = roleDefinition.id
+resource roleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid('roleDefinition', roleDefinition.id)
+  properties: {
+    roleDefinitionId: roleDefinition.id
+    principalId: managedIdentityPrincipalId
+    principalType: 'ServicePrincipal'
+  }
+  scope: storageResource
+}

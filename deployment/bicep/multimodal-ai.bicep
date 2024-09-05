@@ -244,7 +244,7 @@ module aiSearch 'modules/aiSearch/aiSearch.bicep' = {
   }
 }
 
-module aiSearchRoleDef 'modules/rbac/roleDef-searchServiceContributor.bicep' = {
+module aiSearchRoleAssignment 'modules/rbac/roleAssignment-searchService.bicep' = {
   name: 'modAISearchRoleDef'
   scope: resourceGroup(resourceGroupNames.ai)
   dependsOn: [
@@ -253,23 +253,12 @@ module aiSearchRoleDef 'modules/rbac/roleDef-searchServiceContributor.bicep' = {
   ]
   params: {
     aiSearchId: aiSearch.outputs.searchResourceId
-  }
-}
-
-module aiSearchRoleAssignment 'modules/rbac/roleAssignment.bicep' = {
-  name: 'modAISearchRoleAssignment'
-  scope: resourceGroup(resourceGroupNames.ai)
-  dependsOn: [
-    aiSearchRoleDef
-  ]
-  params: {
     managedIdentityPrincipalId: aiSearchDeploymentScriptIdentity.outputs.managedIdentityPrincipalId
-    roleDefinitionId: aiSearchRoleDef.outputs.roleDefinitionId
   }
 }
 
 // Role Assignments
-module storageRoleDef 'modules/rbac/roleDef-blobDataReader.bicep' = {
+module storageRoleAssignment 'modules/rbac/roleAssignment-blobStorage.bicep' = {
   name: 'modStorageRoleDef'
   scope: resourceGroup(resourceGroupNames.storage)
   dependsOn: [
@@ -278,18 +267,46 @@ module storageRoleDef 'modules/rbac/roleDef-blobDataReader.bicep' = {
   ]
   params: {
     storageAccountId: storageAccount.outputs.storageAccountId
+    managedIdentityPrincipalId: aiSearch.outputs.searchResourcePrincipalId
   }
 }
 
-module storageRoleAssignment 'modules/rbac/roleAssignment.bicep' = {
-  name: 'modStorageRoleAssignment'
-  scope: resourceGroup(resourceGroupNames.storage)
+module azureOpenAIRoleAssignment 'modules/rbac/roleAssignment-azureOpenAI.bicep' = {
+  name: 'modAzureOpenAIUserRoleDef'
+  scope: resourceGroup(resourceGroupNames.ai)
   dependsOn: [
-    storageRoleDef
+    aiSearch
+    azureOpenAI
   ]
   params: {
+    cognitiveServicesAccountId: azureOpenAI.outputs.cognitiveServicesAccountId
     managedIdentityPrincipalId: aiSearch.outputs.searchResourcePrincipalId
-    roleDefinitionId: storageRoleDef.outputs.roleDefinitionId
+  }
+}
+
+module azureAIVisionRoleAssignment 'modules/rbac/roleAssignment-cognitiveServices.bicep' = {
+  name: 'modAzureAIVisionCognitiveServicesUserRoleDef'
+  scope: resourceGroup(resourceGroupNames.ai)
+  dependsOn: [
+    aiSearch
+    azureAIVision
+  ]
+  params: {
+    cognitiveServicesAccountId: azureAIVision.outputs.cognitiveServicesAccountId
+    managedIdentityPrincipalId: aiSearch.outputs.searchResourcePrincipalId
+  }
+}
+
+module documentIntelligenceRoleAssignment 'modules/rbac/roleAssignment-cognitiveServices.bicep' = {
+  name: 'modDocumentIntelligenceCognitiveServicesUserRoleDef'
+  scope: resourceGroup(resourceGroupNames.ai)
+  dependsOn: [
+    aiSearch
+    documentIntelligence
+  ]
+  params: {
+    cognitiveServicesAccountId: documentIntelligence.outputs.cognitiveServicesAccountId
+    managedIdentityPrincipalId: aiSearch.outputs.searchResourcePrincipalId
   }
 }
 
@@ -342,6 +359,8 @@ module aiSearchIndex 'modules/aiSearch/aiSearch-index.bicep' = {
   scope: resourceGroup(resourceGroupNames.ai)
   dependsOn: [
     aiSearch
+    azureAIVisionRoleAssignment
+    azureOpenAIRoleAssignment
   ]
   params: {
     location: location
@@ -364,6 +383,8 @@ module aiSearchSkillset 'modules/aiSearch/aiSearch-skillset.bicep' = {
     storageAccount
     storageRoleAssignment
     aiSearchRoleAssignment
+    azureAIVisionRoleAssignment
+    azureOpenAIRoleAssignment
     azureCognitiveServices
   ]
   params: {
@@ -389,6 +410,10 @@ module aiSearchIndexer 'modules/aiSearch/aiSearch-indexer.bicep' = {
     aiSearch
     aiSearchIndex
     aiSearchSkillset
+    storageRoleAssignment
+    aiSearchRoleAssignment
+    azureAIVisionRoleAssignment
+    azureOpenAIRoleAssignment
   ]
   params: {
     location: location
