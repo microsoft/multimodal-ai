@@ -244,8 +244,9 @@ module aiSearch 'modules/aiSearch/aiSearch.bicep' = {
   }
 }
 
+// Role Assignments
 module aiSearchRoleAssignment 'modules/rbac/roleAssignment-searchService.bicep' = {
-  name: 'modAISearchRoleDef'
+  name: 'modAISearchRoleAssignment'
   scope: resourceGroup(resourceGroupNames.ai)
   dependsOn: [
     aiSearch
@@ -257,9 +258,8 @@ module aiSearchRoleAssignment 'modules/rbac/roleAssignment-searchService.bicep' 
   }
 }
 
-// Role Assignments
 module storageRoleAssignment 'modules/rbac/roleAssignment-blobStorage.bicep' = {
-  name: 'modStorageRoleDef'
+  name: 'modStorageRoleAssignment'
   scope: resourceGroup(resourceGroupNames.storage)
   dependsOn: [
     storageAccount
@@ -272,7 +272,7 @@ module storageRoleAssignment 'modules/rbac/roleAssignment-blobStorage.bicep' = {
 }
 
 module azureOpenAIRoleAssignment 'modules/rbac/roleAssignment-azureOpenAI.bicep' = {
-  name: 'modAzureOpenAIUserRoleDef'
+  name: 'modAzureOpenAIUserRoleAssignment'
   scope: resourceGroup(resourceGroupNames.ai)
   dependsOn: [
     aiSearch
@@ -285,7 +285,7 @@ module azureOpenAIRoleAssignment 'modules/rbac/roleAssignment-azureOpenAI.bicep'
 }
 
 module azureAIVisionRoleAssignment 'modules/rbac/roleAssignment-cognitiveServices.bicep' = {
-  name: 'modAzureAIVisionCognitiveServicesUserRoleDef'
+  name: 'modAzureAIVisionCognitiveServicesRoleAssignment'
   scope: resourceGroup(resourceGroupNames.ai)
   dependsOn: [
     aiSearch
@@ -298,7 +298,7 @@ module azureAIVisionRoleAssignment 'modules/rbac/roleAssignment-cognitiveService
 }
 
 module documentIntelligenceRoleAssignment 'modules/rbac/roleAssignment-cognitiveServices.bicep' = {
-  name: 'modDocumentIntelligenceCognitiveServicesUserRoleDef'
+  name: 'modDocumentIntelligenceCognitiveServicesRoleAssignment'
   scope: resourceGroup(resourceGroupNames.ai)
   dependsOn: [
     aiSearch
@@ -307,6 +307,27 @@ module documentIntelligenceRoleAssignment 'modules/rbac/roleAssignment-cognitive
   params: {
     cognitiveServicesAccountId: documentIntelligence.outputs.cognitiveServicesAccountId
     managedIdentityPrincipalId: aiSearch.outputs.searchResourcePrincipalId
+  }
+}
+
+// Azure Function for AI Search Custom Skills
+module azureFunction 'modules/function/function.bicep' = {
+  name: 'modAzureFunction'
+  scope: resourceGroup(resourceGroupNames.ai)
+  dependsOn: [
+    resourceGroupAI
+    storageAccount
+  ]
+  params: {
+    location: location
+    appServiceCapacity: appServicePlan.capacity
+    appServiceFamily: appServicePlan.family
+    appServiceName: appServicePlan.name
+    appServiceSize: appServicePlan.size
+    appServiceTier: appServicePlan.tier
+    azureFunctionName: resourceNames.functionApp
+    azureFunctionZipUri: resourceNames.functionAppUri
+    azureFunctionStorageName: resourceNames.functionStorageAccountName
   }
 }
 
@@ -329,27 +350,6 @@ module aiSearchDataSource 'modules/aiSearch/aiSearch-datasource.bicep' = {
     storageAccountResourceId: storageAccount.outputs.storageAccountId
     containerName: storageAccountDocsContainerName
     managedIdentityId: aiSearchDeploymentScriptIdentity.outputs.managedIdentityId
-  }
-}
-
-
-module azureFunction 'modules/function/function.bicep' = {
-  name: 'modAzureFunction'
-  scope: resourceGroup(resourceGroupNames.ai)
-  dependsOn: [
-    resourceGroupAI
-    storageAccount
-  ]
-  params: {
-    location: location
-    appServiceCapacity: appServicePlan.capacity
-    appServiceFamily: appServicePlan.family
-    appServiceName: appServicePlan.name
-    appServiceSize: appServicePlan.size
-    appServiceTier: appServicePlan.tier
-    azureFunctionName: resourceNames.functionApp
-    azureFunctionZipUri: resourceNames.functionAppUri
-    azureFunctionStorageName: resourceNames.functionStorageAccountName
   }
 }
 
