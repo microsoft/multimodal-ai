@@ -272,7 +272,7 @@ module storageRoleAssignment 'modules/rbac/roleAssignment-blobStorage.bicep' = {
 }
 
 module azureOpenAIRoleAssignment 'modules/rbac/roleAssignment-azureOpenAI.bicep' = {
-  name: 'modAzureOpenAIUserRoleAssignment'
+  name: 'modAzureOpenAIRoleAssignment'
   scope: resourceGroup(resourceGroupNames.ai)
   dependsOn: [
     aiSearch
@@ -285,7 +285,7 @@ module azureOpenAIRoleAssignment 'modules/rbac/roleAssignment-azureOpenAI.bicep'
 }
 
 module azureAIVisionRoleAssignment 'modules/rbac/roleAssignment-cognitiveServices.bicep' = {
-  name: 'modAzureAIVisionCognitiveServicesRoleAssignment'
+  name: 'modAIVisionCognitiveServicesRoleAssignment'
   scope: resourceGroup(resourceGroupNames.ai)
   dependsOn: [
     aiSearch
@@ -298,7 +298,7 @@ module azureAIVisionRoleAssignment 'modules/rbac/roleAssignment-cognitiveService
 }
 
 module documentIntelligenceRoleAssignment 'modules/rbac/roleAssignment-cognitiveServices.bicep' = {
-  name: 'modDocumentIntelligenceCognitiveServicesRoleAssignment'
+  name: 'modDocIntelCognitiveServicesRoleAssignment'
   scope: resourceGroup(resourceGroupNames.ai)
   dependsOn: [
     aiSearch
