@@ -27,4 +27,3 @@ resource "azurerm_cognitive_account" "cognitive_service" {
   sku_name                           = var.cognitive_service_sku
 
 }
-

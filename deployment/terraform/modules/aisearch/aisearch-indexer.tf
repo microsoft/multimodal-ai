@@ -22,7 +22,7 @@ resource "local_file" "indexer_config" {
 
 # wait for permissions to propogate
 resource "time_sleep" "wait_5mins" {
-  depends_on = [azurerm_role_assignment.storage_blob_data_to_search_service, azurerm_role_assignment.knowledgestore_blob_data_to_search_service]
+  depends_on      = [azurerm_role_assignment.storage_blob_data_to_search_service, azurerm_role_assignment.knowledgestore_blob_data_to_search_service]
   create_duration = "5m"
 }
 
@@ -40,6 +40,6 @@ resource "null_resource" "create_indexer" {
   }
   triggers = {
     always_run = "${timestamp()}"
-  }  
+  }
   depends_on = [azurerm_search_service.search_service, local_file.indexer_config, null_resource.create_datasource, null_resource.create_index, null_resource.create_skillset, time_sleep.wait_5mins]
 }

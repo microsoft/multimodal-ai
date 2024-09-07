@@ -23,4 +23,3 @@ output "cognitive_services_key" {
   description = "Cognitive services key."
   value       = azurerm_cognitive_account.cognitive_service.primary_access_key
 }
-

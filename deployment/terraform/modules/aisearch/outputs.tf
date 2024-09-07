@@ -7,4 +7,3 @@ output "search_service_resource_id" {
   description = "The ID of the service account."
   value       = azurerm_search_service.search_service.id
 }
-

@@ -34,6 +34,6 @@ resource "null_resource" "create_index" {
   }
   triggers = {
     always_run = "${timestamp()}"
-  }  
+  }
   depends_on = [azurerm_search_service.search_service, local_file.index_config, azurerm_role_assignment.storage_blob_data_to_search_service, azurerm_role_assignment.search_index_data_contributor]
 }
