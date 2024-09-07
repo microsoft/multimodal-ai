@@ -1,4 +1,4 @@
-resource "azurerm_cognitive_account" "cognitive_service" {
+resource "azurerm_cognitive_account" "aoai" {
   name                = var.cognitive_service_name
   location            = var.location
   resource_group_name = var.resource_group_name
@@ -25,6 +25,7 @@ resource "azurerm_cognitive_account" "cognitive_service" {
   outbound_network_access_restricted = false
   public_network_access_enabled      = true
   sku_name                           = var.cognitive_service_sku
+
 }
 
 # # Requires subscription to be onboarded
@@ -52,16 +53,18 @@ resource "azurerm_cognitive_account" "cognitive_service" {
 #   })
 # }
 
-resource "azurerm_cognitive_deployment" "gpt-4" {
-  name                 = var.gpt_model_name
-  cognitive_account_id = azurerm_cognitive_account.cognitive_service.id
+resource "azurerm_cognitive_deployment" "aoai_deployments" {
+  for_each             = { for deployment in var.aoai_deployments : deployment.name => deployment }
+  name                 = each.value.name
+  cognitive_account_id = azurerm_cognitive_account.aoai.id
 
   model {
-    format  = "OpenAI"
-    name    = var.gpt_model_name
-    version = var.gpt_model_version
+    format  = each.value.model.format
+    name    = each.value.name
+    version = each.value.model.version
   }
-  scale {
-    type = "Standard"
+  sku {
+    name     = "Standard"
+    capacity = each.value.sku.capacity
   }
 }

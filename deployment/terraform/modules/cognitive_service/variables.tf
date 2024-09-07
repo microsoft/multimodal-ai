@@ -37,7 +37,6 @@ variable "cognitive_service_kind" {
   description = "Specifies the kind of the cognitive service."
   type        = string
   sensitive   = false
-  default     = "OpenAI"
   validation {
     condition     = contains(["AnomalyDetector", "ComputerVision", "CognitiveServices", "ContentModerator", "CustomVision.Training", "CustomVision.Prediction", "Face", "FormRecognizer", "ImmersiveReader", "LUIS", "Personalizer", "SpeechServices", "TextAnalytics", "TextTranslation", "OpenAI"], var.cognitive_service_kind)
     error_message = "Please specify a valid kind."
@@ -54,6 +53,15 @@ variable "cognitive_service_sku" {
   }
 }
 
+variable "local_auth_enabled" {
+  description = "Specifies if the key based auth enabled."
+  type        = bool
+  sensitive   = false
+  default     = false
+}
+
+
+
 # Monitoring variables
 variable "log_analytics_workspace_id" {
   description = "Specifies the resource ID of the log analytics workspace used for the stamp"
@@ -63,19 +71,6 @@ variable "log_analytics_workspace_id" {
     condition     = length(split("/", var.log_analytics_workspace_id)) == 9
     error_message = "Please specify a valid resource ID."
   }
-}
-
-variable "aoai_deployments" {
-  type = list(object({
-    name = string
-    model = object({
-      format  = string
-      version = string
-    })
-    sku = object({
-      capacity = number
-    })
-  }))
 }
 
 # Network variables

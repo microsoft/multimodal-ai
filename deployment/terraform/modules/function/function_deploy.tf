@@ -1,10 +1,12 @@
 locals {
-  is_windows      = length(regexall("^[a-z]:", lower(abspath(path.root)))) > 0
-  windows_command = "az functionapp deployment source config-zip --resource-group rg-mmai-f1486904 --name backend-f1486904 --src ${replace(one(data.archive_file.file_function[*].output_path), "/", "\\")} --build-remote true  ^&  del ${replace(one(data.archive_file.file_function[*].output_path), "/", "\\")}"
-  linux_command   = <<-EOT
-          az functionapp deployment source config-zip --resource-group rg-mmai-f1486904 --name backend-f1486904 --src ${one(data.archive_file.file_function[*].output_path)} --build-remote true
-          rm -f ${one(data.archive_file.file_function[*].output_path)}
-EOT
+  is_windows                      = length(regexall("^[a-z]:", lower(abspath(path.root)))) > 0
+  line_separator = local.is_windows ? "`" : "\\"
+  path_separator = local.is_windows ? "\\" : "/"
+  escape_char    = local.is_windows ? "`" : ""
+
+  delete_file_command_for_windows = "del %s"
+  delete_file_command_for_linux   = "rm %s"
+  delete_file_command             = local.is_windows ? local.delete_file_command_for_windows : local.delete_file_command_for_linux
 }
 
 resource "null_resource" "linux_function_app_deployment" {
@@ -15,6 +17,12 @@ resource "null_resource" "linux_function_app_deployment" {
   }
 
   provisioner "local-exec" {
-    command = local.is_windows ? local.windows_command : local.linux_command
+    interpreter = local.is_windows ? ["PowerShell", "-Command"] : []
+    command     = <<EOT
+      ${var.subscription_id != "" ? "az account set -s ${var.subscription_id}":""}
+      az functionapp deployment source config-zip --resource-group ${var.resource_group_name} --name ${var.function_name} --src ${one(data.archive_file.file_function[*].output_path)} --build-remote true
+      ${format(local.delete_file_command, one(data.archive_file.file_function[*].output_path))}
+    EOT
   }
+  depends_on = [azurerm_linux_function_app.linux_function_app]
 }
