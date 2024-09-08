@@ -10,8 +10,18 @@ module "openai" {
   cognitive_service_sku  = local.opeanai_sku
 
   model_deployment = {
-    "${local.chat_deployment}" = jsonencode({ model = local.chat_model, capacity = local.chat_capacity, version = local.chat_version })
-    "${local.embedding_deployment}" = jsonencode({ model = local.embedding_model, capacity = local.embedding_capacity, version = local.embedding_version})
+    "${local.chat_deployment}" = jsonencode({
+      model          = local.chat_model,
+      capacity       = local.chat_capacity,
+      version        = local.chat_version
+      deploymentType = local.chat_deploymentType
+    })
+    "${local.embedding_deployment}" = jsonencode({
+      model          = local.embedding_model,
+      capacity       = local.embedding_capacity,
+      version        = local.embedding_version,
+      deploymentType = local.embedding_deploymentType
+    })
   }
 
   subnet_id                  = null

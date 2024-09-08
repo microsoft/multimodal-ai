@@ -18,7 +18,7 @@ locals {
 
   # Computer Vision
   computer_vision_name = "${local.prefix}-ai-vision-001"
-  coputer_vision_sku   = "F0"
+  coputer_vision_sku   = "S1"
   coputer_vision_kind  = "ComputerVision"
 
   # OpenAI
@@ -30,11 +30,13 @@ locals {
   chat_deployment = "chat"
   chat_version = "2024-05-13"
   chat_capacity = 30
+  chat_deploymentType = "GlobalStandard"
 
   embedding_model    = "text-embedding-ada-002"
   embedding_deployment = "embedding"
   embedding_capacity = 30
   embedding_version = "2"
+  embedding_deploymentType = "Standard"
 
   gpt4v_model    = "gpt-4o"
   gpt4v_deployment = "gpt4v"

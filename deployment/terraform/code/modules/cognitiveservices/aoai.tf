@@ -70,7 +70,7 @@ resource "azurerm_cognitive_deployment" "model_deployment" {
     version = jsondecode(each.value).version
   }
   scale {
-    type     = "Standard"
+    type     = jsondecode(each.value).deploymentType #"GlobalStandard"
     capacity = jsondecode(each.value).capacity
   }
 }
