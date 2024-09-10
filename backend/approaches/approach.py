@@ -31,6 +31,7 @@ from text import nonewlines
 @dataclass
 class Document:
     id: Optional[str]
+    parent_id: Optional[str]
     content: Optional[str]
     embedding: Optional[List[float]]
     image_embedding: Optional[List[float]]
@@ -169,6 +170,7 @@ class Approach(ABC):
                 documents.append(
                     Document(
                         id=document.get("id"),
+                        parent_id=document.get("parent_id"),
                         content=document.get("content"),
                         embedding=document.get("embedding"),
                         image_embedding=document.get("imageEmbedding"),
@@ -215,7 +217,7 @@ class Approach(ABC):
             return sourcepage
         else:
             path, ext = os.path.splitext(sourcepage)
-            if ext.lower() == ".png":
+            if ext.lower() == ".jpg":
                 page_idx = path.rfind("-")
                 page_number = int(path[page_idx + 1 :])
                 return f"{path[:page_idx]}.pdf#page={page_number}"

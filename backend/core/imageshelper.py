@@ -1,6 +1,7 @@
 import base64
 import logging
 import os
+import re
 from typing import Optional
 
 from azure.core.exceptions import ResourceNotFoundError
@@ -19,23 +20,25 @@ class ImageURL(TypedDict, total=False):
 
 
 async def download_blob_as_base64(blob_container_client: ContainerClient, file_path: str) -> Optional[str]:
-    base_name, _ = os.path.splitext(file_path)
-    image_filename = base_name + ".jpg"
     try:
-        blob = await blob_container_client.get_blob_client(image_filename).download_blob()
+        blob = await blob_container_client.get_blob_client(file_path).download_blob()
         if not blob.properties:
-            logging.warning(f"No blob exists for {image_filename}")
+            logging.warning(f"No blob exists for {file_path}")
             return None
         img = base64.b64encode(await blob.readall()).decode("utf-8")
         return f"data:image/png;base64,{img}"
     except ResourceNotFoundError:
-        logging.warning(f"No blob exists for {image_filename}")
+        logging.warning(f"No blob exists for {file_path}")
         return None
 
 
 async def fetch_image(blob_container_client: ContainerClient, result: Document) -> Optional[ImageURL]:
     if result.sourcepage:
-        img = await download_blob_as_base64(blob_container_client, result.sourcepage)
+        match = re.search(r'-([0-9]+)\.', result.sourcepage)
+        page_idx = match.group(1)
+
+        file_path = f"{result.parent_id}/normalized_images_{page_idx}.jpg"
+        img = await download_blob_as_base64(blob_container_client, file_path)
         if img:
             return {"url": img, "detail": "auto"}
         else:
