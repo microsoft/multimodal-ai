@@ -96,6 +96,7 @@ var resourceNames = {
   functionAppUri: azureFunctionUri
   functionStorageAccountName: take('${prefixNormalized}${locationNormalized}functionstg',23)
   logAnalyticsWorkspaceName: '${prefixNormalized}-${locationNormalized}-loganalytics'
+  appInsightsName: '${prefixNormalized}-${locationNormalized}-appinsights'
 }
 
 var appServicePlan = {
@@ -143,6 +144,9 @@ module resourceGroupMonitoring './modules/resourceGroup/resourceGroup.bicep' = {
   }
 }
 
+// Azure Resources
+
+// Azure OpenAI
 module azureOpenAI 'modules/cognitiveServices/cognitiveServices.bicep' = {
   name: 'modAzureOpenAI'
   scope: resourceGroup(resourceGroupNames.ai)
@@ -158,6 +162,7 @@ module azureOpenAI 'modules/cognitiveServices/cognitiveServices.bicep' = {
   }
 }
 
+//Azure OpenAI Model Deployments
 @batchSize(1)
 module azureOpenAIModelDeployments 'modules/aoai/aoaiDeployment.bicep' = [for deployment in aoaiDeployments: {
   name: 'aoai-deployment-${deployment.name}'
@@ -174,6 +179,7 @@ module azureOpenAIModelDeployments 'modules/aoai/aoaiDeployment.bicep' = [for de
   }
 }]
 
+// Azure Cognitive Services
 module azureCognitiveServices 'modules/cognitiveServices/cognitiveServices.bicep' = {
   name: 'modAzureCognitiveServices'
   scope: resourceGroup(resourceGroupNames.ai)
@@ -189,6 +195,7 @@ module azureCognitiveServices 'modules/cognitiveServices/cognitiveServices.bicep
   }
 }
 
+// Azure AI Vision
 module azureAIVision 'modules/cognitiveServices/cognitiveServices.bicep' = {
   name: 'modAzureAIVision'
   scope: resourceGroup(resourceGroupNames.ai)
@@ -204,6 +211,7 @@ module azureAIVision 'modules/cognitiveServices/cognitiveServices.bicep' = {
   }
 }
 
+// Azure Document Intelligence
 module documentIntelligence 'modules/cognitiveServices/cognitiveServices.bicep' = {
   name: 'modDocumentIntelligence'
   scope: resourceGroup(resourceGroupNames.ai)
@@ -219,6 +227,7 @@ module documentIntelligence 'modules/cognitiveServices/cognitiveServices.bicep' 
   }
 }
 
+// Storage Account
 module storageAccount 'modules/storage/storageAccount.bicep' = {
   name: 'modStorageAccount'
   scope: resourceGroup(resourceGroupNames.storage)
@@ -233,6 +242,7 @@ module storageAccount 'modules/storage/storageAccount.bicep' = {
   }
 }
 
+// AI Search Deployment Script Identity
 module aiSearchDeploymentScriptIdentity 'modules/managedIdentities/managedIdentity.bicep' = {
   name: 'modAISearchDeploymentScriptIdentity'
   scope: resourceGroup(resourceGroupNames.ai)
@@ -245,6 +255,7 @@ module aiSearchDeploymentScriptIdentity 'modules/managedIdentities/managedIdenti
   }
 }
 
+// AI Search
 module aiSearch 'modules/aiSearch/aiSearch.bicep' = {
   name: 'modAiSearch'
   scope: resourceGroup(resourceGroupNames.ai)
@@ -261,6 +272,7 @@ module aiSearch 'modules/aiSearch/aiSearch.bicep' = {
   }
 }
 
+// Log Analytics Workspace
 module logAnalytics 'modules/logAnalytics/logAnalytics.bicep' = {
   name: 'modLogAnalytics'
   scope: resourceGroup(resourceGroupNames.monitoring)
@@ -272,6 +284,21 @@ module logAnalytics 'modules/logAnalytics/logAnalytics.bicep' = {
     logAnalyticsWorkspaceName: resourceNames.logAnalyticsWorkspaceName
     logAnalyticsSku: logAnalyticsSettings.sku
     logAnalyticsRetentionInDays: logAnalyticsSettings.retentionInDays
+    tags: tags
+  }
+}
+
+// App Insights
+module appInsights 'modules/appInsights/appInsights.bicep' = {
+  name: 'modAppInsights'
+  scope: resourceGroup(resourceGroupNames.monitoring)
+  dependsOn: [
+    logAnalytics
+  ]
+  params: {
+    location: location
+    appInsightsName: resourceNames.appInsightsName
+    logAnalyticsWorkspaceId: logAnalytics.outputs.logAnalyticsWorkspaceId
     tags: tags
   }
 }
