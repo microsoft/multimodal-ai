@@ -87,6 +87,7 @@ var resourceGroupNames = {
   ai: '${prefixNormalized}-${locationNormalized}-ai-rg'
   storage: '${prefixNormalized}-${locationNormalized}-storage-rg'
   monitoring: '${prefixNormalized}-${locationNormalized}-monitoring-rg'
+  apps: '${prefixNormalized}-${locationNormalized}-apps-rg'
 }
 
 var resourceNames = {
@@ -107,7 +108,7 @@ var resourceNames = {
   aiSearchIndexName: '${prefixNormalized}index'
   aiSearchSkillsetName: '${prefix}-skillset'
   webAppServicePlanName: '${prefixNormalized}-${locationNormalized}-webapp-svcplan'
-  webAppName: '${prefixNormalized}-${locationNormalized}-app'
+  webAppName: '${prefixNormalized}-${locationNormalized}-webapp'
 }
 
 var appServicePlan = {
@@ -151,6 +152,15 @@ module resourceGroupMonitoring './modules/resourceGroup/resourceGroup.bicep' = {
   params: {
     location: location
     resourceGroupName: resourceGroupNames.monitoring
+    tags: tags
+  }
+}
+
+module resourceGroupApps './modules/resourceGroup/resourceGroup.bicep' = {
+  name: 'modResourceGroupApps'
+  params: {
+    location: location
+    resourceGroupName: resourceGroupNames.apps
     tags: tags
   }
 }
@@ -404,7 +414,10 @@ module azureFunction 'modules/function/function.bicep' = {
 // Azure Web App
 module webAppServicePlan 'modules/appService/appServicePlan.bicep' = {
   name: 'modWebAppServicePlan'
-  scope: resourceGroup(resourceGroupNames.ai)
+  scope: resourceGroup(resourceGroupNames.apps)
+  dependsOn:[
+    resourceGroupApps
+  ]
   params: {
     name: resourceNames.webAppServicePlanName
     location: location
@@ -419,9 +432,9 @@ module webAppServicePlan 'modules/appService/appServicePlan.bicep' = {
 
 module webApp 'modules/appService/appService.bicep' = {
   name: 'modWebApp'
-  scope: resourceGroup(resourceGroupNames.ai)
+  scope: resourceGroup(resourceGroupNames.apps)
   dependsOn: [
-    resourceGroupAI
+    resourceGroupApps
     webAppServicePlan
     appInsights
   ]
