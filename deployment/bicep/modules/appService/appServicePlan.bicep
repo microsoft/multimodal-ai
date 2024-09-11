@@ -1,5 +1,3 @@
-metadata description = 'Creates an Azure App Service plan.'
-
 @sys.description('Name of the App Service Plan Resource.')
 param name string
 
