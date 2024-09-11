@@ -63,10 +63,6 @@ param storageAccountDocsContainerName string
 @sys.description('Specifies the tags which will be applied to all resources.')
 param tags object = {}
 
-
-@sys.description('Specifies the URI of the MSDeploy Package for the Azure Function.')
-param azureFunctionUri string = ''
-
 param aoaiTextEmbeddingModelForAiSearch string
 
 // Variables
@@ -93,7 +89,6 @@ var resourceNames = {
   aiSearchDocsDataSourceName: '${storageAccountDocsContainerName}-datasource'
   appServicePlan: '${prefixNormalized}-${locationNormalized}-appserviceplan'
   functionApp: '${prefixNormalized}-${locationNormalized}-functionapp'
-  functionAppUri: azureFunctionUri
   functionStorageAccountName: take('${prefixNormalized}${locationNormalized}functionstg',23)
   logAnalyticsWorkspaceName: '${prefixNormalized}-${locationNormalized}-loganalytics'
   appInsightsName: '${prefixNormalized}-${locationNormalized}-appinsights'
@@ -385,8 +380,8 @@ module azureFunction 'modules/function/function.bicep' = {
     appServiceSize: appServicePlan.size
     appServiceTier: appServicePlan.tier
     azureFunctionName: resourceNames.functionApp
-    azureFunctionZipUri: resourceNames.functionAppUri
     azureFunctionStorageName: resourceNames.functionStorageAccountName
+    logAnalyticsWorkspaceid: logAnalytics.outputs.logAnalyticsWorkspaceId
   }
 }
 

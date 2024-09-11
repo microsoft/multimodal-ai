@@ -1,9 +1,9 @@
 using './multimodal-ai.bicep'
 
-param prefix = 'mmai'
-param location = 'eastus'
+param prefix = 'mmai7'
+param location = 'southcentralus'
 
-param aiVisionlocation = 'eastus'
+param aiVisionlocation = 'francecentral'
 param aiVisionKind = 'ComputerVision'
 param aiVisionSku = 'S1'
 
@@ -19,9 +19,6 @@ param cogsvcSku = 'S0'
 param cogsvcKind = 'CognitiveServices'
 
 param storageAccountDocsContainerName = 'docs'
-
-// Replace with real app
-param azureFunctionUri = ''
 
 param aoaiKind = 'OpenAI'
 param aoaiSku = 'S0'
