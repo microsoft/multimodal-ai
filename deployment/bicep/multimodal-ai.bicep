@@ -67,19 +67,27 @@ param tags object = {}
 @sys.description('Specifies the URI of the MSDeploy Package for the Azure Function.')
 param azureFunctionUri string = ''
 
-param aoaiTextEmbeddingModelForAiSearch string
+@sys.description('Specifies the text embedding model to use in Azure OpenAI.')
+param aoaiTextEmbeddingModel string
+
+@sys.description('Specifies the chat model to use in Azure OpenAI.')
+param aoaiChatModel string
+
+@sys.description('Specifies the Vision model to use in Azure OpenAI.')
+param aoaiVisionModel string
+
+@sys.description('App Service Plan Sku')
+param appServiceSkuName string
 
 // Variables
 var locationNormalized = toLower(location)
 var prefixNormalized = toLower(prefix)
 
-var aiSearchIndexName = '${prefixNormalized}index'
-var aiSearchSkillsetName = '${prefix}-skillset'
-
 var resourceGroupNames = {
   ai: '${prefixNormalized}-${locationNormalized}-ai-rg'
   storage: '${prefixNormalized}-${locationNormalized}-storage-rg'
   monitoring: '${prefixNormalized}-${locationNormalized}-monitoring-rg'
+  apps: '${prefixNormalized}-${locationNormalized}-apps-rg'
 }
 
 var resourceNames = {
@@ -97,6 +105,10 @@ var resourceNames = {
   functionStorageAccountName: take('${prefixNormalized}${locationNormalized}functionstg',23)
   logAnalyticsWorkspaceName: '${prefixNormalized}-${locationNormalized}-loganalytics'
   appInsightsName: '${prefixNormalized}-${locationNormalized}-appinsights'
+  aiSearchIndexName: '${prefixNormalized}index'
+  aiSearchSkillsetName: '${prefix}-skillset'
+  webAppServicePlanName: '${prefixNormalized}-${locationNormalized}-webapp-svcplan'
+  webAppName: '${prefixNormalized}-${locationNormalized}-webapp'
 }
 
 var appServicePlan = {
@@ -140,6 +152,15 @@ module resourceGroupMonitoring './modules/resourceGroup/resourceGroup.bicep' = {
   params: {
     location: location
     resourceGroupName: resourceGroupNames.monitoring
+    tags: tags
+  }
+}
+
+module resourceGroupApps './modules/resourceGroup/resourceGroup.bicep' = {
+  name: 'modResourceGroupApps'
+  params: {
+    location: location
+    resourceGroupName: resourceGroupNames.apps
     tags: tags
   }
 }
@@ -390,6 +411,73 @@ module azureFunction 'modules/function/function.bicep' = {
   }
 }
 
+// Azure Web App
+module webAppServicePlan 'modules/appService/appServicePlan.bicep' = {
+  name: 'modWebAppServicePlan'
+  scope: resourceGroup(resourceGroupNames.apps)
+  dependsOn:[
+    resourceGroupApps
+  ]
+  params: {
+    name: resourceNames.webAppServicePlanName
+    location: location
+    tags: tags
+    sku: {
+      name: appServiceSkuName
+      capacity: 1
+    }
+    kind: 'linux'
+  }
+}
+
+module webApp 'modules/appService/appService.bicep' = {
+  name: 'modWebApp'
+  scope: resourceGroup(resourceGroupNames.apps)
+  dependsOn: [
+    resourceGroupApps
+    webAppServicePlan
+    appInsights
+  ]
+  params: {
+    name: resourceNames.webAppName
+    location: location
+    tags: tags
+    applicationInsightsName: appInsights.outputs.appInsightsResourceName
+    applicationInsightsResourceGroup: resourceGroupNames.monitoring
+    appServicePlanId: webAppServicePlan.outputs.id
+    runtimeName: 'python'
+    runtimeVersion: '3.11'
+    appCommandLine: 'python3 -m gunicorn main:app'
+    use32BitWorkerProcess: appServiceSkuName == 'F1'
+    alwaysOn: appServiceSkuName != 'F1'
+    appSettings: {
+      AZURE_STORAGE_ACCOUNT: resourceNames.storageAccount
+      AZURE_STORAGE_CONTAINER: storageAccountDocsContainerName
+      AZURE_SEARCH_INDEX: resourceNames.aiSearchIndexName
+      AZURE_SEARCH_SERVICE: resourceNames.aiSearch
+      AZURE_SEARCH_SEMANTIC_RANKER: 'standard'
+      AZURE_VISION_ENDPOINT: 'https://${resourceNames.aiVision}.cognitiveservices.azure.com'
+      AZURE_SEARCH_QUERY_LANGUAGE: 'en-us'
+      AZURE_SEARCH_QUERY_SPELLER: 'lexicon'
+      OPENAI_HOST: 'azure'
+      AZURE_OPENAI_EMB_MODEL_NAME: aoaiTextEmbeddingModel
+      AZURE_OPENAI_EMB_DIMENSIONS: 1536
+      AZURE_OPENAI_CHATGPT_MODEL: aoaiChatModel
+      AZURE_OPENAI_GPT4V_MODEL: aoaiVisionModel
+      AZURE_OPENAI_SERVICE: resourceNames.azureOpenAI
+      AZURE_OPENAI_CHATGPT_DEPLOYMENT: first(filter(aoaiDeployments, deployment => deployment.name == aoaiChatModel)).name
+      AZURE_OPENAI_EMB_DEPLOYMENT: first(filter(aoaiDeployments, deployment => deployment.name == aoaiTextEmbeddingModel)).name
+      AZURE_OPENAI_GPT4V_DEPLOYMENT: first(filter(aoaiDeployments, deployment => deployment.name == aoaiVisionModel)).name
+      USE_VECTORS: true
+      USE_GPT4V: true
+      USE_USER_UPLOAD: false
+      PYTHON_ENABLE_GUNICORN_MULTIWORKERS: true
+      SCM_DO_BUILD_DURING_DEPLOYMENT: true
+      ENABLE_ORYX_BUILD: true
+    }
+  }
+}
+
 // Azure AI Search Configuration
 
 // Create data source
@@ -424,9 +512,9 @@ module aiSearchIndex 'modules/aiSearch/aiSearch-index.bicep' = {
   params: {
     location: location
     aiSearchEndpoint: last(split(aiSearch.outputs.searchResourceId, '/'))
-    indexName: aiSearchIndexName
+    indexName: resourceNames.aiSearchIndexName
     azureOpenAIEndpoint: 'https://${azureOpenAI.outputs.cognitiveServicesAccountName}.openai.azure.com/'
-    azureOpenAITextModelName: aoaiTextEmbeddingModelForAiSearch
+    azureOpenAITextModelName: aoaiTextEmbeddingModel
     cognitiveServicesEndpoint: 'https://${azureAIVision.outputs.cognitiveServicesAccountName}.cognitiveservices.azure.com'
     managedIdentityId: aiSearchDeploymentScriptIdentity.outputs.managedIdentityId
   }
@@ -449,10 +537,10 @@ module aiSearchSkillset 'modules/aiSearch/aiSearch-skillset.bicep' = {
   params: {
     location: location
     aiSearchEndpoint: last(split(aiSearch.outputs.searchResourceId, '/'))
-    indexName: aiSearchIndexName
-    skillsetName: aiSearchSkillsetName
+    indexName: resourceNames.aiSearchIndexName
+    skillsetName: resourceNames.aiSearchSkillsetName
     azureOpenAIEndpoint: 'https://${azureOpenAI.name}.openai.azure.com/'
-    azureOpenAITextModelName: aoaiTextEmbeddingModelForAiSearch
+    azureOpenAITextModelName: aoaiTextEmbeddingModel
     knowledgeStoreStorageResourceUri: 'ResourceId=${storageAccount.outputs.storageAccountId}'
     knowledgeStoreStorageContainer: storageAccountDocsContainerName
     pdfMergeCustomSkillEndpoint: azureFunction.outputs.pdfTextImageMergeSkillEndpoint
@@ -477,8 +565,8 @@ module aiSearchIndexer 'modules/aiSearch/aiSearch-indexer.bicep' = {
   params: {
     location: location
     aiSearchEndpoint: last(split(aiSearch.outputs.searchResourceId, '/'))
-    indexName: aiSearchIndexName
-    skillsetName : aiSearchSkillsetName
+    indexName: resourceNames.aiSearchIndexName
+    skillsetName : resourceNames.aiSearchSkillsetName
     dataSourceName: resourceNames.aiSearchDocsDataSourceName
     managedIdentityId: aiSearchDeploymentScriptIdentity.outputs.managedIdentityId
   }
