@@ -79,6 +79,7 @@ var aiSearchSkillsetName = '${prefix}-skillset'
 var resourceGroupNames = {
   ai: '${prefixNormalized}-${locationNormalized}-ai-rg'
   storage: '${prefixNormalized}-${locationNormalized}-storage-rg'
+  monitoring: '${prefixNormalized}-${locationNormalized}-monitoring-rg'
 }
 
 var resourceNames = {
@@ -94,6 +95,7 @@ var resourceNames = {
   functionApp: '${prefixNormalized}-${locationNormalized}-functionapp'
   functionAppUri: azureFunctionUri
   functionStorageAccountName: take('${prefixNormalized}${locationNormalized}functionstg',23)
+  logAnalyticsWorkspaceName: '${prefixNormalized}-${locationNormalized}-loganalytics'
 }
 
 var appServicePlan = {
@@ -102,6 +104,11 @@ var appServicePlan = {
   size: 'S1'
   family: 'S'
   capacity: 1
+}
+
+var logAnalyticsSettings = {
+  sku: 'PerGB2018'
+  retentionInDays: 30
 }
 
 // Resources
@@ -122,6 +129,16 @@ module resourceGroupStorage './modules/resourceGroup/resourceGroup.bicep' = {
   params: {
     location: location
     resourceGroupName: resourceGroupNames.storage
+    tags: tags
+  }
+}
+
+// Resource Group Monitoring
+module resourceGroupMonitoring './modules/resourceGroup/resourceGroup.bicep' = {
+  name: 'modResourceGroupMonitoring'
+  params: {
+    location: location
+    resourceGroupName: resourceGroupNames.monitoring
     tags: tags
   }
 }
@@ -240,6 +257,21 @@ module aiSearch 'modules/aiSearch/aiSearch.bicep' = {
     skuName: aiSearchSku
     skuCapacity: aiSearchCapacity
     semanticSearch: aiSearchSemanticSearch
+    tags: tags
+  }
+}
+
+module logAnalytics 'modules/logAnalytics/logAnalytics.bicep' = {
+  name: 'modLogAnalytics'
+  scope: resourceGroup(resourceGroupNames.monitoring)
+  dependsOn: [
+    resourceGroupMonitoring
+  ]
+  params: {
+    location: location
+    logAnalyticsWorkspaceName: resourceNames.logAnalyticsWorkspaceName
+    logAnalyticsSku: logAnalyticsSettings.sku
+    logAnalyticsRetentionInDays: logAnalyticsSettings.retentionInDays
     tags: tags
   }
 }
