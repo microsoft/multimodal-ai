@@ -7,6 +7,12 @@ param location string
 @sys.description('Tags you would like to be applied to the resource.')
 param tags object = {}
 
+@sys.description('Name of the Application Insights resource.')
+param applicationInsightsName string
+
+@sys.description('Name of the Application Insights resource group.')
+param applicationInsightsResourceGroup string
+
 @sys.description('Id of the App Service Plan Resource.')
 param appServicePlanId string
 
@@ -65,7 +71,10 @@ resource appService 'Microsoft.Web/sites@2022-03-01' = {
 
   resource configAppSettings 'config' = {
     name: 'appsettings'
-    properties: appSettings
+    properties:  union(appSettings,
+      {
+        APPLICATIONINSIGHTS_CONNECTION_STRING: applicationInsights.properties.ConnectionString
+      })
   }
 
   resource configLogs 'config' = {
@@ -94,6 +103,11 @@ resource appService 'Microsoft.Web/sites@2022-03-01' = {
       allow: false
     }
   }
+}
+
+resource applicationInsights 'Microsoft.Insights/components@2020-02-02' existing = {
+  name: applicationInsightsName
+  scope: resourceGroup(applicationInsightsResourceGroup)
 }
 
 output id string = appService.id

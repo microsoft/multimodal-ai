@@ -44,4 +44,3 @@ resource searchResource 'Microsoft.Search/searchServices@2024-06-01-preview' = {
 
 output searchResourceId string = searchResource.id
 output searchResourcePrincipalId string = searchResource.identity.principalId
-output searchName string = searchResource.name

@@ -418,12 +418,19 @@ module webAppServicePlan 'modules/appService/appServicePlan.bicep' = {
 }
 
 module webApp 'modules/appService/appService.bicep' = {
-  name: 'web'
+  name: 'modWebApp'
   scope: resourceGroup(resourceGroupNames.ai)
+  dependsOn: [
+    resourceGroupAI
+    webAppServicePlan
+    appInsights
+  ]
   params: {
     name: resourceNames.webAppName
     location: location
     tags: tags
+    applicationInsightsName: appInsights.outputs.appInsightsResourceName
+    applicationInsightsResourceGroup: resourceGroupNames.monitoring
     appServicePlanId: webAppServicePlan.outputs.id
     runtimeName: 'python'
     runtimeVersion: '3.11'
@@ -431,21 +438,20 @@ module webApp 'modules/appService/appService.bicep' = {
     use32BitWorkerProcess: appServiceSkuName == 'F1'
     alwaysOn: appServiceSkuName != 'F1'
     appSettings: {
-      AZURE_STORAGE_ACCOUNT: storageAccount.outputs.storageAccountName
+      AZURE_STORAGE_ACCOUNT: resourceNames.storageAccount
       AZURE_STORAGE_CONTAINER: storageAccountDocsContainerName
       AZURE_SEARCH_INDEX: resourceNames.aiSearchIndexName
-      AZURE_SEARCH_SERVICE: aiSearch.outputs.searchName
+      AZURE_SEARCH_SERVICE: resourceNames.aiSearch
       AZURE_SEARCH_SEMANTIC_RANKER: 'standard'
-      AZURE_VISION_ENDPOINT: 'https://${azureAIVision.outputs.cognitiveServicesAccountName}.cognitiveservices.azure.com'
+      AZURE_VISION_ENDPOINT: 'https://${resourceNames.aiVision}.cognitiveservices.azure.com'
       AZURE_SEARCH_QUERY_LANGUAGE: 'en-us'
       AZURE_SEARCH_QUERY_SPELLER: 'lexicon'
-      APPLICATIONINSIGHTS_CONNECTION_STRING: appInsights.outputs.connectionString
       OPENAI_HOST: 'azure'
       AZURE_OPENAI_EMB_MODEL_NAME: aoaiTextEmbeddingModel
       AZURE_OPENAI_EMB_DIMENSIONS: 1536
       AZURE_OPENAI_CHATGPT_MODEL: aoaiChatModel
       AZURE_OPENAI_GPT4V_MODEL: aoaiVisionModel
-      AZURE_OPENAI_SERVICE: azureOpenAI.outputs.cognitiveServicesAccountName
+      AZURE_OPENAI_SERVICE: resourceNames.azureOpenAI
       AZURE_OPENAI_CHATGPT_DEPLOYMENT: first(filter(aoaiDeployments, deployment => deployment.name == aoaiChatModel)).name
       AZURE_OPENAI_EMB_DEPLOYMENT: first(filter(aoaiDeployments, deployment => deployment.name == aoaiTextEmbeddingModel)).name
       AZURE_OPENAI_GPT4V_DEPLOYMENT: first(filter(aoaiDeployments, deployment => deployment.name == aoaiVisionModel)).name
