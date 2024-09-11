@@ -382,6 +382,7 @@ module azureFunction 'modules/function/function.bicep' = {
     azureFunctionName: resourceNames.functionApp
     azureFunctionStorageName: resourceNames.functionStorageAccountName
     logAnalyticsWorkspaceid: logAnalytics.outputs.logAnalyticsWorkspaceId
+    azureResourceGroup: resourceGroupNames.ai
   }
 }
 
