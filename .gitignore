@@ -492,3 +492,8 @@ terraform.rc
 
 # ignore lock file
 .terraform.lock.hcl
+
+# NPM
+npm-debug.log*
+node_modules
+static
