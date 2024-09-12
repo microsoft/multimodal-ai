@@ -49,11 +49,11 @@ function Deploy-WebApp {
     # Change to the directory root
     Set-Location $projectRootDirectory
 
-    # Archive the backend folder to a zip file. Will only compress commited files not being part of .gitignore
+    # Archive the backend folder to a zip file. Will only compress committed files not part of .gitignore
     git archive -o $zipPath HEAD:backend
 
     # Now add generated files not tracked by git
-    Compress-Archive -Path "$backEndDirectory\static" -Update -DestinationPath $zipPath
+    Compress-Archive -Path "$backEndDirectory/static" -Update -DestinationPath $zipPath
 
     # Return to the original directory
     Set-Location $originalDirectory
@@ -64,7 +64,7 @@ function Deploy-WebApp {
     Publish-AzWebApp -ResourceGroupName $ResourceGroupName -Name $WebAppName -ArchivePath $zipPath -Timeout 300000 -Force
 
     # Clean up temporary files
-    #Remove-Item $zipPath -Force
+    Remove-Item $zipPath -Force
 
     Write-Verbose "Web app deployment completed successfully."
 }
