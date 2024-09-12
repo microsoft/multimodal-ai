@@ -26,8 +26,9 @@ function Deploy-WebApp {
     Write-Verbose "Using app service resource: $WebAppName"
 
     $originalDirectory = Get-Location
-    $twoLevelsUpDirectory = (Get-Item $originalDirectory).Parent.Parent.FullName
-    $frontEndDirectory = "$twoLevelsUpDirectory/frontend"
+    $projectRootDirectory = (Get-Item $originalDirectory).Parent.Parent.FullName
+    $frontEndDirectory = "$projectRootDirectory/frontend"
+    $backEndDirectory = "$projectRootDirectory/backend"
     $zipPath = "$originalDirectory/backend.zip"
 
     # Change to the frontend directoty to build the static frontend
@@ -45,11 +46,14 @@ function Deploy-WebApp {
         throw "Failed to build frontend"
     }
 
-    # Change to the directory two levels up
-    Set-Location $twoLevelsUpDirectory
+    # Change to the directory root
+    Set-Location $projectRootDirectory
 
-    # Archive the backend folder to a zip file
+    # Archive the backend folder to a zip file. Will only compress commited files not being part of .gitignore
     git archive -o $zipPath HEAD:backend
+
+    # Now add generated files not tracked by git
+    Compress-Archive -Path "$backEndDirectory\static" -Update -DestinationPath $zipPath
 
     # Return to the original directory
     Set-Location $originalDirectory
@@ -60,7 +64,7 @@ function Deploy-WebApp {
     Publish-AzWebApp -ResourceGroupName $ResourceGroupName -Name $WebAppName -ArchivePath $zipPath -Timeout 300000 -Force
 
     # Clean up temporary files
-    Remove-Item $zipPath -Force
+    #Remove-Item $zipPath -Force
 
     Write-Verbose "Web app deployment completed successfully."
 }
