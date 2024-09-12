@@ -40,7 +40,7 @@ function Deploy-WebApp {
     if ($LASTEXITCODE -ne 0) {
         throw "Restoring frontend npm packages"
     }
-    
+
     npm run build
     if ($LASTEXITCODE -ne 0) {
         throw "Failed to build frontend"
