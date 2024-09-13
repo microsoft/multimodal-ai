@@ -661,7 +661,7 @@ async def close_clients():
         await quart_app.config[CONFIG_USER_BLOB_CONTAINER_CLIENT].close()
 
 
-async def create_app():
+def create_app():
     global quart_app
     quart_app = Quart(__name__)
     quart_app.register_blueprint(bp)
