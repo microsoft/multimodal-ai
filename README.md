@@ -1,33 +1,89 @@
 # Multimodal AI
 
+## Table of Contents
+
+- [Overview](#overview)
+- [Deployment](#deployment)
+- [About this project](#whats-included)
+- [High-level architecture](#high-level-architecture)
+- [Azure services required](#azure-services-required)
+- [References](#references)
+- [Contributing](#contributing)
+- [Trademarks](#trademarks)
+
 ## Overview
 
 Welcome to the Multimodal AI project!
 
-The Multimodal AI project aims to build on the work of other [Open Source projects at Microsoft](https://github.com/Azure-Samples/azure-search-openai-demo) and deliver an enterprise-ready solution for customers that require Generative AI (Gen AI) solutions that go beyond text-based content by implementing Gen AI solutions (such as Retrieval Augmented Generation or RAG or image classification) based on text, images and audio content. For images, the goal is to go beyond traditional Object Character Recognition (OCR) and generate embeddings on the actual image contents (colors, objects, locations, coordinates, etc).
+The Multimodal AI project aims deliver an enterprise-ready solution for customers that require Generative AI (Gen AI) solutions that go beyond text-based content by providing AI solutions (such as Retrieval Augmented Generation, a.k.a. RAG, image classification or video analysis) for content based based on text, images, audio and video.
 
-## What's included
+For images, the goal is to go beyond traditional Object Character Recognition (OCR) and generate embeddings on the actual image contents (colors, objects, locations, coordinates, etc).
 
-This project build upon the existing [ChatGPT-like app with your data using Azure OpenAI and Azure AI Search](https://github.com/Azure-Samples/azure-search-openai-demo) Microsoft Open Source project, but instead of doing all the Azure services configuration and document processing activities client side via Python scripts (for example, index creation in AI Search or generate images and embeddings from PDF files), this project enhances that experience by making it enterprise-ready with the following features:
+## Deployment
 
-- It focuses in the multimodal Gen AI scenario, in order to generate embeddings based on text- and images: https://github.com/Azure-Samples/azure-search-openai-demo/blob/main/docs/gpt4v.md
-- Simplify prerequisites and deployment experience by using a minimal set of requirements.
-- Enterprise-level deployment experience via Terraform (given that most enterprise customers use Terraform for their enterprise CI/CD and IaC practices) and Bicep.
-- Move the file processing activities (like chunking, generating embeddings, converting documents to images, etc.) from client-side python scripts to a server-side platform on Azure in Azure AI Search by using the integrated vectorization capabilities (in preview for images).
-- Multimodal embeddings will be generated using [AI Search integrated vectorization](https://learn.microsoft.com/en-us/azure/search/vector-search-integrated-vectorization):
+The Multimodal AI Project can be deployed either by using Bicep or Terraform. Please select the option below of your preferred deployment solution:
+
+- [Bicep](/deployment/bicep/readme.md)
+- [Terraform](/deployment/terraform/)
+
+## About this project
+
+This project aims to provide enterprise-ready multimodal Generative AI (GenAI) solutions in customer's environments. The goal is to provide GenAI solutions independently if content is text, images, audio or video.
+
+With the rapid development and introduction of new multimodal AI models, such as [GPT-4o](https://openai.com/index/hello-gpt-4o/), customers are realizing the value of implementing GenAI solutions that go beyond simply using text-based documents within their organizations and instead, they are looking for solutions that leverage other media types that are in use within their organizations, for example, categorize a video and find specific scenes or analyse documents and images with architectural diagrams to provide better answers to technical support personnel.
+
+This project leverages some of the resources from another Microsoft's Open Source project (see [References](#references) section on this document) including some Python scripts as well as their great web application for user interaction. However, this solution takes a different approach by not performing all the logic, resource configuration and file processing activities via client-side Python scripts (for example, create images from PDF files or generate embeddings and index them into Azure AI Search), and instead, this project performs all those activities server side on the Azure platform using native Azure services and capabilities.
+
+The scope of this project currently is:
+
+- Focused in multimodal Gen AI scenarios instead of traditional text-only AI solutions.
+- Make deployment experience as simple as possible by requiring a minimal set of prerequistes.
+- Enterprise-level deployment experience via Terraform and Bicep, for easy incorporation into CI/CD deployment pipelines.
+- File processing activities (like chunking, generating embeddings, converting documents to images, etc.) are executed server-side on Azure via Azure AI Search (using built-in capabilities as well as using custom skills).
+- Use AI Search [data sources](https://learn.microsoft.com/en-us/AZURE/search/search-data-sources-gallery) for easier processing and ingestion of documents by simply uploading the documents, images, videos, etc. to Azure Storage (blob).
+- Multimodal embeddings generated by using [AI Search integrated vectorization](https://learn.microsoft.com/en-us/azure/search/vector-search-integrated-vectorization):
    - Images: Azure AI Vision multimodal embeddings skill (in preview): https://learn.microsoft.com/en-us/azure/search/cognitive-search-skill-vision-vectorize
    - Text: Azure OpenAI Embedding skill : https://learn.microsoft.com/en-us/azure/search/cognitive-search-skill-azure-openai-embedding
-- Use AI Search [data sources](https://learn.microsoft.com/en-us/AZURE/search/search-data-sources-gallery) for easier processing of documents (without having to use local Python scripts from a developer computer to index additional content)
-- Generate images from PDF files as part of the AI Search indexing process via an Indexer.
-- Usage of Azure AI Search [custom skills](https://learn.microsoft.com/en-us/azure/search/cognitive-search-custom-skill-interface) to interact with Azure Document Intelligence and persisting images from PDF files.
+- Image generation from PDF files as part of the AI Search indexing process via an Indexer.
+- Usage of Azure AI Search [custom skills](https://learn.microsoft.com/en-us/azure/search/cognitive-search-custom-skill-interface) to interact with Azure Document Intelligence and persisting images generated as part of the indexing process.
 - Leverage AI Search [knowledge storage](https://learn.microsoft.com/en-us/azure/search/knowledge-store-concept-intro) to persist images generated as part of the indexing process.
-- Extend the existing web application to support JPG images (as that is the extension that AI Search generates them)
 
 ## High-level architecture
 
 The following picture depicts the high-level architecture of the Multimodal AI Project:
 
 ![High-level architecture](docs/images/high-level-architecture.png)
+
+## Azure services required
+
+As the architectural diagram in the previous depicts, this project deploys and configures the following Azure resources:
+
+- Azure Open AI with the following models
+   - GPT-4o
+   - text-embedding-ada-002
+- Azure AI Search with the following features configured
+   - Data sources
+   - Indexes
+   - Built-in skills
+   - Custom skills
+   - Indexer
+   - Knowledge store
+- Document Intelligence
+   - To extract text from documents
+- Azure AI Vision
+   - For generating embeddings of images
+- Azure Functions
+   - For AI Search custom skills
+- Azure App Service
+   - For the web app
+- Azure Log Analytics Workspace
+- Azure Application Insights
+- Storage Account
+   - To provide the documents to be indexed
+
+## References
+
+As previously mentioned, this project leverages the [ChatGPT-like app with your data using Azure OpenAI and Azure AI Search](https://github.com/Azure-Samples/azure-search-openai-demo) Open Source project by using some of its Python scripts (for chunking for example) as well as the web application used by users to submit prompts and get responses.
 
 ## Contributing
 
