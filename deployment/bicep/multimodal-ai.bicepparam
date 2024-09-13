@@ -30,7 +30,7 @@ param aoaiChatModel = 'gpt-4o'
 param aoaiVisionModel = 'gpt-4o'
 param tags = {}
 
-param appServiceSkuName = 'B1'
+param appServiceSkuName = 'B3'
 
 param aoaiDeployments = [
   {
