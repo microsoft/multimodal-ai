@@ -579,3 +579,6 @@ module aiSearchIndexer 'modules/aiSearch/aiSearch-indexer.bicep' = {
     managedIdentityId: deploymentScriptIdentity.outputs.managedIdentityId
   }
 }
+
+output appsResourceGroup string = resourceGroupNames.apps
+output webAppName string = webApp.outputs.name
