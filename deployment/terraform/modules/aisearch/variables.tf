@@ -57,6 +57,96 @@ variable "search_service_replica_count" {
 
 }
 
+variable "search_service_datasource_name" {
+  description = "Specifies datasource name."
+  type        = string
+  sensitive   = false
+}
+
+variable "search_service_index_name" {
+  description = "Specifies index name."
+  type        = string
+  sensitive   = false
+}
+
+variable "search_service_indexer_name" {
+  description = "Specifies index name."
+  type        = string
+  sensitive   = false
+}
+
+variable "search_service_skillset_name" {
+  description = "Specifies index name."
+  type        = string
+  sensitive   = false
+}
+
+variable "pdf_merge_customskill_endpoint" {
+  description = "Specifies endpoint for skill."
+  type        = string
+  sensitive   = false
+
+}
+
+variable "cognitive_services_endpoint" {
+  description = "Azure Cognitive Services endpoint"
+  type        = string
+}
+
+variable "cognitive_services_key" {
+  description = "Specifies cognitive services key."
+  type        = string
+  sensitive   = false
+
+}
+
+variable "knowledgestore_storage_account_id" {
+  description = "Specifies knowledge resource stroager."
+  type        = string
+  sensitive   = false
+
+}
+
+variable "knowledgestore_storage_container_name" {
+  description = "Specifies knowledge resource contaner name."
+  type        = string
+  sensitive   = false
+
+}
+
+variable "azure_openai_endpoint" {
+  description = "Azure OpenAI endpoint"
+  type        = string
+}
+
+variable "azure_openai_text_deployment_id" {
+  description = "Azure OpenAI text deployment ID"
+  type        = string
+}
+
+variable "azure_openai_text_model_name" {
+  description = "Azure OpenAI text model name"
+  type        = string
+}
+
+
+
+
+
+
+variable "storage_account_id" {
+  description = "Storage account id"
+  type        = string
+  sensitive   = false
+}
+
+variable "storage_container_name_content" {
+  description = "Storage container name"
+  type        = string
+  sensitive   = false
+  default     = "content"
+}
+
 # Monitoring variables
 variable "log_analytics_workspace_id" {
   description = "Specifies the resource ID of the log analytics workspace used for the stamp"
@@ -73,6 +163,7 @@ variable "subnet_id" {
   description = "Specifies the subnet ID."
   type        = string
   sensitive   = false
+  default     = ""
 }
 
 # Customer-managed key variables
