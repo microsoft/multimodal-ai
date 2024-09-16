@@ -63,10 +63,6 @@ param storageAccountDocsContainerName string
 @sys.description('Specifies the tags which will be applied to all resources.')
 param tags object = {}
 
-
-@sys.description('Specifies the URI of the MSDeploy Package for the Azure Function.')
-param azureFunctionUri string = ''
-
 @sys.description('Specifies the text embedding model to use in Azure OpenAI.')
 param aoaiTextEmbeddingModel string
 
@@ -101,7 +97,6 @@ var resourceNames = {
   aiSearchDocsDataSourceName: '${storageAccountDocsContainerName}-datasource'
   appServicePlan: '${prefixNormalized}-${locationNormalized}-appserviceplan'
   functionApp: '${prefixNormalized}-${locationNormalized}-functionapp'
-  functionAppUri: azureFunctionUri
   functionStorageAccountName: take('${prefixNormalized}${locationNormalized}functionstg',23)
   logAnalyticsWorkspaceName: '${prefixNormalized}-${locationNormalized}-loganalytics'
   appInsightsName: '${prefixNormalized}-${locationNormalized}-appinsights'
@@ -401,21 +396,24 @@ module appServiceRoleAssignmentStorage 'modules/rbac/roleAssignment-appService-s
 // Azure Function for AI Search Custom Skills
 module azureFunction 'modules/function/function.bicep' = {
   name: 'modAzureFunction'
-  scope: resourceGroup(resourceGroupNames.ai)
+  scope: resourceGroup(resourceGroupNames.apps)
   dependsOn: [
     resourceGroupAI
     storageAccount
   ]
   params: {
     location: location
+    tags: tags
+    applicationInsightsName: appInsights.outputs.appInsightsResourceName
+    applicationInsightsResourceGroup: resourceGroupNames.monitoring
     appServiceCapacity: appServicePlan.capacity
     appServiceFamily: appServicePlan.family
     appServiceName: appServicePlan.name
     appServiceSize: appServicePlan.size
     appServiceTier: appServicePlan.tier
     azureFunctionName: resourceNames.functionApp
-    azureFunctionZipUri: resourceNames.functionAppUri
     azureFunctionStorageName: resourceNames.functionStorageAccountName
+    logAnalyticsWorkspaceid: logAnalytics.outputs.logAnalyticsWorkspaceId
   }
 }
 
