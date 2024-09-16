@@ -15,9 +15,7 @@
 
 Welcome to the Multimodal AI project!
 
-The Multimodal AI project aims deliver an enterprise-ready solution for customers that require Generative AI (Gen AI) solutions that go beyond text-based content by leveraging the latests advancements in multimodal Artificial intelligence models to implement generative AI solutions such as Retrieval Augmented Generation (RAG), image classification or video analysis, for content based based on text, images, audio and video.
-
-For images, the goal is to go beyond traditional Object Character Recognition (OCR) and generate embeddings on the actual image contents (colors, objects, locations, coordinates, etc).
+The Multimodal AI project goal is to deliver an enterprise-ready solution for customers that require Generative AI (Gen AI) solutions that go beyond text-based content, by leveraging the latests advancements in multimodal Artificial Intelligence models, to implement generative AI solutions such as Retrieval Augmented Generation (RAG), image classification or video analysis, for content based on text, images, audio and video. For images, the goal is to go beyond traditional Object Character Recognition (OCR) and generate embeddings on the actual image contents (colors, objects, locations, coordinates, etc).
 
 ## Deployment
 
@@ -34,7 +32,7 @@ With the rapid development and introduction of new multimodal AI models, such as
 
 This project provides a solution that allows customers to bring their data independently of the format (i.e. can be text, text with images, images, audio or video) and via native Azure PaaS services, process the data (for example, perform chunking, generate images from files, generate embeddings, index content, etc) to deliver Generative AI solutions, such as RAG, independently of the data format as well as ensuring all processing activities are performed server-side on Azure (i.e. no processing is done client-side for example via scripting). This provides a enterprise-grade highly-scalable solution that you can grow and scale as your needs demand thanks to the power and capacity of the Azure platform without having to rely on local processing on developer workstations. 
 
-The scope of this Multimodal AI project is:
+The current scope of the Multimodal AI project is as follows:
 
 - Focused in multimodal Gen AI scenarios instead of traditional AI solutions based on text-only  content.
 - Make deployment experience as simple as possible by requiring a minimal set of prerequistes.
@@ -47,7 +45,8 @@ The scope of this Multimodal AI project is:
 - Image generation from PDF files as part of the AI Search indexing process via an Indexer.
 - Usage of Azure AI Search [custom skills](https://learn.microsoft.com/en-us/azure/search/cognitive-search-custom-skill-interface) to interact with Azure Document Intelligence and persisting images generated as part of the indexing process.
 - Leverage AI Search [knowledge storage](https://learn.microsoft.com/en-us/azure/search/knowledge-store-concept-intro) to persist images generated as part of the indexing process.
-- Audio and video content is in the roadmap and will be incorporated shortly.
+
+Please note that other capabilities such as support for audio and video content as well as enablement of network security features such as usage of virtual networks and private endpoints is in the roadmap and will be incorporated in future updates.
 
 ## High-level architecture
 
