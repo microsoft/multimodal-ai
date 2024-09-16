@@ -69,6 +69,8 @@ As the architectural diagram in the previous depicts, this project deploys and c
    - Custom skills
    - Indexer
    - Knowledge store
+- Azure AI Services multi-service account
+   - Used by AI Search for integrated vectorization of images
 - Document Intelligence
    - To extract text from documents
 - Azure AI Vision
@@ -76,7 +78,7 @@ As the architectural diagram in the previous depicts, this project deploys and c
 - Azure Functions
    - For AI Search custom skills
 - Azure App Service
-   - For the web app
+   - For the web application
 - Azure Log Analytics Workspace
 - Azure Application Insights
 - Storage Account
