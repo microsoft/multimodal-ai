@@ -29,9 +29,6 @@ param azureFunctionStorageName string
 @sys.description('Log Analytics Workspace Id for the Azure Function.')
 param logAnalyticsWorkspaceid string
 
-@sys.description('Name of the Azure Resource Group to be created.')
-param azureResourceGroup string
-
 //creating a storage account for the Azure Function
 resource storageAccount 'Microsoft.Storage/storageAccounts@2022-05-01' = {
   name: azureFunctionStorageName
@@ -89,19 +86,12 @@ resource functionApp 'Microsoft.Web/sites@2022-03-01' = {
   }
 }
 
-// grant Blob Data Contributor assignment to the managed identity
-// perhaps should be moved to modules/rbac/*
-resource storageResource 'Microsoft.Storage/storageAccounts@2023-05-01' existing = {
-  name: azureFunctionStorageName
-}
-
-resource roleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(functionApp.id, 'StorageBlobDataContributor')
-  scope: storageResource
-  properties: {
-    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'ba92f5b4-2d11-453d-a403-e96b0029c9fe')
-    principalId: functionApp.identity.principalId
-    principalType: 'ServicePrincipal'
+// Grant Blob Data Contributor assignment to the Function managed identity
+module functionRoleAssignmentStorage '../rbac/roleAssignment-function-storage.bicep' = {
+  name: 'functionRoleAssignmentStorage'
+  params: {
+    storageAccountId: storageAccount.id
+    managedIdentityPrincipalId: functionApp.identity.principalId
   }
 }
 
