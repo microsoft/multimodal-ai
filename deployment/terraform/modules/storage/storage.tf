@@ -69,34 +69,3 @@ resource "azurerm_storage_container" "storage_container" {
     azurerm_role_assignment.current_role_assignment_storage_blob_data_owner
   ]
 }
-
-# resource "azurerm_storage_share" "storage_share" {
-#   for_each = toset(var.storage_account_share_names)
-
-#   name                 = each.key
-#   storage_account_name = azurerm_storage_account.storage.name
-
-#   access_tier      = "TransactionOptimized"
-#   enabled_protocol = "SMB"
-#   quota            = 102400
-# }
-
-
-# resource "azapi_resource" "storage_share" {
-#   for_each = toset(var.storage_account_share_names)
-
-#   type      = "Microsoft.Storage/storageAccounts/fileServices/shares@2021-02-01"
-#   name      = each.key
-#   parent_id = "${azurerm_storage_account.storage.id}/fileServices/default"
-#   body = jsonencode({
-#     properties = {
-#       accessTier       = "TransactionOptimized"
-#       enabledProtocols  = "SMB"
-#       shareQuota             = 102400
-#     }
-#   })
-#   depends_on = [
-#     azurerm_storage_account.storage,
-#     azurerm_role_assignment.current_role_assignment_storage_blob_data_owner
-#  ]
-# }

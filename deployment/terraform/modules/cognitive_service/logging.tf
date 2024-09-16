@@ -1,6 +1,6 @@
 resource "azurerm_monitor_diagnostic_setting" "diagnostic_setting_cognitive_service" {
   name                       = "logAnalytics"
-  target_resource_id         = azurerm_cognitive_account.aoai.id
+  target_resource_id         = azurerm_cognitive_account.cognitive_service.id
   log_analytics_workspace_id = var.log_analytics_workspace_id
 
   dynamic "enabled_log" {

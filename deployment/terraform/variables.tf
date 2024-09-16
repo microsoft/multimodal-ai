@@ -25,14 +25,26 @@ variable "backend_service_code_path" {
   default     = "../../backend"
 }
 
+variable "skills_service_code_path" {
+  description = "Skillsets service code path."
+  type        = string
+  default     = "../../skills"
+}
+
 variable "appservice_plan_sku" {
   description = "App Service Plan Sku Name."
   type        = string
-  default     = "EP1" # linux consumption plans does not support website_run_from_package = 1 setting
+  default     = "S2" # linux consumption plans does not support website_run_from_package = 1 setting
 }
 
 variable "backend_service_name" {
   description = "Backend Service Name."
+  type        = string
+  default     = ""
+}
+
+variable "skills_service_name" {
+  description = "Skillsets Service Name."
   type        = string
   default     = ""
 }
@@ -61,22 +73,201 @@ variable "log_analytics_workspace_name" {
   default     = ""
 }
 
-variable "searchServiceName" {
+variable "search_service_name" {
   description = "Search Service Name."
   type        = string
   default     = ""
 }
 
-variable "searchServiceLocation" {
+variable "search_service_location" {
   description = "Search Service Location."
   type        = string
   default     = ""
 }
 
-variable "searchServiceSkuName" {
+variable "search_service_sku" {
   description = "Search Service SKU Name."
   type        = string
   default     = "standard"
+}
+
+variable "search_service_partition_count" {
+  description = "Specifies the number of partitions in the search service."
+  type        = number
+  sensitive   = false
+  default     = 1
+
+}
+
+variable "search_service_replica_count" {
+  description = "Specifies the number of replicas in the search service."
+  type        = number
+  sensitive   = false
+  default     = 1
+
+}
+
+
+variable "search_service_datasource_name" {
+  description = "Specifies datasource name"
+  type        = string
+  default     = ""
+}
+
+variable "search_service_index_name" {
+  description = "Specifies index name"
+  type        = string
+  default     = ""
+}
+
+variable "search_service_indexer_name" {
+  description = "Specifies indexer name"
+  type        = string
+  default     = ""
+}
+
+variable "search_service_skillset_name" {
+  description = "Specifies skillset name"
+  type        = string
+  default     = ""
+}
+
+
+variable "azure_openai_text_deployment_id" {
+  description = "Azure OpenAI text deployment ID"
+  type        = string
+  default     = "text-embedding-ada-002"
+}
+
+variable "azure_openai_text_model_name" {
+  description = "Azure OpenAI text model name"
+  type        = string
+  default     = "text-embedding-ada-002"
+}
+
+variable "knowledgestore_storage_container_name" {
+  description = "Specifies knowledge resource contaner name."
+  type        = string
+  sensitive   = false
+  default     = "docs"
+}
+
+
+variable "openai_service_name" {
+  description = "Specifies the sku name of the cognitive service."
+  type        = string
+  sensitive   = false
+  default     = ""
+}
+
+variable "openai_service_sku" {
+  description = "Specifies the sku name of the cognitive service."
+  type        = string
+  sensitive   = false
+  default     = "S0"
+  validation {
+    condition     = length(var.openai_service_sku) >= 1
+    error_message = "Please specify a valid sku name."
+  }
+}
+
+variable "cognitive_service_name" {
+  description = "Specifies the sku name of the cognitive service."
+  type        = string
+  sensitive   = false
+  default     = ""
+}
+
+variable "cognitive_service_sku" {
+  description = "Specifies the sku name of the cognitive service."
+  type        = string
+  sensitive   = false
+  default     = "S0"
+  validation {
+    condition     = length(var.cognitive_service_sku) >= 1
+    error_message = "Please specify a valid sku name."
+  }
+}
+
+variable "form_recognizer_name" {
+  description = "Specifies the sku name of the form recognizer service."
+  type        = string
+  sensitive   = false
+  default     = ""
+}
+
+variable "form_recognizer_sku" {
+  description = "Specifies the sku name of the cognitive service."
+  type        = string
+  sensitive   = false
+  default     = "F0"
+  validation {
+    condition     = length(var.form_recognizer_sku) >= 1
+    error_message = "Please specify a valid sku name."
+  }
+}
+
+variable "computer_vision_name" {
+  description = "Specifies the sku name of the computer vision service."
+  type        = string
+  sensitive   = false
+  default     = ""
+}
+
+variable "computer_vision_sku" {
+  description = "Specifies the sku name of the cognitive service."
+  type        = string
+  sensitive   = false
+  default     = "S1"
+  validation {
+    condition     = length(var.computer_vision_sku) >= 1
+    error_message = "Please specify a valid sku name."
+  }
+}
+
+variable "aoai_deployments" {
+  type = list(object({
+    name = string
+    model = object({
+      format  = string
+      version = string
+    })
+    sku = object({
+      capacity = number
+    })
+  }))
+  default = [
+    {
+      name = "gpt-4o"
+      model = {
+        format  = "OpenAI"
+        version = "2024-05-13"
+      }
+      sku = {
+        capacity = 1
+      }
+    },
+    {
+      name = "text-embedding-ada-002"
+      model = {
+        format  = "OpenAI"
+        version = "2"
+      }
+      sku = {
+        capacity = 1
+      }
+    },
+    {
+      name = "gpt-35-turbo"
+      model = {
+        format  = "OpenAI"
+        version = "0613"
+      }
+      sku = {
+        capacity = 1
+      }
+    }
+  ]
 }
 
 
@@ -92,12 +283,9 @@ variable "storage_container_name_content" {
   default     = "content"
 }
 
-# variable "storage_share_name_function_app" {
-#   description = "Storage share name for function app to use."
-#   type        = string
-#   default     = "funcapp"
-# }
 
+
+# ###################################################################################################
 
 variable "azure_auth_tenant_id" {
   description = "AZURE_AUTH_TENANT_ID app service configuration value."
