@@ -47,14 +47,7 @@ resource "azurerm_linux_function_app" "linux_function_app" {
     vnet_route_all_enabled            = false
     websockets_enabled                = false
   }
-  storage_account_name          = data.azurerm_storage_account.storage_account.name
-  storage_uses_managed_identity = true
-  # storage_account {
-  #   name         = "functionapp"
-  #   access_key   = data.azurerm_storage_account.storage_account.primary_access_key
-  #   account_name = data.azurerm_storage_account.storage_account.name
-  #   share_name   = var.function_share_name
-  #   type         = "AzureFiles"
-  # }
+  storage_account_name                           = data.azurerm_storage_account.storage_account.name
+  storage_uses_managed_identity                  = true
   webdeploy_publish_basic_authentication_enabled = false
 }

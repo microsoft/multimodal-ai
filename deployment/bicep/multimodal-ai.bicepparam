@@ -1,6 +1,6 @@
 using './multimodal-ai.bicep'
 
-param prefix = 'mmai11'
+param prefix = 'mmai81'
 param location = 'eastus'
 
 param aiVisionlocation = 'eastus'
@@ -22,8 +22,12 @@ param storageAccountDocsContainerName = 'docs'
 
 param aoaiKind = 'OpenAI'
 param aoaiSku = 'S0'
-param aoaiTextEmbeddingModelForAiSearch = 'text-embedding-ada-002'
+param aoaiTextEmbeddingModel = 'text-embedding-ada-002'
+param aoaiChatModel = 'gpt-4o'
+param aoaiVisionModel = 'gpt-4o'
 param tags = {}
+
+param appServiceSkuName = 'B3'
 
 param aoaiDeployments = [
   {

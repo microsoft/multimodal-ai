@@ -1,0 +1,119 @@
+{
+  "pageTitle": "Azure OpenAI + AI Search",
+  "headerTitle": "Azure OpenAI + AI Search",
+  "chat": "Chat",
+  "qa": "Posez une question",
+  "login": "Connexion",
+  "logout": "D\u00e9connexion",
+  "clearChat": "Effacer le chat",
+  "upload": {
+    "fileLabel": "T\u00e9l\u00e9charger le fichier:",
+    "uploadedFilesLabel": "Fichiers pr\u00e9c\u00e9demment t\u00e9l\u00e9charg\u00e9s:",
+    "noFilesUploaded": "Aucun fichier t\u00e9l\u00e9charg\u00e9 pour le moment",
+    "loading": "Chargement...",
+    "manageFileUploads": "G\u00e9rer les t\u00e9l\u00e9chargements de fichiers",
+    "uploadingFiles": "T\u00e9l\u00e9chargement de fichiers...",
+    "uploadedFileError": "Erreur lors du t\u00e9l\u00e9chargement du fichier - veuillez r\u00e9essayer ou contacter l'administrateur.",
+    "deleteFile": "Supprimer le fichier",
+    "deletingFile": "Suppression du fichier...",
+    "errorDeleting": "Erreur lors de la suppression.",
+    "fileDeleted": "Fichier supprim\u00e9"
+  },
+  "developerSettings": "Param\u00e8tres d\u00e9veloppeur",
+  "chatEmptyStateTitle": "Discutez avec vos donn\u00e9es",
+  "chatEmptyStateSubtitle": "Demandez n'importe quoi ou essayez un exemple",
+  "defaultExamples": {
+    "1": "Qu'est-ce qui est inclus dans mon plan Northwind Health Plus qui n'est pas dans le standard?",
+    "2": "Qu'arrive-t-il lors d'un examen de performance?",
+    "3": "Qu'est-ce qu'un Product Manager fait?",
+    "placeholder": "Tapez une nouvelle question (par exemple, mon plan couvre-t-il les examens oculaires annuels?)"
+  },
+  "askTitle": "Demandez \u00e0 vos donn\u00e9es",
+  "gpt4vExamples": {
+    "1": "Comparez l'impact des taux d'int\u00e9r\u00eat et du PIB sur les march\u00e9s financiers.",
+    "2": "Quelle est la tendance pr\u00e9vue pour l'indice S&P 500 au cours des cinq prochaines ann\u00e9es? Comparez-le aux performances pass\u00e9es de l'S&P 500",
+    "3": "Pouvez-vous identifier une corr\u00e9lation entre les prix du p\u00e9trole et les tendances du march\u00e9 boursier?",
+    "placeholder": "Exemple: Mon plan couvre-t-il les examens oculaires annuels?"
+  },
+  "generatingAnswer": "G\u00e9n\u00e9ration de la r\u00e9ponse",
+  "citationWithColon": "Citation:",
+  "followupQuestions": "Questions de suivi:",
+  "tooltips": {
+    "submitQuestion": "Soumettre une question",
+    "askWithVoice": "Poser une question \u00e0 l'aide de la voix",
+    "stopRecording": "Arr\u00eater l'enregistrement de la question",
+    "showThoughtProcess": "Montrer le processus de r\u00e9flexion",
+    "showSupportingContent": "Montrer le contenu de soutien",
+    "speakAnswer": "Parler r\u00e9ponse",
+    "info": "Info",
+    "save": "Sauvegarder"
+  },
+  "headerTexts": {
+    "thoughtProcess": "Processus de R\u00e9flexion",
+    "supportingContent": "Contenu d'Appui",
+    "citation": "Citation"
+  },
+  "labels": {
+    "toggleMenu": "Basculer le menu",
+    "languagePicker": "S\u00e9lectionnez votre langue",
+    "headerText": "Configurer la g\u00e9n\u00e9ration de r\u00e9ponses",
+    "closeButton": "Fermer",
+    "promptTemplate": "Mod\u00e8le de l'invitation",
+    "temperature": "Temp\u00e9rature",
+    "seed": "Seed",
+    "minimumSearchScore": "Score de recherche minimum",
+    "minimumRerankerScore": "Score minimum du reclasseur s\u00e9mantique",
+    "retrieveCount": "R\u00e9cup\u00e9rer ce nombre de r\u00e9sultats de recherche :",
+    "excludeCategory": "Exclure la cat\u00e9gorie",
+    "useSemanticRanker": "Utiliser le reclasseur s\u00e9mantique",
+    "useSemanticCaptions": "Utiliser les titres s\u00e9mantiques",
+    "useSuggestFollowupQuestions": "Sugg\u00e9rer des questions de suivi",
+    "useGPT4V": "Utiliser le mod\u00e8le GPT Vision",
+    "gpt4VInput": {
+      "label": "Entr\u00e9es du mod\u00e8le GPT Vision",
+      "options": {
+        "textAndImages": "Images et texte",
+        "images": "Images",
+        "texts": "Texte"
+      }
+    },
+    "retrievalMode": {
+      "label": "Mode de r\u00e9cup\u00e9ration",
+      "options": {
+        "hybrid": "Vecteurs + Texte (Hybride)",
+        "vectors": "Vecteurs",
+        "texts": "Texte"
+      }
+    },
+    "vector": {
+      "label": "Champs de vecteur (recherche de vecteur multi-requ\u00eate)",
+      "options": {
+        "embedding": "Incorporations de texte",
+        "imageEmbedding": "Incorporations d'images",
+        "both": "Incorporations de texte et d'images"
+      }
+    },
+    "useOidSecurityFilter": "Utiliser le filtre de s\u00e9curit\u00e9 oid",
+    "useGroupsSecurityFilter": "Utiliser le filtre de s\u00e9curit\u00e9 de groupe",
+    "shouldStream": "Diffuser en continu les r\u00e9ponses"
+  },
+  "helpTexts": {
+    "promptTemplate": "Remplace le prompt utilis\u00e9 pour g\u00e9n\u00e9rer la r\u00e9ponse en fonction de la question et des r\u00e9sultats de la recherche. Pour ajouter \u00e0 l'invite existante au lieu de remplacer l'invite enti\u00e8re, commencez votre invite par '>>>'.",
+    "temperature": "D\u00e9finit la temp\u00e9rature de la requ\u00eate \u00e0 le Grand mod\u00e8le de langage (LLM) qui g\u00e9n\u00e8re la r\u00e9ponse. Des temp\u00e9ratures plus \u00e9lev\u00e9es donnent lieu \u00e0 des r\u00e9ponses plus cr\u00e9atives, mais elles peuvent \u00eatre moins ancr\u00e9es.",
+    "seed": "D\u00e9termine un num\u00e9ro premier qui servira \u00e0 am\u00e9liorer la r\u00e9p\u00e9tabilit\u00e9 des r\u00e9ponses du mod\u00e8le. Le num\u00e9ro premier doit \u00eatre un entier quelconque.",
+    "searchScore": "D\u00e9finit un score minimum pour les r\u00e9sultats de recherche provenant d'Azure AI Search. La plage de scores d\u00e9pend si vous utilisez l'hybride (par d\u00e9faut), uniquement les vecteurs, ou uniquement le texte.",
+    "rerankerScore": "D\u00e9finit un score minimum pour les r\u00e9sultats de recherche provenant du reranker s\u00e9mantique. Le score varie toujours entre 0 et 4. Plus le score est \u00e9lev\u00e9, plus le r\u00e9sultat est s\u00e9mantiquement pertinent par rapport \u00e0 la question.",
+    "retrieveNumber": "D\u00e9finit le nombre de r\u00e9sultats de recherche \u00e0 r\u00e9cup\u00e9rer d'Azure AI Search. Plus de r\u00e9sultats peuvent augmenter la probabilit\u00e9 de trouver la bonne r\u00e9ponse, mais peuvent amener le mod\u00e8le \u00e0 se 'perdre au milieu'.",
+    "excludeCategory": "Sp\u00e9cifie une cat\u00e9gorie \u00e0 exclure des r\u00e9sultats de recherche. Il n'y a aucune cat\u00e9gorie utilis\u00e9e dans l'ensemble de donn\u00e9es par d\u00e9faut.",
+    "useSemanticReranker": "Active le classement s\u00e9mantique d'Azure AI Search, un mod\u00e8le qui r\u00e9organise les r\u00e9sultats de recherche en fonction de la similarit\u00e9 s\u00e9mantique avec la requ\u00eate de l'utilisateur.",
+    "useSemanticCaptions": "Envoie des l\u00e9gendes s\u00e9mantiques \u00e0 l'LLM au lieu du r\u00e9sultat de recherche complet. Une l\u00e9gende s\u00e9mantique est extraite d'un r\u00e9sultat de recherche lors du processus de classement s\u00e9mantique.",
+    "suggestFollowupQuestions": "Demande \u00e0 l'LLM de sugg\u00e9rer des questions de suivi en fonction de la requ\u00eate de l'utilisateur.",
+    "useGPT4Vision": "Utilise GPT-4-Turbo avec Vision pour g\u00e9n\u00e9rer des r\u00e9ponses bas\u00e9es sur des images et du texte de l'index.",
+    "vectorFields": "Sp\u00e9cifie quels champs d'incorporation dans l'index de recherche Azure AI seront recherch\u00e9s, \u00e0 la fois les incorporations 'Images et texte', 'Images' seulement, ou 'Texte' seulement.",
+    "gpt4VisionInputs": "D\u00e9finit ce qui sera envoy\u00e9 au mod\u00e8le de vision. 'Images et texte' envoie \u00e0 la fois des images et du texte au mod\u00e8le, 'Images' envoie seulement des images, et 'Texte' envoie seulement du texte.",
+    "retrievalMode": "D\u00e9finit le mode de r\u00e9cup\u00e9ration pour la requ\u00eate Azure AI Search. Vecteurs + Texte (Hybride) utilise une combinaison de recherche vectorielle et de recherche en texte int\u00e9gral, Vecteurs utilise uniquement la recherche vectorielle, et Texte utilise uniquement la recherche en texte int\u00e9gral. Hybride est g\u00e9n\u00e9ralement optimal.",
+    "streamChat": "Diffuse en continu la r\u00e9ponse \u00e0 l'interface utilisateur du chat au fur et \u00e0 mesure de sa g\u00e9n\u00e9ration.",
+    "useOidSecurityFilter": "Filtrez les r\u00e9sultats de recherche en fonction de l'OID de l'utilisateur authentifi\u00e9.",
+    "useGroupsSecurityFilter": "Filtrez les r\u00e9sultats de recherche en fonction des groupes de l'utilisateur authentifi\u00e9."
+  }
+}

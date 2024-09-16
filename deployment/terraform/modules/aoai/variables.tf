@@ -37,6 +37,7 @@ variable "cognitive_service_kind" {
   description = "Specifies the kind of the cognitive service."
   type        = string
   sensitive   = false
+  default     = "OpenAI"
   validation {
     condition     = contains(["AnomalyDetector", "ComputerVision", "CognitiveServices", "ContentModerator", "CustomVision.Training", "CustomVision.Prediction", "Face", "FormRecognizer", "ImmersiveReader", "LUIS", "Personalizer", "SpeechServices", "TextAnalytics", "TextTranslation", "OpenAI"], var.cognitive_service_kind)
     error_message = "Please specify a valid kind."
@@ -44,7 +45,7 @@ variable "cognitive_service_kind" {
 }
 
 variable "cognitive_service_sku" {
-  description = "Specifies the name of the cognitive service."
+  description = "Specifies the sku name of the cognitive service."
   type        = string
   sensitive   = false
   validation {
@@ -64,24 +65,17 @@ variable "log_analytics_workspace_id" {
   }
 }
 
-variable "gpt_model_name" {
-  description = "Specifies the name of the GPT model."
-  type        = string
-  sensitive   = false
-  validation {
-    condition     = length(var.gpt_model_name) >= 2
-    error_message = "Please specify a valid name."
-  }
-}
-
-variable "gpt_model_version" {
-  description = "Specifies the version of the GPT model."
-  type        = string
-  sensitive   = false
-  validation {
-    condition     = length(var.gpt_model_version) >= 2
-    error_message = "Please specify a valid version."
-  }
+variable "aoai_deployments" {
+  type = list(object({
+    name = string
+    model = object({
+      format  = string
+      version = string
+    })
+    sku = object({
+      capacity = number
+    })
+  }))
 }
 
 # Network variables
@@ -89,6 +83,7 @@ variable "subnet_id" {
   description = "Specifies the subnet ID."
   type        = string
   sensitive   = false
+  default     = ""
 }
 
 # Customer-managed key variables

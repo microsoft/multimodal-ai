@@ -5,7 +5,6 @@ locals {
 
 # Generate a unique resource token
 locals {
-  #resourceToken = lower(join("", [random_id.main.hex, var.environmentName, var.location]))
   resourceToken = lower(join("", [random_id.main.hex]))
 }
 
