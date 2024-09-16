@@ -63,10 +63,6 @@ param storageAccountDocsContainerName string
 @sys.description('Specifies the tags which will be applied to all resources.')
 param tags object = {}
 
-
-@sys.description('Specifies the URI of the MSDeploy Package for the Azure Function.')
-param azureFunctionUri string = ''
-
 @sys.description('Specifies the text embedding model to use in Azure OpenAI.')
 param aoaiTextEmbeddingModel string
 
@@ -400,7 +396,7 @@ module appServiceRoleAssignmentStorage 'modules/rbac/roleAssignment-appService-s
 // Azure Function for AI Search Custom Skills
 module azureFunction 'modules/function/function.bicep' = {
   name: 'modAzureFunction'
-  scope: resourceGroup(resourceGroupNames.ai)
+  scope: resourceGroup(resourceGroupNames.apps)
   dependsOn: [
     resourceGroupAI
     storageAccount
