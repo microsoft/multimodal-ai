@@ -15,31 +15,31 @@
 
 Welcome to the Multimodal AI project!
 
-The Multimodal AI project aims deliver an enterprise-ready solution for customers that require Generative AI (Gen AI) solutions that go beyond text-based content by providing AI solutions (such as Retrieval Augmented Generation, a.k.a. RAG, image classification or video analysis) for content based based on text, images, audio and video.
+The Multimodal AI project aims deliver an enterprise-ready solution for customers that require Generative AI (Gen AI) solutions that go beyond text-based content by leveraging the latests advancements in multimodal Artificial intelligence models to implement generative AI solutions such as Retrieval Augmented Generation (RAG), image classification or video analysis, for content based based on text, images, audio and video.
 
 For images, the goal is to go beyond traditional Object Character Recognition (OCR) and generate embeddings on the actual image contents (colors, objects, locations, coordinates, etc).
 
 ## Deployment
 
-The Multimodal AI Project can be deployed either by using Bicep or Terraform. Please select the option below of your preferred deployment solution:
+This project has been implemented to facilitate its deployment for enterprises by using CI/CD tooling and pipelines, as well as make it simple to deploy from developer workstations for evaluation purposes and it can deployed via Bicep or Terraform. Please select the option below of your preferred deployment solution:
 
 - [Bicep](/deployment/bicep/readme.md)
 - [Terraform](/deployment/terraform/)
 
 ## About this project
 
-This project aims to provide enterprise-ready multimodal Generative AI (GenAI) solutions in customer's environments. The goal is to provide GenAI solutions independently if content is text, images, audio or video.
+This project aims to provide enterprise-ready multimodal Generative AI (GenAI) solutions in customer's environments with their own data. The goal is to provide GenAI solutions independently if the data is in text, images, audio or video format.
 
-With the rapid development and introduction of new multimodal AI models, such as [GPT-4o](https://openai.com/index/hello-gpt-4o/), customers are realizing the value of implementing GenAI solutions that go beyond simply using text-based documents within their organizations and instead, they are looking for solutions that leverage other media types that are in use within their organizations, for example, categorize a video and find specific scenes or analyse documents and images with architectural diagrams to provide better answers to technical support personnel.
+With the rapid development and introduction of new multimodal AI models, such as [GPT-4o](https://openai.com/index/hello-gpt-4o/), customers are realizing the value of implementing GenAI solutions that go beyond simply using text-based documents within their organizations and instead, they are looking for solutions that leverage other media types that are in use within their organizations, for example, categorize a video and find specific scenes or analyse documents with images embedded that include architectural diagrams or flow charts to provide better answers to technical support personnel.
 
-This project leverages some of the resources from another Microsoft's Open Source project (see [References](#references) section on this document) including some Python scripts as well as their great web application for user interaction. However, this solution takes a different approach by not performing all the logic, resource configuration and file processing activities via client-side Python scripts (for example, create images from PDF files or generate embeddings and index them into Azure AI Search), and instead, this project performs all those activities server side on the Azure platform using native Azure services and capabilities.
+This project provides a solution that allows customers to bring their data independently of the format (i.e. can be text, text with images, images, audio or video) and via native Azure PaaS services, process the data (for example, perform chunking, generate images from files, generate embeddings, index content, etc) to deliver Generative AI solutions, such as RAG, independently of the data format as well as ensuring all processing activities are performed server-side on Azure (i.e. no processing is done client-side for example via scripting). This provides a enterprise-grade highly-scalable solution that you can grow and scale as your needs demand thanks to the power and capacity of the Azure platform without having to rely on local processing on developer workstations. 
 
-The scope of this project currently is:
+The scope of this Multimodal AI project is:
 
-- Focused in multimodal Gen AI scenarios instead of traditional text-only AI solutions.
+- Focused in multimodal Gen AI scenarios instead of traditional AI solutions based on text-only  content.
 - Make deployment experience as simple as possible by requiring a minimal set of prerequistes.
 - Enterprise-level deployment experience via Terraform and Bicep, for easy incorporation into CI/CD deployment pipelines.
-- File processing activities (like chunking, generating embeddings, converting documents to images, etc.) are executed server-side on Azure via Azure AI Search (using built-in capabilities as well as using custom skills).
+- Data processing activities (like chunking, generating embeddings, converting documents to images, etc.) are executed server-side on Azure via Azure AI Search (using built-in capabilities as well as using custom skills).
 - Use AI Search [data sources](https://learn.microsoft.com/en-us/AZURE/search/search-data-sources-gallery) for easier processing and ingestion of documents by simply uploading the documents, images, videos, etc. to Azure Storage (blob).
 - Multimodal embeddings generated by using [AI Search integrated vectorization](https://learn.microsoft.com/en-us/azure/search/vector-search-integrated-vectorization):
    - Images: Azure AI Vision multimodal embeddings skill (in preview): https://learn.microsoft.com/en-us/azure/search/cognitive-search-skill-vision-vectorize
@@ -47,6 +47,7 @@ The scope of this project currently is:
 - Image generation from PDF files as part of the AI Search indexing process via an Indexer.
 - Usage of Azure AI Search [custom skills](https://learn.microsoft.com/en-us/azure/search/cognitive-search-custom-skill-interface) to interact with Azure Document Intelligence and persisting images generated as part of the indexing process.
 - Leverage AI Search [knowledge storage](https://learn.microsoft.com/en-us/azure/search/knowledge-store-concept-intro) to persist images generated as part of the indexing process.
+- Audio and video content is in the roadmap and will be incorporated shortly.
 
 ## High-level architecture
 
@@ -83,7 +84,7 @@ As the architectural diagram in the previous depicts, this project deploys and c
 
 ## References
 
-As previously mentioned, this project leverages the [ChatGPT-like app with your data using Azure OpenAI and Azure AI Search](https://github.com/Azure-Samples/azure-search-openai-demo) Open Source project by using some of its Python scripts (for chunking for example) as well as the web application used by users to submit prompts and get responses.
+This project leverages the [ChatGPT-like app with your data using Azure OpenAI and Azure AI Search](https://github.com/Azure-Samples/azure-search-openai-demo) Open Source project by using some of its Python scripts (for chunking for example) as well as the web application used by users to submit prompts and get responses.
 
 ## Contributing
 
