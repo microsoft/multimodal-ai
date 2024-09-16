@@ -84,7 +84,19 @@ As the architectural diagram in the previous depicts, this project deploys and c
 
 ## References
 
-This project leverages the [ChatGPT-like app with your data using Azure OpenAI and Azure AI Search](https://github.com/Azure-Samples/azure-search-openai-demo) Open Source project by using some of its Python scripts (for chunking for example) as well as the web application used by users to submit prompts and get responses.
+This project leverages the [ChatGPT-like app with your data using Azure OpenAI and Azure AI Search](https://github.com/Azure-Samples/azure-search-openai-demo) Open Source project by using its web application used by users to submit prompts and get responses from a Large Language Model (LLM) such as Azure OpenAI GPT4o as well as  some of its Python scripts such as: 
+
+- Logic to parse documents with Document Intelligence.
+- Logic to parse documents across pages.
+- The backend API.
+
+### Sample documents
+
+If you're evaluating this solution and you would like to use some sample documents with mix of text, tables and images, feel free to use some of the sample documents from these GitHub repositories:
+
+- [Azure Search Sample Data](https://github.com/Azure-Samples/azure-search-sample-data)
+- [Azure Search Vector Samples](https://github.com/Azure/azure-search-vector-samples)
+- [Azure Search OpenAI Demo](https://github.com/Azure-Samples/azure-search-openai-demo)
 
 ## Contributing
 
