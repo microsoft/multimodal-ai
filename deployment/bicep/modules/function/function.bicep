@@ -29,10 +29,20 @@ param azureFunctionStorageName string
 @sys.description('Log Analytics Workspace Id for the Azure Function.')
 param logAnalyticsWorkspaceid string
 
+@sys.description('Name of the Application Insights resource.')
+param applicationInsightsName string
+
+@sys.description('Name of the Application Insights resource group.')
+param applicationInsightsResourceGroup string
+
+@sys.description('Tags you would like to be applied to the resource.')
+param tags object = {}
+
 //creating a storage account for the Azure Function
-resource storageAccount 'Microsoft.Storage/storageAccounts@2022-05-01' = {
+resource storageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' = {
   name: azureFunctionStorageName
   location: location
+  tags: tags
   sku: {
     name: 'Standard_LRS'
   }
@@ -42,10 +52,17 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-05-01' = {
   }
 }
 
+// Reference to existing Application Insights resource
+resource applicationInsights 'Microsoft.Insights/components@2020-02-02' existing = {
+  name: applicationInsightsName
+  scope: resourceGroup(applicationInsightsResourceGroup)
+}
+
 // create hosting plan
-resource hostingPlan 'Microsoft.Web/serverfarms@2021-03-01' = {
+resource hostingPlan 'Microsoft.Web/serverfarms@2023-12-01' = {
   name: appServiceName
   location: location
+  tags: tags
   sku: {
     tier: appServiceTier
     name: appServiceSize
@@ -57,13 +74,16 @@ resource hostingPlan 'Microsoft.Web/serverfarms@2021-03-01' = {
 }
 
 // create function app
-resource functionApp 'Microsoft.Web/sites@2022-03-01' = {
+resource functionApp 'Microsoft.Web/sites@2023-12-01' = {
   name: azureFunctionName
   location: location
+  tags: tags
   kind: 'functionapp'
+
   identity: {
     type: 'SystemAssigned'
   }
+
   properties: {
     serverFarmId: hostingPlan.id
     siteConfig: {
@@ -73,13 +93,17 @@ resource functionApp 'Microsoft.Web/sites@2022-03-01' = {
           name: 'FUNCTIONS_WORKER_RUNTIME'
           value: 'dotnet'
         }
-       {
-         name: 'AzureWebJobsStorage'
-         value:  storageAccount.properties.primaryEndpoints.blob
-       }
+        {
+          name: 'AzureWebJobsStorage'
+          value: storageAccount.properties.primaryEndpoints.blob
+        }
         {
           name: 'FUNCTIONS_EXTENSION_VERSION'
           value: '~4'
+        }
+        {
+          name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
+          value: applicationInsights.properties.ConnectionString
         }
       ]
     }

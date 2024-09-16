@@ -403,6 +403,9 @@ module azureFunction 'modules/function/function.bicep' = {
   ]
   params: {
     location: location
+    tags: tags
+    applicationInsightsName: appInsights.outputs.appInsightsResourceName
+    applicationInsightsResourceGroup: resourceGroupNames.monitoring
     appServiceCapacity: appServicePlan.capacity
     appServiceFamily: appServicePlan.family
     appServiceName: appServicePlan.name
