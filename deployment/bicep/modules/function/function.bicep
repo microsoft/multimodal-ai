@@ -137,7 +137,7 @@ resource zipFile 'Microsoft.Resources/deploymentScripts@2023-08-01' = {
     timeout: 'PT1H'
     arguments: '-arg1 ${functionAppPath} -arg2 ${azureFunctionName}.zip'
     scriptContent: '''
-      $functionAppPath = "$arg1"  
+      $functionAppPath = "$arg1"
       $zipFile = "$arg2"
       Compress-Archive -Path $functionAppPath -DestinationPath $zipFile
       $zipFile
