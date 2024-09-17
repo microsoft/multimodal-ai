@@ -40,8 +40,8 @@ param documentIntelligenceServiceInstanceName string
 @sys.description('Id of the Microsoft Entra Id app.')
 param clientAppId string
 
-@sys.description('Token issuer Uri.')
-param authenticationIssuerUri string
+@sys.description('Application IDs of application that are allowed to access function.')
+param allowedApplications array = []
 
 @sys.description('Tags you would like to be applied to the resource.')
 param tags object = {}
@@ -138,7 +138,12 @@ resource functionApp 'Microsoft.Web/sites@2023-12-01' = {
           enabled: true
           registration: {
             clientId: clientAppId
-            openIdIssuer: authenticationIssuerUri
+            openIdIssuer: '${environment().authentication.loginEndpoint}${tenant().tenantId}'
+          }
+          validation: {
+            defaultAuthorizationPolicy: {
+              allowedApplications: allowedApplications
+            }
           }
         }
       }
@@ -176,4 +181,5 @@ resource diagnosticSetting 'Microsoft.Insights/diagnosticSettings@2021-05-01-pre
 
 output functionAppId string = functionApp.id
 output functionAppName string = functionApp.name
+output functionAppPrincipalId string = functionApp.identity.principalId
 output pdfTextImageMergeSkillEndpoint string = 'https://${functionApp.properties.defaultHostName}/api/pdf_text_image_merge_skill'
