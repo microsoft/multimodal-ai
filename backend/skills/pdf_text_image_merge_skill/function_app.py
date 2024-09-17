@@ -7,7 +7,8 @@ from core.pdfparser import DocumentAnalysisParser
 from core.processor import Processor
 from core.textsplitter import SentenceTextSplitter
 
-app = func.FunctionApp(http_auth_level=func.AuthLevel.FUNCTION)
+# Will use Microsoft Entra ID to authenticate/authorize
+app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
 
 @app.route(route="pdf_text_image_merge_skill", methods=[func.HttpMethod.POST])
 async def pdf_text_image_merge_skill(req: func.HttpRequest) -> func.HttpResponse:

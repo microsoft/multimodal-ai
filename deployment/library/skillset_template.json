@@ -27,11 +27,11 @@
       "description": "A custom skill that uses Document Intelligence service to parse PDF files and then combines image embeddings with corresponding PDF pages",
       "context": "/document",
       "uri": "${pdf_text_image_merge_skill_url}",
+      "authResourceId": "${aad_app_id}/.default",
       "httpMethod": "POST",
       "timeout": "PT1M",
       "batchSize": 4,
       "degreeOfParallelism": 4,
-      "authResourceId": null,
       "inputs": [
         {
           "name": "imageEmbedding",

@@ -350,6 +350,18 @@ module aiSearchRoleAssignmentAI 'modules/rbac/roleAssignment-searchService-ai.bi
   }
 }
 
+module aiSearchRoleAssignmentApps 'modules/rbac/roleAssignment-searchService-apps.bicep' = {
+  name: 'modAISearchRoleAssignmentApps'
+  scope: resourceGroup(resourceGroupNames.apps)
+  dependsOn: [
+    azureFunction
+  ]
+  params: {
+    functionAppId: azureFunction.outputs.functionAppId
+    managedIdentityPrincipalId: aiSearch.outputs.searchResourcePrincipalId
+  }
+}
+
 module aiSearchRoleAssignmentStorage 'modules/rbac/roleAssignment-searchService-storage.bicep' = {
   name: 'modAISearchRoleAssignmentStorage'
   scope: resourceGroup(resourceGroupNames.storage)
@@ -393,13 +405,25 @@ module appServiceRoleAssignmentStorage 'modules/rbac/roleAssignment-appService-s
   }
 }
 
-// Azure Function for AI Search Custom Skills
+module azureFunctionAppRegistration 'modules/appRegistration/appRegistration.bicep' = {
+  name: 'modAzureFunctionAppRegistration'
+  scope: resourceGroup(resourceGroupNames.apps)
+  dependsOn:[
+    resourceGroupApps
+  ]
+  params: {
+    clientAppName: '${resourceNames.functionApp}-api'
+  }
+}
+
+// Azure Function App for AI Search Custom Skills
 module azureFunction 'modules/function/function.bicep' = {
   name: 'modAzureFunction'
   scope: resourceGroup(resourceGroupNames.apps)
   dependsOn: [
     resourceGroupAI
     storageAccount
+    azureFunctionAppRegistration
   ]
   params: {
     location: location
@@ -414,6 +438,8 @@ module azureFunction 'modules/function/function.bicep' = {
     azureFunctionName: resourceNames.functionApp
     azureFunctionStorageName: resourceNames.functionStorageAccountName
     logAnalyticsWorkspaceid: logAnalytics.outputs.logAnalyticsWorkspaceId
+    clientAppId: azureFunctionAppRegistration.outputs.appId
+    authenticationIssuerUri: '${environment().authentication.loginEndpoint}${tenant().tenantId}'
   }
 }
 
@@ -539,7 +565,10 @@ module aiSearchSkillset 'modules/aiSearch/aiSearch-skillset.bicep' = {
     deploymentScriptIdentityRoleAssignmentAI
     aiSearchRoleAssignmentAI
     aiSearchRoleAssignmentStorage
+    aiSearchRoleAssignmentApps
     azureCognitiveServices
+    azureFunctionAppRegistration
+    azureFunction
   ]
   params: {
     location: location
@@ -551,6 +580,7 @@ module aiSearchSkillset 'modules/aiSearch/aiSearch-skillset.bicep' = {
     knowledgeStoreStorageResourceUri: 'ResourceId=${storageAccount.outputs.storageAccountId}'
     knowledgeStoreStorageContainer: storageAccountDocsContainerName
     pdfMergeCustomSkillEndpoint: azureFunction.outputs.pdfTextImageMergeSkillEndpoint
+    aadAppId: azureFunctionAppRegistration.outputs.appId
     cognitiveServicesAccountId: azureCognitiveServices.outputs.cognitiveServicesAccountId
     managedIdentityId: deploymentScriptIdentity.outputs.managedIdentityId
   }
