@@ -449,6 +449,10 @@ module azureFunction 'modules/function/function.bicep' = {
   dependsOn: [
     resourceGroupAI
     storageAccount
+    logAnalytics
+    appInsights
+    documentIntelligence
+    docIntelligenceRoleAssignmentStorage
     azureFunctionAppRegistration
     aiSearchManagedIdentity
   ]
@@ -592,21 +596,20 @@ module aiSearchSkillset 'modules/aiSearch/aiSearch-skillset.bicep' = {
     aiSearch
     aiSearchIndex
     storageAccount
-    documentIntelligence
     azureCognitiveServices
+    azureOpenAI
     azureFunction
     deploymentScriptIdentityRoleAssignmentAI
     aiSearchRoleAssignmentAI
-    functionRoleAssignmentAI
     aiSearchRoleAssignmentStorage
-    docIntelligenceRoleAssignmentStorage
+    functionRoleAssignmentAI
   ]
   params: {
     location: location
     aiSearchEndpoint: last(split(aiSearch.outputs.searchResourceId, '/'))
     indexName: resourceNames.aiSearchIndexName
     skillsetName: resourceNames.aiSearchSkillsetName
-    azureOpenAIEndpoint: 'https://${azureOpenAI.name}.openai.azure.com/'
+    azureOpenAIEndpoint: 'https://${azureOpenAI.outputs.cognitiveServicesAccountName}.openai.azure.com/'
     azureOpenAITextModelName: aoaiTextEmbeddingModel
     knowledgeStoreStorageResourceUri: 'ResourceId=${storageAccount.outputs.storageAccountId}'
     knowledgeStoreStorageContainer: storageAccountDocsContainerName
