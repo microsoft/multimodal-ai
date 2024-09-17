@@ -35,6 +35,12 @@ param applicationInsightsName string
 @sys.description('Name of the Application Insights resource group.')
 param applicationInsightsResourceGroup string
 
+@sys.description('Id of the Microsoft Entra Id app.')
+param clientAppId string
+
+@sys.description('Token issuer Uri.')
+param authenticationIssuerUri string
+
 @sys.description('Tags you would like to be applied to the resource.')
 param tags object = {}
 
@@ -108,6 +114,26 @@ resource functionApp 'Microsoft.Web/sites@2023-12-01' = {
       ]
     }
   }
+
+  resource configAuth 'config' = {
+    name: 'authsettingsV2'
+    properties: {
+      globalValidation: {
+        requireAuthentication: true
+        unauthenticatedClientAction: 'Return401'
+        redirectToProvider: 'azureactivedirectory'
+      }
+      identityProviders: {
+        azureActiveDirectory: {
+          enabled: true
+          registration: {
+            clientId: clientAppId
+            openIdIssuer: authenticationIssuerUri
+          }
+        }
+      }
+    }
+  }
 }
 
 // Grant Blob Data Contributor assignment to the Function managed identity
@@ -138,45 +164,5 @@ resource diagnosticSetting 'Microsoft.Insights/diagnosticSettings@2021-05-01-pre
   }
 }
 
-//
-// zip up the Function source code
-/* var functionAppPath = '../../../../backend/skills/pdf_text_image_merge_skill'
-resource zipFile 'Microsoft.Resources/deploymentScripts@2023-08-01' = {
-  name: 'FunctionZipFile'
-  kind: 'AzurePowerShell'
-  location: location
-  properties: {
-    azPowerShellVersion: '8.3'
-    retentionInterval: 'PT1H'
-    timeout: 'PT1H'
-    arguments: '-arg1 ${functionAppPath} -arg2 ${azureFunctionName}.zip'
-    scriptContent: '''
-      $functionAppPath = "$arg1"
-      $zipFile = "$arg2"
-      Compress-Archive -Path $functionAppPath -DestinationPath $zipFile
-      $zipFile
-    '''
-  }
-}
-
-// deploy the zip file to the Function App
-resource deployApptoFunction 'Microsoft.Resources/deploymentScripts@2023-08-01' = {
-  name: 'deployApptoFunction'
-  kind: 'AzureCLI'
-  location: location
-  properties: {
-    azCliVersion: '2.0.80'
-    retentionInterval: 'PT1H'
-    timeout: 'PT1H'
-    arguments: '-arg1 ${azureResourceGroup} -arg2 ${azureFunctionName} -arg3 ${azureFunctionName}.zip'
-    scriptContent: '''
-      az functionapp deployment source config-zip -g $1 -n $2 --src $3 --build-remote true
-    '''
-  }
-} */
-
-/*
-Blocker issue: The deploymentScripts resource is not supported in the current environment.
-*/
-
+output functionAppId string = functionApp.id
 output pdfTextImageMergeSkillEndpoint string = 'https://${functionApp.properties.defaultHostName}/api/pdf_text_image_merge_skill'

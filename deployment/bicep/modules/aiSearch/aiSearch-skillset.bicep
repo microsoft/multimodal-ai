@@ -32,6 +32,9 @@ param managedIdentityId string
 @sys.description('Specifies the Id of the Cognitive Services account.')
 param cognitiveServicesAccountId string
 
+@sys.description('App id of the Microsoft Entra ID app to be used for api auth.')
+param aadAppId string
+
 // Variables
 var cognitiveServicesAccountName = last(split(cognitiveServicesAccountId, '/'))
 
@@ -59,7 +62,7 @@ resource aiSearchSkillset 'Microsoft.Resources/deploymentScripts@2023-08-01' = {
     azPowerShellVersion: '8.3'
     retentionInterval: 'PT1H'
     timeout: 'PT1H'
-    arguments: '-aiSearchEndpoint ${aiSearchEndpoint} -indexName ${indexName} -skillsetName ${skillsetName} -azureOpenAIEndpoint ${azureOpenAIEndpoint} -azureOpenAITextDeploymentId ${azureOpenAITextModelName} -azureOpenAITextModelName ${azureOpenAITextModelName} -aiMultiServiceAccountKey ${aiMultiServiceAccountKey} -pdfMergeCustomSkillEndpoint ${pdfMergeCustomSkillEndpoint} -knowledgeStoreStorageResourceUri ${knowledgeStoreStorageResourceUri} -knowledgeStoreStorageContainer ${knowledgeStoreStorageContainer} -jsonTemplate ${jsonTemplate}'
+    arguments: '-aiSearchEndpoint ${aiSearchEndpoint} -indexName ${indexName} -skillsetName ${skillsetName} -azureOpenAIEndpoint ${azureOpenAIEndpoint} -azureOpenAITextDeploymentId ${azureOpenAITextModelName} -azureOpenAITextModelName ${azureOpenAITextModelName} -aiMultiServiceAccountKey ${aiMultiServiceAccountKey} -pdfMergeCustomSkillEndpoint ${pdfMergeCustomSkillEndpoint} -knowledgeStoreStorageResourceUri ${knowledgeStoreStorageResourceUri} -knowledgeStoreStorageContainer ${knowledgeStoreStorageContainer} -aadAppId ${aadAppId} -jsonTemplate ${jsonTemplate}'
     scriptContent: loadTextContent('../../scripts/aisearch-create-skillset.ps1')
     cleanupPreference: 'OnSuccess'
   }
