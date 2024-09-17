@@ -138,7 +138,7 @@ resource functionApp 'Microsoft.Web/sites@2023-12-01' = {
           enabled: true
           registration: {
             clientId: clientAppId
-            openIdIssuer: '${environment().authentication.loginEndpoint}${tenant().tenantId}'
+            openIdIssuer: '${environment().authentication.loginEndpoint}${tenant().tenantId}/v2.0'
           }
           validation: {
             defaultAuthorizationPolicy: {

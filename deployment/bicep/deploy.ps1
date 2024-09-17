@@ -129,7 +129,7 @@ try {
         $functionAppName = $deployment.Outputs.functionAppName.value
 
         # Call the function to deploy the web app
-        #Deploy-WebApp -ResourceGroupName $webAppRG -WebAppName $webAppName
+        Deploy-WebApp -ResourceGroupName $webAppRG -WebAppName $webAppName
         Deploy-CustomSkills -ResourceGroupName $webAppRG -FunctionAppName $functionAppName
     }
     else {
