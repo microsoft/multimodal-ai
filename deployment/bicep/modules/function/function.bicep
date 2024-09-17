@@ -19,7 +19,6 @@ param appServiceFamily string
 @sys.description('Capacity of the App Service  to be created.')
 param appServiceCapacity int
 
-//Azure Function
 @sys.description('Name of the Azure Function to be created.')
 param azureFunctionName string
 
@@ -34,6 +33,9 @@ param applicationInsightsName string
 
 @sys.description('Name of the Application Insights resource group.')
 param applicationInsightsResourceGroup string
+
+@sys.description('Name of the document intelligence service instance to be used.')
+param documentIntelligenceServiceInstanceName string
 
 @sys.description('Id of the Microsoft Entra Id app.')
 param clientAppId string
@@ -111,6 +113,10 @@ resource functionApp 'Microsoft.Web/sites@2023-12-01' = {
           name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
           value: applicationInsights.properties.ConnectionString
         }
+        {
+          name: 'DOCUMENT_INTELLIGENCE_SERVICE'
+          value: documentIntelligenceServiceInstanceName
+        }
       ]
     }
   }
@@ -165,4 +171,5 @@ resource diagnosticSetting 'Microsoft.Insights/diagnosticSettings@2021-05-01-pre
 }
 
 output functionAppId string = functionApp.id
+output functionAppName string = functionApp.name
 output pdfTextImageMergeSkillEndpoint string = 'https://${functionApp.properties.defaultHostName}/api/pdf_text_image_merge_skill'
