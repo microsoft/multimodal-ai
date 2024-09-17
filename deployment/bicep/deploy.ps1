@@ -82,14 +82,15 @@ function Deploy-CustomSkills {
 
     $originalDirectory = Get-Location
     $projectRootDirectory = (Get-Item $originalDirectory).Parent.Parent.FullName
-    $customSkillsDirectoryName = "custom_skills"
-    $zipPath = "$originalDirectory/$customSkillsDirectoryName.zip"
+    $customSkillName = "pdf_text_image_merge_skill"
+    $customSkillDirectory = "custom_skills/$customSkillName"
+    $zipPath = "$originalDirectory/$customSkillName.zip"
 
     # Change to the directory root
     Set-Location $projectRootDirectory
 
     # Archive the backend folder to a zip file. Will only compress committed files not part of .gitignore
-    git archive -o $zipPath HEAD:$customSkillsDirectoryName
+    git archive -o $zipPath HEAD:$customSkillDirectory
 
     # Return to the original directory
     Set-Location $originalDirectory
@@ -129,7 +130,7 @@ try {
 
         # Call the function to deploy the web app
         #Deploy-WebApp -ResourceGroupName $webAppRG -WebAppName $webAppName
-        Deploy-CustomSkills -ResourceGroupName $webAppRG -WebAppName $functionAppName
+        Deploy-CustomSkills -ResourceGroupName $webAppRG -FunctionAppName $functionAppName
     }
     else {
         throw "Deployment output is incomplete. Please check your template."

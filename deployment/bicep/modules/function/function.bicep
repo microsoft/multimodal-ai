@@ -19,6 +19,9 @@ param appServiceFamily string
 @sys.description('Capacity of the App Service  to be created.')
 param appServiceCapacity int
 
+@sys.description('Kind of the App Service Plan Resource: https://github.com/Azure/app-service-linux-docs/blob/master/Things_You_Should_Know/kind_property.md#app-service-resource-kind-reference')
+param kind string
+
 @sys.description('Name of the Azure Function to be created.')
 param azureFunctionName string
 
@@ -70,6 +73,7 @@ resource applicationInsights 'Microsoft.Insights/components@2020-02-02' existing
 resource hostingPlan 'Microsoft.Web/serverfarms@2023-12-01' = {
   name: appServiceName
   location: location
+  kind: kind
   tags: tags
   sku: {
     tier: appServiceTier
