@@ -112,7 +112,6 @@ var appServicePlan = {
   size: 'S1'
   family: 'S'
   capacity: 1
-  kind: 'linux'
 }
 
 var logAnalyticsSettings = {
@@ -436,7 +435,6 @@ module azureFunction 'modules/function/function.bicep' = {
     appServiceName: appServicePlan.name
     appServiceSize: appServicePlan.size
     appServiceTier: appServicePlan.tier
-    kind: appServicePlan.kind
     azureFunctionName: resourceNames.functionApp
     azureFunctionStorageName: resourceNames.functionStorageAccountName
     logAnalyticsWorkspaceid: logAnalytics.outputs.logAnalyticsWorkspaceId

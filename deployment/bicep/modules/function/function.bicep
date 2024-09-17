@@ -19,9 +19,6 @@ param appServiceFamily string
 @sys.description('Capacity of the App Service  to be created.')
 param appServiceCapacity int
 
-@sys.description('Kind of the App Service Plan Resource: https://github.com/Azure/app-service-linux-docs/blob/master/Things_You_Should_Know/kind_property.md#app-service-resource-kind-reference')
-param kind string
-
 @sys.description('Name of the Azure Function to be created.')
 param azureFunctionName string
 
@@ -73,7 +70,7 @@ resource applicationInsights 'Microsoft.Insights/components@2020-02-02' existing
 resource hostingPlan 'Microsoft.Web/serverfarms@2023-12-01' = {
   name: appServiceName
   location: location
-  kind: kind
+  kind: 'functionapp,linux'
   tags: tags
   sku: {
     tier: appServiceTier
@@ -82,7 +79,9 @@ resource hostingPlan 'Microsoft.Web/serverfarms@2023-12-01' = {
     family: appServiceFamily
     capacity: appServiceCapacity
   }
-  properties: {}
+  properties: {
+    reserved: true
+  }
 }
 
 // create function app
@@ -90,7 +89,7 @@ resource functionApp 'Microsoft.Web/sites@2023-12-01' = {
   name: azureFunctionName
   location: location
   tags: tags
-  kind: 'functionapp'
+  kind: 'functionapp,linux'
 
   identity: {
     type: 'SystemAssigned'
@@ -100,10 +99,11 @@ resource functionApp 'Microsoft.Web/sites@2023-12-01' = {
     serverFarmId: hostingPlan.id
     siteConfig: {
       alwaysOn: true
+      linuxFxVersion: 'Python|3.11'
       appSettings: [
         {
           name: 'FUNCTIONS_WORKER_RUNTIME'
-          value: 'dotnet'
+          value: 'python'
         }
         {
           name: 'AzureWebJobsStorage'
