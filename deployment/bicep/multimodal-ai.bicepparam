@@ -1,7 +1,7 @@
 using './multimodal-ai.bicep'
 
 param prefix = 'mmai80'
-param location = 'eastus'
+param location = 'eastus2'
 
 param aiVisionlocation = 'eastus'
 param aiVisionKind = 'ComputerVision'
@@ -11,6 +11,7 @@ param docIntelLocation = 'eastus'
 param docIntelKind = 'FormRecognizer'
 param docIntelSku = 'S0'
 
+param aiSearchLocation = 'eastus'
 param aiSearchSku = 'standard'
 param aiSearchCapacity = 1
 param aiSearchSemanticSearch = 'standard'

@@ -19,6 +19,7 @@ param cogsvcSku string
 param cogsvcKind string
 
 // Azure AI Search Parameters
+param aiSearchLocation string
 param aiSearchSku string
 param aiSearchCapacity int
 param aiSearchSemanticSearch string
@@ -195,7 +196,7 @@ module azureOpenAIModelDeployments 'modules/aoai/aoaiDeployment.bicep' = [for de
   }
 }]
 
-// Azure Cognitive Services
+// Azure Cognitive Services. It must be deployed in the same Azure region as AI Search.
 module azureCognitiveServices 'modules/cognitiveServices/cognitiveServices.bicep' = {
   name: 'modAzureCognitiveServices'
   scope: resourceGroup(resourceGroupNames.ai)
@@ -203,7 +204,7 @@ module azureCognitiveServices 'modules/cognitiveServices/cognitiveServices.bicep
     resourceGroupAI
   ]
   params: {
-    location: location
+    location: aiSearchLocation
     name: resourceNames.cognitiveServices
     sku: cogsvcSku
     kind: cogsvcKind
@@ -279,7 +280,7 @@ module aiSearch 'modules/aiSearch/aiSearch.bicep' = {
     resourceGroupAI
   ]
   params: {
-    location: location
+    location: aiSearchLocation
     searchName: resourceNames.aiSearch
     skuName: aiSearchSku
     skuCapacity: aiSearchCapacity
