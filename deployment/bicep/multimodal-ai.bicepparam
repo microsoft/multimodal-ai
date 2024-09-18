@@ -1,6 +1,6 @@
 using './multimodal-ai.bicep'
 
-param prefix = 'mmai81'
+param prefix = 'mmai80'
 param location = 'eastus'
 
 param aiVisionlocation = 'eastus'

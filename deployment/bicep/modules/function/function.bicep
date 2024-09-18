@@ -19,7 +19,6 @@ param appServiceFamily string
 @sys.description('Capacity of the App Service  to be created.')
 param appServiceCapacity int
 
-//Azure Function
 @sys.description('Name of the Azure Function to be created.')
 param azureFunctionName string
 
@@ -35,11 +34,14 @@ param applicationInsightsName string
 @sys.description('Name of the Application Insights resource group.')
 param applicationInsightsResourceGroup string
 
+@sys.description('Name of the document intelligence service instance to be used.')
+param documentIntelligenceServiceInstanceName string
+
 @sys.description('Id of the Microsoft Entra Id app.')
 param clientAppId string
 
-@sys.description('Token issuer Uri.')
-param authenticationIssuerUri string
+@sys.description('Application IDs of application that are allowed to access function.')
+param allowedApplications array = []
 
 @sys.description('Tags you would like to be applied to the resource.')
 param tags object = {}
@@ -68,6 +70,7 @@ resource applicationInsights 'Microsoft.Insights/components@2020-02-02' existing
 resource hostingPlan 'Microsoft.Web/serverfarms@2023-12-01' = {
   name: appServiceName
   location: location
+  kind: 'functionapp,linux'
   tags: tags
   sku: {
     tier: appServiceTier
@@ -76,7 +79,9 @@ resource hostingPlan 'Microsoft.Web/serverfarms@2023-12-01' = {
     family: appServiceFamily
     capacity: appServiceCapacity
   }
-  properties: {}
+  properties: {
+    reserved: true
+  }
 }
 
 // create function app
@@ -84,7 +89,7 @@ resource functionApp 'Microsoft.Web/sites@2023-12-01' = {
   name: azureFunctionName
   location: location
   tags: tags
-  kind: 'functionapp'
+  kind: 'functionapp,linux'
 
   identity: {
     type: 'SystemAssigned'
@@ -94,10 +99,11 @@ resource functionApp 'Microsoft.Web/sites@2023-12-01' = {
     serverFarmId: hostingPlan.id
     siteConfig: {
       alwaysOn: true
+      linuxFxVersion: 'Python|3.11'
       appSettings: [
         {
           name: 'FUNCTIONS_WORKER_RUNTIME'
-          value: 'dotnet'
+          value: 'python'
         }
         {
           name: 'AzureWebJobsStorage'
@@ -110,6 +116,10 @@ resource functionApp 'Microsoft.Web/sites@2023-12-01' = {
         {
           name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
           value: applicationInsights.properties.ConnectionString
+        }
+        {
+          name: 'DOCUMENT_INTELLIGENCE_SERVICE'
+          value: documentIntelligenceServiceInstanceName
         }
       ]
     }
@@ -128,7 +138,12 @@ resource functionApp 'Microsoft.Web/sites@2023-12-01' = {
           enabled: true
           registration: {
             clientId: clientAppId
-            openIdIssuer: authenticationIssuerUri
+            openIdIssuer: '${environment().authentication.loginEndpoint}${tenant().tenantId}/v2.0'
+          }
+          validation: {
+            defaultAuthorizationPolicy: {
+              allowedApplications: allowedApplications
+            }
           }
         }
       }
@@ -165,4 +180,6 @@ resource diagnosticSetting 'Microsoft.Insights/diagnosticSettings@2021-05-01-pre
 }
 
 output functionAppId string = functionApp.id
+output functionAppName string = functionApp.name
+output functionAppPrincipalId string = functionApp.identity.principalId
 output pdfTextImageMergeSkillEndpoint string = 'https://${functionApp.properties.defaultHostName}/api/pdf_text_image_merge_skill'

@@ -350,15 +350,16 @@ module aiSearchRoleAssignmentAI 'modules/rbac/roleAssignment-searchService-ai.bi
   }
 }
 
-module aiSearchRoleAssignmentApps 'modules/rbac/roleAssignment-searchService-apps.bicep' = {
-  name: 'modAISearchRoleAssignmentApps'
-  scope: resourceGroup(resourceGroupNames.apps)
+module functionRoleAssignmentAI 'modules/rbac/roleAssignment-function-ai.bicep' = {
+  name: 'modFunctionRoleAssignmentAI'
+  scope: resourceGroup(resourceGroupNames.ai)
   dependsOn: [
     azureFunction
+    documentIntelligence
   ]
   params: {
-    functionAppId: azureFunction.outputs.functionAppId
-    managedIdentityPrincipalId: aiSearch.outputs.searchResourcePrincipalId
+    documentIntelligenceResourceId : documentIntelligence.outputs.cognitiveServicesAccountId
+    managedIdentityPrincipalId: azureFunction.outputs.functionAppPrincipalId
   }
 }
 
@@ -372,6 +373,19 @@ module aiSearchRoleAssignmentStorage 'modules/rbac/roleAssignment-searchService-
   params: {
     storageAccountId: storageAccount.outputs.storageAccountId
     managedIdentityPrincipalId: aiSearch.outputs.searchResourcePrincipalId
+  }
+}
+
+module docIntelligenceRoleAssignmentStorage 'modules/rbac/roleAssignment-docIntelligence-storage.bicep' = {
+  name: 'modDocIntelligenceRoleAssignmentStorage'
+  scope: resourceGroup(resourceGroupNames.storage)
+  dependsOn:[
+    storageAccount
+    documentIntelligence
+  ]
+  params: {
+    storageAccountId: storageAccount.outputs.storageAccountId
+    managedIdentityPrincipalId: documentIntelligence.outputs.cognitiveServicesPrincipalId
   }
 }
 
@@ -417,13 +431,30 @@ module azureFunctionAppRegistration 'modules/appRegistration/appRegistration.bic
 }
 
 // Azure Function App for AI Search Custom Skills
+
+module aiSearchManagedIdentity 'modules/aiSearch/aiSearch-managedIdentity.bicep' = {
+  name: 'modAiSearchManagedIdentity'
+  scope: resourceGroup(resourceGroupNames.ai)
+  dependsOn:[
+    aiSearch
+  ]
+  params: {
+    searchResourceName: aiSearch.outputs.searchResourceName
+  }
+}
+
 module azureFunction 'modules/function/function.bicep' = {
   name: 'modAzureFunction'
   scope: resourceGroup(resourceGroupNames.apps)
   dependsOn: [
     resourceGroupAI
     storageAccount
+    logAnalytics
+    appInsights
+    documentIntelligence
+    docIntelligenceRoleAssignmentStorage
     azureFunctionAppRegistration
+    aiSearchManagedIdentity
   ]
   params: {
     location: location
@@ -439,7 +470,10 @@ module azureFunction 'modules/function/function.bicep' = {
     azureFunctionStorageName: resourceNames.functionStorageAccountName
     logAnalyticsWorkspaceid: logAnalytics.outputs.logAnalyticsWorkspaceId
     clientAppId: azureFunctionAppRegistration.outputs.appId
-    authenticationIssuerUri: '${environment().authentication.loginEndpoint}${tenant().tenantId}'
+    documentIntelligenceServiceInstanceName: documentIntelligence.outputs.cognitiveServicesAccountName
+    allowedApplications: [
+      aiSearchManagedIdentity.outputs.appId
+    ]
   }
 }
 
@@ -562,20 +596,20 @@ module aiSearchSkillset 'modules/aiSearch/aiSearch-skillset.bicep' = {
     aiSearch
     aiSearchIndex
     storageAccount
+    azureCognitiveServices
+    azureOpenAI
+    azureFunction
     deploymentScriptIdentityRoleAssignmentAI
     aiSearchRoleAssignmentAI
     aiSearchRoleAssignmentStorage
-    aiSearchRoleAssignmentApps
-    azureCognitiveServices
-    azureFunctionAppRegistration
-    azureFunction
+    functionRoleAssignmentAI
   ]
   params: {
     location: location
     aiSearchEndpoint: last(split(aiSearch.outputs.searchResourceId, '/'))
     indexName: resourceNames.aiSearchIndexName
     skillsetName: resourceNames.aiSearchSkillsetName
-    azureOpenAIEndpoint: 'https://${azureOpenAI.name}.openai.azure.com/'
+    azureOpenAIEndpoint: 'https://${azureOpenAI.outputs.cognitiveServicesAccountName}.openai.azure.com/'
     azureOpenAITextModelName: aoaiTextEmbeddingModel
     knowledgeStoreStorageResourceUri: 'ResourceId=${storageAccount.outputs.storageAccountId}'
     knowledgeStoreStorageContainer: storageAccountDocsContainerName
@@ -610,3 +644,4 @@ module aiSearchIndexer 'modules/aiSearch/aiSearch-indexer.bicep' = {
 
 output appsResourceGroup string = resourceGroupNames.apps
 output webAppName string = webApp.outputs.name
+output functionAppName string = azureFunction.outputs.functionAppName

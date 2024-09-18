@@ -69,6 +69,43 @@ function Deploy-WebApp {
     Write-Verbose "Web app deployment completed successfully."
 }
 
+# Function to deploy custom skills
+function Deploy-CustomSkills {
+    param (
+        [string]$ResourceGroupName,
+        [string]$FunctionAppName
+    )
+
+    Write-Verbose "Triggering function app deployment..."
+    Write-Verbose "Using resource group: $ResourceGroupName"
+    Write-Verbose "Using function app resource: $FunctionAppName"
+
+    $originalDirectory = Get-Location
+    $projectRootDirectory = (Get-Item $originalDirectory).Parent.Parent.FullName
+    $customSkillName = "pdf_text_image_merge_skill"
+    $customSkillDirectory = "custom_skills/$customSkillName"
+    $zipPath = "$originalDirectory/$customSkillName.zip"
+
+    # Change to the directory root
+    Set-Location $projectRootDirectory
+
+    # Archive the backend folder to a zip file. Will only compress committed files not part of .gitignore
+    git archive -o $zipPath HEAD:$customSkillDirectory
+
+    # Return to the original directory
+    Set-Location $originalDirectory
+
+    Write-Verbose "Deploying the function app..."
+
+    # Publish the web app
+    Publish-AzWebApp -ResourceGroupName $ResourceGroupName -Name $FunctionAppName -ArchivePath $zipPath -Timeout 300000 -Force
+
+    # Clean up temporary files
+    Remove-Item $zipPath -Force
+
+    Write-Verbose "Function app deployment completed successfully."
+}
+
 # Verbose mode switch
 $VerbosePreference = 'Continue'
 
@@ -86,12 +123,14 @@ try {
         -ErrorVariable deploymentError
 
     # Validate deployment outputs
-    if ($deployment.Outputs.appsResourceGroup -and $deployment.Outputs.webAppName) {
+    if ($deployment.Outputs.appsResourceGroup -and $deployment.Outputs.webAppName -and $deployment.Outputs.functionAppName) {
         $webAppRG = $deployment.Outputs.appsResourceGroup.value
         $webAppName = $deployment.Outputs.webAppName.value
+        $functionAppName = $deployment.Outputs.functionAppName.value
 
         # Call the function to deploy the web app
         Deploy-WebApp -ResourceGroupName $webAppRG -WebAppName $webAppName
+        Deploy-CustomSkills -ResourceGroupName $webAppRG -FunctionAppName $functionAppName
     }
     else {
         throw "Deployment output is incomplete. Please check your template."
