@@ -5,7 +5,7 @@ resource searchResource 'Microsoft.Search/searchServices@2024-06-01-preview' exi
   name: searchResourceName
 }
 
-resource aiSearchManagedIdentity 'Microsoft.ManagedIdentity/identities@2018-11-30' existing = {
+resource aiSearchManagedIdentity 'Microsoft.ManagedIdentity/identities@2023-01-31' existing = {
   scope: searchResource
   name: 'default'
 }
