@@ -19,6 +19,7 @@ param cogsvcSku string
 param cogsvcKind string
 
 // Azure AI Search Parameters
+param aiSearchLocation string
 param aiSearchSku string
 param aiSearchCapacity int
 param aiSearchSemanticSearch string
@@ -279,7 +280,7 @@ module aiSearch 'modules/aiSearch/aiSearch.bicep' = {
     resourceGroupAI
   ]
   params: {
-    location: location
+    location: aiSearchLocation
     searchName: resourceNames.aiSearch
     skuName: aiSearchSku
     skuCapacity: aiSearchCapacity

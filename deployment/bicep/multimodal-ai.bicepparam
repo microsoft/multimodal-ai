@@ -1,7 +1,7 @@
 using './multimodal-ai.bicep'
 
 param prefix = 'mmai80'
-param location = 'eastus'
+param location = 'eastus2'
 
 param aiVisionlocation = 'eastus'
 param aiVisionKind = 'ComputerVision'
@@ -11,6 +11,7 @@ param docIntelLocation = 'eastus'
 param docIntelKind = 'FormRecognizer'
 param docIntelSku = 'S0'
 
+param aiSearchLocation = 'eastus'
 param aiSearchSku = 'standard'
 param aiSearchCapacity = 1
 param aiSearchSemanticSearch = 'standard'
@@ -37,7 +38,7 @@ param aoaiDeployments = [
       version: '2'
     }
     sku: {
-      capacity: 30
+      capacity: 10
     }
   }
   {
@@ -47,7 +48,7 @@ param aoaiDeployments = [
       version: '2024-05-13'
     }
     sku: {
-      capacity: 20
+      capacity: 10
     }
   }
   {
@@ -57,7 +58,7 @@ param aoaiDeployments = [
       version: '0613'
     }
     sku: {
-      capacity: 60
+      capacity: 10
     }
   }
 ]
