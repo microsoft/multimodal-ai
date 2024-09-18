@@ -38,7 +38,7 @@ param aoaiDeployments = [
       version: '2'
     }
     sku: {
-      capacity: 10
+      capacity: 30
     }
   }
   {
@@ -48,7 +48,7 @@ param aoaiDeployments = [
       version: '2024-05-13'
     }
     sku: {
-      capacity: 10
+      capacity: 20
     }
   }
   {
@@ -58,7 +58,7 @@ param aoaiDeployments = [
       version: '0613'
     }
     sku: {
-      capacity: 10
+      capacity: 60
     }
   }
 ]
