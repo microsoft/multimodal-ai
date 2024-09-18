@@ -196,7 +196,7 @@ module azureOpenAIModelDeployments 'modules/aoai/aoaiDeployment.bicep' = [for de
   }
 }]
 
-// Azure Cognitive Services
+// Azure Cognitive Services. It must be deployed in the same Azure region as AI Search.
 module azureCognitiveServices 'modules/cognitiveServices/cognitiveServices.bicep' = {
   name: 'modAzureCognitiveServices'
   scope: resourceGroup(resourceGroupNames.ai)
@@ -204,7 +204,7 @@ module azureCognitiveServices 'modules/cognitiveServices/cognitiveServices.bicep
     resourceGroupAI
   ]
   params: {
-    location: location
+    location: aiSearchLocation
     name: resourceNames.cognitiveServices
     sku: cogsvcSku
     kind: cogsvcKind
