@@ -569,12 +569,6 @@ variable "use_speech_output_browser" {
   default     = ""
 }
 
-variable "use_user_upload" {
-  description = "USE_USER_UPLOAD app service configuration value."
-  type        = string
-  default     = ""
-}
-
 variable "use_vectors" {
   description = "USE_VECTORS app service configuration value."
   type        = string
