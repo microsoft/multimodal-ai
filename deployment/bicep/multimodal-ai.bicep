@@ -537,7 +537,6 @@ module webApp 'modules/appService/appService.bicep' = {
       AZURE_OPENAI_GPT4V_DEPLOYMENT: first(filter(aoaiDeployments, deployment => deployment.name == aoaiVisionModel)).name
       USE_VECTORS: true
       USE_GPT4V: true
-      USE_USER_UPLOAD: false
       PYTHON_ENABLE_GUNICORN_MULTIWORKERS: true
       SCM_DO_BUILD_DURING_DEPLOYMENT: true
       ENABLE_ORYX_BUILD: true

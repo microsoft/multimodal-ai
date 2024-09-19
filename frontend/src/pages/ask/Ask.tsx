@@ -16,7 +16,6 @@ import { SettingsButton } from "../../components/SettingsButton/SettingsButton";
 import { useLogin, getToken, requireAccessControl, checkLoggedIn } from "../../authConfig";
 import { VectorSettings } from "../../components/VectorSettings";
 import { GPT4VSettings } from "../../components/GPT4VSettings";
-import { UploadFile } from "../../components/UploadFile";
 
 import { useMsal } from "@azure/msal-react";
 import { TokenClaimsDisplay } from "../../components/TokenClaimsDisplay";
@@ -46,7 +45,6 @@ export function Component(): JSX.Element {
     const [showGPT4VOptions, setShowGPT4VOptions] = useState<boolean>(true);
     const [showSemanticRankerOption, setShowSemanticRankerOption] = useState<boolean>(false);
     const [showVectorOption, setShowVectorOption] = useState<boolean>(false);
-    const [showUserUpload, setShowUserUpload] = useState<boolean>(false);
     const [showLanguagePicker, setshowLanguagePicker] = useState<boolean>(false);
     const [showSpeechInput, setShowSpeechInput] = useState<boolean>(false);
     const [showSpeechOutputBrowser, setShowSpeechOutputBrowser] = useState<boolean>(false);
@@ -85,7 +83,6 @@ export function Component(): JSX.Element {
             if (!config.showVectorOption) {
                 setRetrievalMode(RetrievalMode.Text);
             }
-            setShowUserUpload(config.showUserUpload);
             setshowLanguagePicker(config.showLanguagePicker);
             setShowSpeechInput(config.showSpeechInput);
             setShowSpeechOutputBrowser(config.showSpeechOutputBrowser);
@@ -248,7 +245,6 @@ export function Component(): JSX.Element {
             </Helmet>
             <div className={styles.askTopSection}>
                 <div className={styles.commandsContainer}>
-                    {showUserUpload && <UploadFile className={styles.commandButton} disabled={loggedIn} />}
                     <SettingsButton className={styles.commandButton} onClick={() => setIsConfigPanelOpen(!isConfigPanelOpen)} />
                 </div>
                 <h1 className={styles.askTitle}>{t("askTitle")}</h1>

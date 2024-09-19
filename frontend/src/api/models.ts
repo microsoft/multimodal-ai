@@ -84,7 +84,6 @@ export type Config = {
     showGPT4VOptions: boolean;
     showSemanticRankerOption: boolean;
     showVectorOption: boolean;
-    showUserUpload: boolean;
     showLanguagePicker: boolean;
     showSpeechInput: boolean;
     showSpeechOutputBrowser: boolean;

@@ -28,7 +28,6 @@ import { HelpCallout } from "../../components/HelpCallout";
 import { AnalysisPanel, AnalysisPanelTabs } from "../../components/AnalysisPanel";
 import { SettingsButton } from "../../components/SettingsButton";
 import { ClearChatButton } from "../../components/ClearChatButton";
-import { UploadFile } from "../../components/UploadFile";
 import { useLogin, getToken, requireAccessControl } from "../../authConfig";
 import { VectorSettings } from "../../components/VectorSettings";
 import { useMsal } from "@azure/msal-react";
@@ -75,7 +74,6 @@ const Chat = () => {
     const [showGPT4VOptions, setShowGPT4VOptions] = useState<boolean>(true);
     const [showSemanticRankerOption, setShowSemanticRankerOption] = useState<boolean>(false);
     const [showVectorOption, setShowVectorOption] = useState<boolean>(false);
-    const [showUserUpload, setShowUserUpload] = useState<boolean>(false);
     const [showLanguagePicker, setshowLanguagePicker] = useState<boolean>(false);
     const [showSpeechInput, setShowSpeechInput] = useState<boolean>(false);
     const [showSpeechOutputBrowser, setShowSpeechOutputBrowser] = useState<boolean>(false);
@@ -100,7 +98,6 @@ const Chat = () => {
             if (!config.showVectorOption) {
                 setRetrievalMode(RetrievalMode.Text);
             }
-            setShowUserUpload(config.showUserUpload);
             setshowLanguagePicker(config.showLanguagePicker);
             setShowSpeechInput(config.showSpeechInput);
             setShowSpeechOutputBrowser(config.showSpeechOutputBrowser);
@@ -354,7 +351,6 @@ const Chat = () => {
             </Helmet>
             <div className={styles.commandsContainer}>
                 <ClearChatButton className={styles.commandButton} onClick={clearChat} disabled={!lastQuestionRef.current || isLoading} />
-                {showUserUpload && <UploadFile className={styles.commandButton} disabled={!loggedIn} />}
                 <SettingsButton className={styles.commandButton} onClick={() => setIsConfigPanelOpen(!isConfigPanelOpen)} />
             </div>
             <div className={styles.chatRoot}>
