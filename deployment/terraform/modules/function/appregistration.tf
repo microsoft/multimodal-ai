@@ -22,5 +22,3 @@ resource "azuread_application" "function_ad_app" {
     }
   }
 }
-
-
