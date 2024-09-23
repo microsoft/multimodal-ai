@@ -14,7 +14,8 @@ data "template_file" "skillset_template" {
     pdf_text_image_merge_skill_url            = var.pdf_merge_customskill_endpoint
     cognitiveServices_multiService_accountKey = var.cognitive_services_key # https://learn.microsoft.com/azure/search/cognitive-search-attach-cognitive-services?tabs=portal%2Cportal-remove#how-the-key-is-used
     storage_account_resource_uri              = "ResourceId=${var.knowledgestore_storage_account_id}"
-    storage_account_image_container_name      = var.knowledgestore_storage_container_name
+    storage_account_image_container_name      = var.storage_container_name_knowledgestore
+    aad_app_id                                = var.function_app_id
   }
 }
 

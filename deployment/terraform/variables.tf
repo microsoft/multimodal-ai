@@ -1,20 +1,26 @@
+
 variable "subscription_id" {
-  description = "subscription_id"
+  description = "Azure subscription ID to deploy the solution."
   type        = string
+  sensitive   = false
+  validation {
+    condition     = length(var.subscription_id) >= 1
+    error_message = "Please specify a valid subscription id."
+  }
 }
 
 variable "environment_name" {
-  description = "Name of the the environment, used to generate a short unique hash used in all resources."
+  description = "Name of the the environment, used in resource group name and as tag for resources created."
   type        = string
 }
 
 variable "location" {
-  description = "Primary location for all resources."
+  description = "Primary/default location for all resources unless specified in other location parameters."
   type        = string
 }
 
 variable "resource_group_name" {
-  description = "Resource Group Name."
+  description = "Resource Group Name, generated automatically if not given."
   type        = string
   default     = ""
 }
@@ -28,13 +34,12 @@ variable "backend_service_code_path" {
 variable "skills_service_code_path" {
   description = "Skillsets service code path."
   type        = string
-  default     = "../../skills"
+  default     = "../../custom_skills/pdf_text_image_merge_skill"
 }
 
 variable "appservice_plan_sku" {
-  description = "App Service Plan Sku Name."
+  description = "App Service Plan Sku Name. Used for both backend and skillsets service."
   type        = string
-  default     = "S2" # linux consumption plans does not support website_run_from_package = 1 setting
 }
 
 variable "backend_service_name" {
@@ -91,12 +96,17 @@ variable "search_service_sku" {
   default     = "standard"
 }
 
+variable "semantic_search_sku" {
+  description = "Semantic search SKU Name."
+  type        = string
+  default     = "standard"
+}
+
 variable "search_service_partition_count" {
   description = "Specifies the number of partitions in the search service."
   type        = number
   sensitive   = false
   default     = 1
-
 }
 
 variable "search_service_replica_count" {
@@ -104,34 +114,55 @@ variable "search_service_replica_count" {
   type        = number
   sensitive   = false
   default     = 1
-
 }
 
-
 variable "search_service_datasource_name" {
-  description = "Specifies datasource name"
+  description = "Specifies datasource name in the search service."
   type        = string
   default     = ""
 }
 
 variable "search_service_index_name" {
-  description = "Specifies index name"
+  description = "Specifies index name in the search service."
   type        = string
   default     = ""
 }
 
 variable "search_service_indexer_name" {
-  description = "Specifies indexer name"
+  description = "Specifies indexer name in the search service."
   type        = string
   default     = ""
 }
 
 variable "search_service_skillset_name" {
-  description = "Specifies skillset name"
+  description = "Specifies skillset name in the search service."
   type        = string
   default     = ""
 }
 
+
+variable "openai_service_name" {
+  description = "Specifies the sku name of the Azure OpenAI service."
+  type        = string
+  sensitive   = false
+  default     = ""
+}
+
+variable "openai_service_location" {
+  description = "Azure OpenAI Service Location."
+  type        = string
+  default     = ""
+}
+
+variable "openai_service_sku" {
+  description = "Specifies the sku name of the Azure OpenAI service."
+  type        = string
+  sensitive   = false
+  validation {
+    condition     = length(var.openai_service_sku) >= 1
+    error_message = "Please specify a valid sku name."
+  }
+}
 
 variable "azure_openai_text_deployment_id" {
   description = "Azure OpenAI text deployment ID"
@@ -145,31 +176,13 @@ variable "azure_openai_text_model_name" {
   default     = "text-embedding-ada-002"
 }
 
-variable "knowledgestore_storage_container_name" {
+variable "storage_container_name_knowledgestore" {
   description = "Specifies knowledge resource contaner name."
   type        = string
   sensitive   = false
-  default     = "docs"
+  default     = "knowledgestore"
 }
 
-
-variable "openai_service_name" {
-  description = "Specifies the sku name of the cognitive service."
-  type        = string
-  sensitive   = false
-  default     = ""
-}
-
-variable "openai_service_sku" {
-  description = "Specifies the sku name of the cognitive service."
-  type        = string
-  sensitive   = false
-  default     = "S0"
-  validation {
-    condition     = length(var.openai_service_sku) >= 1
-    error_message = "Please specify a valid sku name."
-  }
-}
 
 variable "cognitive_service_name" {
   description = "Specifies the sku name of the cognitive service."
@@ -182,7 +195,6 @@ variable "cognitive_service_sku" {
   description = "Specifies the sku name of the cognitive service."
   type        = string
   sensitive   = false
-  default     = "S0"
   validation {
     condition     = length(var.cognitive_service_sku) >= 1
     error_message = "Please specify a valid sku name."
@@ -196,11 +208,16 @@ variable "form_recognizer_name" {
   default     = ""
 }
 
+variable "form_recognizer_service_location" {
+  description = "Form Recognizer Service Location."
+  type        = string
+  default     = ""
+}
+
 variable "form_recognizer_sku" {
-  description = "Specifies the sku name of the cognitive service."
+  description = "Specifies the sku name of the form recognizer service."
   type        = string
   sensitive   = false
-  default     = "F0"
   validation {
     condition     = length(var.form_recognizer_sku) >= 1
     error_message = "Please specify a valid sku name."
@@ -214,11 +231,16 @@ variable "computer_vision_name" {
   default     = ""
 }
 
+variable "computer_vision_service_location" {
+  description = "Computer Vision Service Location."
+  type        = string
+  default     = ""
+}
+
 variable "computer_vision_sku" {
-  description = "Specifies the sku name of the cognitive service."
+  description = "Specifies the sku name of the computer vision service."
   type        = string
   sensitive   = false
-  default     = "S1"
   validation {
     condition     = length(var.computer_vision_sku) >= 1
     error_message = "Please specify a valid sku name."
@@ -244,7 +266,7 @@ variable "aoai_deployments" {
         version = "2024-05-13"
       }
       sku = {
-        capacity = 1
+        capacity = 20
       }
     },
     {
@@ -254,7 +276,7 @@ variable "aoai_deployments" {
         version = "2"
       }
       sku = {
-        capacity = 1
+        capacity = 30
       }
     },
     {
@@ -264,7 +286,7 @@ variable "aoai_deployments" {
         version = "0613"
       }
       sku = {
-        capacity = 1
+        capacity = 60
       }
     }
   ]
@@ -280,297 +302,47 @@ variable "storage_account_name" {
 variable "storage_container_name_content" {
   description = "Storage Container Name."
   type        = string
-  default     = "content"
-}
-
-
-
-# ###################################################################################################
-
-variable "azure_auth_tenant_id" {
-  description = "AZURE_AUTH_TENANT_ID app service configuration value."
-  type        = string
-  default     = ""
-}
-
-variable "azure_client_app_id" {
-  description = "AZURE_CLIENT_APP_ID app service configuration value."
-  type        = string
-  default     = ""
-}
-
-variable "azure_client_app_secret" {
-  description = "AZURE_CLIENT_APP_SECRET app service configuration value."
-  type        = string
-  default     = ""
-}
-
-variable "azure_documentintelligence_key" {
-  description = "AZURE_DOCUMENTINTELLIGENCE_KEY app service configuration value."
-  type        = string
-  default     = ""
-}
-
-variable "azure_documentintelligence_service" {
-  description = "AZURE_DOCUMENTINTELLIGENCE_SERVICE app service configuration value."
-  type        = string
-  default     = ""
-}
-
-variable "azure_enable_global_documents_access" {
-  description = "AZURE_ENABLE_GLOBAL_DOCUMENTS_ACCESS app service configuration value."
-  type        = string
-  default     = ""
-}
-
-variable "azure_enable_unauthenticated_access" {
-  description = "AZURE_ENABLE_UNAUTHENTICATED_ACCESS app service configuration value."
-  type        = string
-  default     = ""
-}
-
-variable "azure_enforce_access_control" {
-  description = "AZURE_ENFORCE_ACCESS_CONTROL app service configuration value."
-  type        = string
-  default     = ""
-}
-
-variable "azure_openai_api_key" {
-  description = "AZURE_OPENAI_API_KEY app service configuration value."
-  type        = string
-  default     = ""
-}
-
-variable "azure_openai_api_version" {
-  description = "AZURE_OPENAI_API_VERSION app service configuration value."
-  type        = string
-  default     = ""
-}
-
-variable "azure_openai_chatgpt_deployment" {
-  description = "AZURE_OPENAI_CHATGPT_DEPLOYMENT app service configuration value."
-  type        = string
-  default     = ""
-}
-
-variable "azure_openai_chatgpt_model" {
-  description = "AZURE_OPENAI_CHATGPT_MODEL app service configuration value."
-  type        = string
-  default     = ""
-}
-
-variable "azure_openai_custom_url" {
-  description = "AZURE_OPENAI_CUSTOM_URL app service configuration value."
-  type        = string
-  default     = ""
-}
-
-variable "azure_openai_emb_deployment" {
-  description = "AZURE_OPENAI_EMB_DEPLOYMENT app service configuration value."
-  type        = string
-  default     = ""
-}
-
-variable "azure_openai_emb_dimensions" {
-  description = "AZURE_OPENAI_EMB_DIMENSIONS app service configuration value."
-  type        = string
-  default     = ""
+  default     = "docs"
 }
 
 variable "azure_openai_emb_model_name" {
-  description = "AZURE_OPENAI_EMB_MODEL_NAME app service configuration value."
+  description = "OpenAI embedding model name. Must be defined in aoai_deployments parameter."
   type        = string
-  default     = ""
+  default     = "text-embedding-ada-002"
 }
 
-variable "azure_openai_gpt4v_deployment" {
-  description = "AZURE_OPENAI_GPT4V_DEPLOYMENT app service configuration value."
+variable "azure_openai_emb_deployment_name" {
+  description = "OpenAI embedding deployment name. Must be defined in aoai_deployments parameter."
   type        = string
-  default     = ""
+  default     = "text-embedding-ada-002"
 }
 
-variable "azure_openai_gpt4v_model" {
-  description = "AZURE_OPENAI_GPT4V_MODEL app service configuration value."
-  type        = string
-  default     = ""
+variable "azure_openai_emb_dimensions" {
+  description = "OpenAI embedding dimensions."
+  type        = number
+  default     = 1536
 }
 
-variable "azure_openai_service" {
-  description = "AZURE_OPENAI_SERVICE app service configuration value."
+variable "azure_openai_chatgpt_model_name" {
+  description = "OpenAI chatgpt model name. Must be defined in aoai_deployments parameter."
   type        = string
-  default     = ""
+  default     = "gpt-4o"
 }
 
-variable "azure_search_index" {
-  description = "AZURE_SEARCH_INDEX app service configuration value."
+variable "azure_openai_chatgpt_deployment_name" {
+  description = "OpenAI chatgpt deployment name. Must be defined in aoai_deployments parameter."
   type        = string
-  default     = ""
+  default     = "gpt-4o"
 }
 
-variable "azure_search_query_language" {
-  description = "AZURE_SEARCH_QUERY_LANGUAGE app service configuration value."
+variable "azure_openai_gpt4v_model_name" {
+  description = "OpenAI gpt4v model name. Must be defined in aoai_deployments parameter."
   type        = string
-  default     = ""
+  default     = "gpt-4o"
 }
 
-variable "azure_search_query_speller" {
-  description = "AZURE_SEARCH_QUERY_SPELLER app service configuration value."
+variable "azure_openai_gpt4v_deployment_name" {
+  description = "OpenAI gpt4v deployment name. Must be defined in aoai_deployments parameter."
   type        = string
-  default     = ""
-}
-
-variable "azure_search_semantic_ranker" {
-  description = "AZURE_SEARCH_SEMANTIC_RANKER app service configuration value."
-  type        = string
-  default     = ""
-}
-
-variable "azure_server_app_id" {
-  description = "AZURE_SERVER_APP_ID app service configuration value."
-  type        = string
-  default     = ""
-}
-
-variable "azure_server_app_secret" {
-  description = "AZURE_SERVER_APP_SECRET app service configuration value."
-  type        = string
-  default     = ""
-}
-
-variable "azure_speech_service_id" {
-  description = "AZURE_SPEECH_SERVICE_ID app service configuration value."
-  type        = string
-  default     = ""
-}
-
-variable "azure_speech_service_location" {
-  description = "AZURE_SPEECH_SERVICE_LOCATION app service configuration value."
-  type        = string
-  default     = ""
-}
-
-variable "azure_storage_account" {
-  description = "AZURE_STORAGE_ACCOUNT app service configuration value."
-  type        = string
-  default     = ""
-}
-
-variable "azure_storage_container" {
-  description = "AZURE_STORAGE_CONTAINER app service configuration value."
-  type        = string
-  default     = ""
-}
-
-variable "azure_tenant_id" {
-  description = "AZURE_TENANT_ID app service configuration value."
-  type        = string
-  default     = ""
-}
-
-variable "azure_userstorage_account" {
-  description = "AZURE_USERSTORAGE_ACCOUNT app service configuration value."
-  type        = string
-  default     = ""
-}
-
-variable "azure_userstorage_container" {
-  description = "AZURE_USERSTORAGE_CONTAINER app service configuration value."
-  type        = string
-  default     = ""
-}
-
-variable "azure_use_authentication" {
-  description = "AZURE_USE_AUTHENTICATION app service configuration value."
-  type        = string
-  default     = ""
-}
-
-variable "azure_vision_endpoint" {
-  description = "AZURE_VISION_ENDPOINT app service configuration value."
-  type        = string
-  default     = ""
-}
-
-variable "enable_oryx_build" {
-  description = "ENABLE_ORYX_BUILD app service configuration value."
-  type        = string
-  default     = ""
-}
-
-variable "openai_api_key" {
-  description = "OPENAI_API_KEY app service configuration value."
-  type        = string
-  default     = ""
-}
-
-variable "openai_host" {
-  description = "OPENAI_HOST app service configuration value."
-  type        = string
-  default     = ""
-}
-
-variable "openai_organization" {
-  description = "OPENAI_ORGANIZATION app service configuration value."
-  type        = string
-  default     = ""
-}
-
-variable "pythonunbuffered" {
-  description = "PYTHONUNBUFFERED app service configuration value."
-  type        = string
-  default     = ""
-}
-
-variable "python_enable_gunicorn_multiworkers" {
-  description = "PYTHON_ENABLE_GUNICORN_MULTIWORKERS app service configuration value."
-  type        = string
-  default     = ""
-}
-
-variable "search_key" {
-  description = "SEARCH_KEY app service configuration value."
-  type        = string
-  default     = ""
-}
-
-variable "use_gpt4v" {
-  description = "USE_GPT4V app service configuration value."
-  type        = string
-  default     = ""
-}
-
-variable "use_local_html_parser" {
-  description = "USE_LOCAL_HTML_PARSER app service configuration value."
-  type        = string
-  default     = ""
-}
-
-variable "use_local_pdf_parser" {
-  description = "USE_LOCAL_PDF_PARSER app service configuration value."
-  type        = string
-  default     = ""
-}
-
-variable "use_speech_input_browser" {
-  description = "USE_SPEECH_INPUT_BROWSER app service configuration value."
-  type        = string
-  default     = ""
-}
-
-variable "use_speech_output_azure" {
-  description = "USE_SPEECH_OUTPUT_AZURE app service configuration value."
-  type        = string
-  default     = ""
-}
-
-variable "use_speech_output_browser" {
-  description = "USE_SPEECH_OUTPUT_BROWSER app service configuration value."
-  type        = string
-  default     = ""
-}
-
-variable "use_vectors" {
-  description = "USE_VECTORS app service configuration value."
-  type        = string
-  default     = ""
+  default     = "gpt-4o"
 }

@@ -33,9 +33,16 @@ variable "search_service_name" {
   }
 }
 
-# Service variables
 variable "search_service_sku" {
   description = "Specifies the SKU for the search service"
+  type        = string
+  sensitive   = false
+  default     = "standard"
+}
+
+
+variable "semantic_search_sku" {
+  description = "Specifies the SKU for the semantic search"
   type        = string
   sensitive   = false
   default     = "standard"
@@ -81,11 +88,23 @@ variable "search_service_skillset_name" {
   sensitive   = false
 }
 
+variable "function_app_id" {
+  description = ""
+  type        = string
+  sensitive   = false
+
+}
+
 variable "pdf_merge_customskill_endpoint" {
   description = "Specifies endpoint for skill."
   type        = string
   sensitive   = false
 
+}
+
+variable "computer_vision_endpoint" {
+  description = ""
+  type        = string
 }
 
 variable "cognitive_services_endpoint" {
@@ -107,7 +126,7 @@ variable "knowledgestore_storage_account_id" {
 
 }
 
-variable "knowledgestore_storage_container_name" {
+variable "storage_container_name_knowledgestore" {
   description = "Specifies knowledge resource contaner name."
   type        = string
   sensitive   = false
@@ -128,11 +147,6 @@ variable "azure_openai_text_model_name" {
   description = "Azure OpenAI text model name"
   type        = string
 }
-
-
-
-
-
 
 variable "storage_account_id" {
   description = "Storage account id"
