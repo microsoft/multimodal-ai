@@ -2,14 +2,17 @@
 
 ## Table of Contents
 
-- [Overview](#overview)
-- [Deployment](#deployment)
-- [About this project](#whats-included)
-- [High-level architecture](#high-level-architecture)
-- [Azure services required](#azure-services-required)
-- [References](#references)
-- [Contributing](#contributing)
-- [Trademarks](#trademarks)
+- [Multimodal AI](#multimodal-ai)
+  - [Table of Contents](#table-of-contents)
+  - [Overview](#overview)
+  - [Deployment](#deployment)
+  - [About this project](#about-this-project)
+  - [High-level architecture](#high-level-architecture)
+  - [Azure services required](#azure-services-required)
+  - [References](#references)
+    - [Sample documents](#sample-documents)
+  - [Contributing](#contributing)
+  - [Trademarks](#trademarks)
 
 ## Overview
 
@@ -72,16 +75,17 @@ As the architectural diagram in the previous depicts, this project deploys and c
    - Used by AI Search for integrated vectorization of images
 - Document Intelligence
    - To extract text from documents
-- Azure AI Vision
+- Azure AI Vision (Computer Vision)
    - For generating embeddings of images
 - Azure Functions
-   - For AI Search custom skills
+   - For hosting AI Search custom skills
 - Azure App Service
    - For the web application
 - Azure Log Analytics Workspace
 - Azure Application Insights
 - Storage Account
    - To provide the documents to be indexed
+   - To host the knowledgestore storing the created/extracted images 
 
 ## References
 
