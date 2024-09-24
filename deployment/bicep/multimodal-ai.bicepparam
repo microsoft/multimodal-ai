@@ -30,6 +30,8 @@ param tags = {}
 
 param appServiceSkuName = 'B3'
 
+param functionAppClientId = ''
+
 param aoaiDeployments = [
   {
     name: 'text-embedding-ada-002'
