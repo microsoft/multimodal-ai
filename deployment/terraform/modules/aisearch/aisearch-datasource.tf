@@ -2,19 +2,7 @@ locals {
   datasource_config_file = "datasource_config.json"
 }
 
-# data "template_file" "datasource_template" {
-#   template = file("${path.module}/../../../library/datasource_blob_template.json")
-
-#   vars = {
-#     datasource_name                   = var.search_service_datasource_name
-#     datasource_description            = "Data source for indexing documents from Azure Blob Storage"
-#     storage_account_connection_string = "ResourceId=${var.storage_account_id}"
-#     container_name                    = var.storage_container_name_content
-#   }
-# }
-
 resource "local_file" "datasource_config" {
-  # content  = data.template_file.datasource_template.rendered
   content = templatefile("${path.module}/../../../library/datasource_blob_template.json", {
     datasource_name                   = var.search_service_datasource_name
     datasource_description            = "Data source for indexing documents from Azure Blob Storage"

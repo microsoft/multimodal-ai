@@ -3,20 +3,7 @@ locals {
   indexer_config_file = "indexer_config.json"
 }
 
-# data "template_file" "indexer_template" {
-#   template = file("${path.module}/../../../library/indexer_template.json")
-
-#   vars = {
-#     datasource_name     = var.search_service_datasource_name
-#     index_name          = var.search_service_index_name
-#     indexer_name        = var.search_service_indexer_name
-#     indexer_description = "Indexer for auto indexing documents with ${var.search_service_skillset_name}"
-#     skillset_name       = var.search_service_skillset_name
-#   }
-# }
-
 resource "local_file" "indexer_config" {
-  #content  = data.template_file.indexer_template.rendered
   content = templatefile("${path.module}/../../../library/indexer_template.json", {
     datasource_name     = var.search_service_datasource_name
     index_name          = var.search_service_index_name
