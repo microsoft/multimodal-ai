@@ -17,4 +17,6 @@ locals {
     resource_group_name = split("/", var.function_key_vault_id)[4]
     name                = split("/", var.function_key_vault_id)[8]
   }
+
+  function_ad_app_client_id = var.function_ad_app_client_id != "" ? var.function_ad_app_client_id : azuread_application.function_ad_app[0].client_id
 }

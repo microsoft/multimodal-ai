@@ -12,7 +12,7 @@ variable "resource_group_name" {
   sensitive   = false
   validation {
     condition     = length(var.resource_group_name) >= 2
-    error_message = "Please specify a valid name."
+    error_message = "Please specify a valid name longer than 2 characters."
   }
 }
 
@@ -35,7 +35,7 @@ variable "function_name" {
   sensitive   = false
   validation {
     condition     = length(var.function_name) >= 2
-    error_message = "Please specify a valid name."
+    error_message = "Please specify a valid name longer than 2 characters."
   }
 }
 
@@ -99,7 +99,7 @@ variable "function_application_insights_instrumentation_key" {
   sensitive   = false
   validation {
     condition     = length(var.function_application_insights_instrumentation_key) >= 2
-    error_message = "Please specify a valid name."
+    error_message = "Please specify a valid name longer than 2 characters."
   }
 }
 
@@ -109,7 +109,7 @@ variable "function_application_insights_connection_string" {
   sensitive   = false
   validation {
     condition     = length(var.function_application_insights_connection_string) >= 2
-    error_message = "Please specify a valid name."
+    error_message = "Please specify a valid name longer than 2 characters."
   }
 }
 
@@ -122,6 +122,12 @@ variable "log_analytics_workspace_id" {
     condition     = length(split("/", var.log_analytics_workspace_id)) == 9
     error_message = "Please specify a valid resource ID."
   }
+}
+
+variable "function_ad_app_client_id" {
+  description = "Specifies the client id of the app registration created"
+  type        = string
+  sensitive   = false
 }
 
 # Network variables

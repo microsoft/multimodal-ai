@@ -12,7 +12,7 @@ variable "resource_group_name" {
   sensitive   = false
   validation {
     condition     = length(var.resource_group_name) >= 2
-    error_message = "Please specify a valid name."
+    error_message = "Please specify a valid name longer than 2 characters."
   }
 }
 
@@ -35,7 +35,7 @@ variable "webapp_name" {
   sensitive   = false
   validation {
     condition     = length(var.webapp_name) >= 2
-    error_message = "Please specify a valid name."
+    error_message = "Please specify a valid name longer than 2 characters."
   }
 }
 
@@ -99,7 +99,7 @@ variable "webapp_application_insights_instrumentation_key" {
   sensitive   = false
   validation {
     condition     = length(var.webapp_application_insights_instrumentation_key) >= 2
-    error_message = "Please specify a valid name."
+    error_message = "Please specify a valid name longer than 2 characters."
   }
 }
 
@@ -109,7 +109,7 @@ variable "webapp_application_insights_connection_string" {
   sensitive   = false
   validation {
     condition     = length(var.webapp_application_insights_connection_string) >= 2
-    error_message = "Please specify a valid name."
+    error_message = "Please specify a valid name longer than 2 characters."
   }
 }
 

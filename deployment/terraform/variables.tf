@@ -87,7 +87,6 @@ variable "search_service_name" {
 variable "search_service_location" {
   description = "Search Service Location."
   type        = string
-  default     = ""
 }
 
 variable "search_service_sku" {
@@ -148,10 +147,29 @@ variable "openai_service_name" {
   default     = ""
 }
 
+
 variable "openai_service_location" {
   description = "Azure OpenAI Service Location."
   type        = string
-  default     = ""
+  validation {
+    condition     = contains(["australiaeast", "canadaeast", "eastus", "eastus2", "francecentral", "japaneast", "northcentralus", "swedencentral", "switzerlandnorth", "uksouth"], var.openai_service_location)
+    error_message = <<EOT
+    Please specify a region that supports gpt-35-turbo,0613 models for OpenAI.
+    Valid values at the time this code published are:
+      - australiaeast
+      - canadaeast
+      - eastus
+      - eastus2
+      - francecentral
+      - japaneast
+      - northcentralus
+      - swedencentral
+      - switzerlandnorth
+      - uksouth
+    Regions that support gpt-35-turbo,0613 models are published in the page below
+    https://learn.microsoft.com/en-us/azure/ai-services/openai/concepts/models#gpt-35-models
+    EOT
+  }
 }
 
 variable "openai_service_sku" {
@@ -183,7 +201,6 @@ variable "storage_container_name_knowledgestore" {
   default     = "knowledgestore"
 }
 
-
 variable "cognitive_service_name" {
   description = "Specifies the sku name of the cognitive service."
   type        = string
@@ -211,7 +228,19 @@ variable "form_recognizer_name" {
 variable "form_recognizer_service_location" {
   description = "Form Recognizer Service Location."
   type        = string
-  default     = ""
+  validation {
+    condition     = contains(["eastus", "northcentralus", "westeurope", "westus2"], var.form_recognizer_service_location)
+    error_message = <<EOT
+    Please specify a region that supports API 2024-07-31-preview.
+    Valid values at the time this code published are:
+      - eastus
+      - northcentralus
+      - westeurope
+      - westus2
+    Regions that support API 2024-07-31-preview are published in the page below
+    https://learn.microsoft.com/en-us/azure/cognitive-services/form-recognizer/overview#supported-apis
+    EOT
+  }
 }
 
 variable "form_recognizer_sku" {
@@ -234,8 +263,29 @@ variable "computer_vision_name" {
 variable "computer_vision_service_location" {
   description = "Computer Vision Service Location."
   type        = string
-  default     = ""
+  validation {
+    condition     = contains(["eastus", "westus", "westus2", "francecentral", "northeurope", "westeurope", "swedencentral", "switzerlandnorth", "australiaeast", "southeastasia", "koreacentral", "japaneast"], var.computer_vision_service_location)
+    error_message = <<EOT
+    Please specify a region for search service that supports Multimodal embeddings
+    Valid values at the time this code published are:
+      - eastus
+      - westus
+      - westus2
+      - francecentral
+      - northeurope
+      - westeurope
+      - swedencentral
+      - switzerlandnorth
+      - australiaeast
+      - southeastasia
+      - koreacentral
+      - japaneast
+    Regions that support multimodal embeddings are published here
+    https://learn.microsoft.com/en-us/azure/ai-services/computer-vision/overview-image-analysis?tabs=4-0#region-availability
+    EOT
+  }
 }
+
 
 variable "computer_vision_sku" {
   description = "Specifies the sku name of the computer vision service."
@@ -345,4 +395,11 @@ variable "azure_openai_gpt4v_deployment_name" {
   description = "OpenAI gpt4v deployment name. Must be defined in aoai_deployments parameter."
   type        = string
   default     = "gpt-4o"
+}
+
+variable "function_ad_app_client_id" {
+  description = "Specifies the client id of the app registration created"
+  type        = string
+  sensitive   = false
+  default     = ""
 }

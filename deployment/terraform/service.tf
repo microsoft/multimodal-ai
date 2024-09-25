@@ -61,6 +61,7 @@ module "skills" {
   function_key_vault_id                             = module.keyvault.key_vault_id
   function_code_path                                = var.skills_service_code_path
   function_storage_account_id                       = module.storage.storage_account_id
+  function_ad_app_client_id                         = var.function_ad_app_client_id
   function_application_settings = {
     FUNCTIONS_WORKER_RUNTIME = "python"
     #WEBSITE_RUN_FROM_PACKAGE              = 1
@@ -147,7 +148,7 @@ module "aisearch" {
   pdf_merge_customskill_endpoint        = "https://${module.skills.linux_function_app_default_hostname}/api/pdf_text_image_merge_skill"
   knowledgestore_storage_account_id     = module.storage.storage_account_id
   storage_container_name_knowledgestore = var.storage_container_name_knowledgestore
-  function_app_id                       = module.skills.linux_function_app_client_id
+  function_app_id                       = module.skills.function_ad_app_client_id
 
   depends_on = [module.aoai, module.cognitive_service, module.storage, module.skills]
 }

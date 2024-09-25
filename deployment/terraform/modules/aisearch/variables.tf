@@ -1,9 +1,29 @@
 # General variables
 variable "location" {
-  description = "Specifies the location of the resource group."
+  description = "Specifies the location of the search service."
   type        = string
   sensitive   = false
-
+  validation {
+    condition     = contains(["eastus", "westus", "westus2", "francecentral", "northeurope", "westeurope", "swedencentral", "switzerlandnorth", "australiaeast", "southeastasia", "koreacentral", "japaneast"], var.location)
+    error_message = <<EOT
+    Please specify a region for search service that supports Multimodal embeddings
+    Valid values at the time this code published are:
+      - eastus
+      - westus
+      - westus2
+      - francecentral
+      - northeurope
+      - westeurope
+      - swedencentral
+      - switzerlandnorth
+      - australiaeast
+      - southeastasia
+      - koreacentral
+      - japaneast
+    Regions that support multimodal embeddings are published here
+    https://learn.microsoft.com/en-us/azure/ai-services/computer-vision/overview-image-analysis?tabs=4-0#region-availability
+    EOT
+  }
 }
 
 variable "resource_group_name" {
@@ -12,7 +32,7 @@ variable "resource_group_name" {
   sensitive   = false
   validation {
     condition     = length(var.resource_group_name) >= 2
-    error_message = "Please specify a valid name."
+    error_message = "Please specify a valid name longer than 2 characters."
   }
 }
 
@@ -29,7 +49,7 @@ variable "search_service_name" {
   sensitive   = false
   validation {
     condition     = length(var.search_service_name) >= 2
-    error_message = "Please specify a valid name."
+    error_message = "Please specify a valid name longer than 2 characters."
   }
 }
 

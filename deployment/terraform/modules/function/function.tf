@@ -60,7 +60,7 @@ resource "azurerm_linux_function_app" "linux_function_app" {
       # allowed_audiences = [
       #   "${managed_identity_application_id}"
       # ]
-      client_id            = azuread_application.function_ad_app.client_id
+      client_id            = local.function_ad_app_client_id
       tenant_auth_endpoint = "https://login.microsoftonline.com/${data.azurerm_client_config.current.tenant_id}/v2.0"
     }
     login {

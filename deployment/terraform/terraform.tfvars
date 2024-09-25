@@ -2,8 +2,8 @@ subscription_id  = ""
 environment_name = "mmai"
 
 location                         = "eastus2"
-search_service_location          = "eastus"
 openai_service_location          = "eastus2"
+search_service_location          = "eastus"
 form_recognizer_service_location = "eastus"
 computer_vision_service_location = "eastus"
 
@@ -46,3 +46,5 @@ azure_openai_chatgpt_model_name      = "gpt-4o"
 azure_openai_chatgpt_deployment_name = "gpt-4o"
 azure_openai_gpt4v_model_name        = "gpt-4o"
 azure_openai_gpt4v_deployment_name   = "gpt-4o"
+
+function_ad_app_client_id = ""
