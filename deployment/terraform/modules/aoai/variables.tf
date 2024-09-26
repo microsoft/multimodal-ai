@@ -11,7 +11,7 @@ variable "resource_group_name" {
   sensitive   = false
   validation {
     condition     = length(var.resource_group_name) >= 2
-    error_message = "Please specify a valid name."
+    error_message = "Please specify a valid name longer than 2 characters."
   }
 }
 
@@ -28,7 +28,7 @@ variable "cognitive_service_name" {
   sensitive   = false
   validation {
     condition     = length(var.cognitive_service_name) >= 2
-    error_message = "Please specify a valid name."
+    error_message = "Please specify a valid name longer than 2 characters."
   }
 }
 
@@ -40,7 +40,7 @@ variable "cognitive_service_kind" {
   default     = "OpenAI"
   validation {
     condition     = contains(["AnomalyDetector", "ComputerVision", "CognitiveServices", "ContentModerator", "CustomVision.Training", "CustomVision.Prediction", "Face", "FormRecognizer", "ImmersiveReader", "LUIS", "Personalizer", "SpeechServices", "TextAnalytics", "TextTranslation", "OpenAI"], var.cognitive_service_kind)
-    error_message = "Please specify a valid kind."
+    error_message = "Please specify a valid kind. Valid values are: \"AnomalyDetector\", \"ComputerVision\", \"CognitiveServices\", \"ContentModerator\", \"CustomVision.Training\", \"CustomVision.Prediction\", \"Face\", \"FormRecognizer\", \"ImmersiveReader\", \"LUIS\", \"Personalizer\", \"SpeechServices\", \"TextAnalytics\", \"TextTranslation\", \"OpenAI\"."
   }
 }
 

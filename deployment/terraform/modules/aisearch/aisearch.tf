@@ -11,6 +11,7 @@ resource "azurerm_search_service" "search_service" {
   hosting_mode = "default"
 
   sku                                      = var.search_service_sku
+  semantic_search_sku                      = var.semantic_search_sku
   partition_count                          = var.search_service_partition_count
   replica_count                            = var.search_service_replica_count
   public_network_access_enabled            = true

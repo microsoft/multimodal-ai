@@ -29,86 +29,86 @@ variable "tags" {
   default     = {}
 }
 
-variable "function_name" {
+variable "webapp_name" {
   description = "Specifies the name of the data factory."
   type        = string
   sensitive   = false
   validation {
-    condition     = length(var.function_name) >= 2
+    condition     = length(var.webapp_name) >= 2
     error_message = "Please specify a valid name longer than 2 characters."
   }
 }
 
 # Service variables
-variable "function_application_settings" {
+variable "webapp_application_settings" {
   description = "Specifies app settings this is then merged with local app settings"
   type        = map(string)
   sensitive   = false
 }
 
-variable "function_always_on" {
-  description = "Specifies weahther always on should be enabled on the function."
+variable "webapp_always_on" {
+  description = "Specifies weahther always on should be enabled on the webapp."
   type        = bool
   sensitive   = false
   default     = false
 }
 
-variable "function_code_path" {
-  description = "Specifies the code location of the function."
+variable "webapp_code_path" {
+  description = "Specifies the code location of the webapp."
   type        = string
   sensitive   = false
 }
 
-variable "function_storage_account_id" {
-  description = "Specifies the resource id of the storage account."
-  type        = string
-  sensitive   = false
-  default     = null
-  validation {
-    condition     = length(split("/", var.function_storage_account_id)) == 9
-    error_message = "Please specify a valid name."
-  }
-}
-
-variable "function_key_vault_id" {
+variable "webapp_key_vault_id" {
   description = "Specifies the resource id of the key vault."
   type        = string
   sensitive   = false
   validation {
-    condition     = length(split("/", var.function_key_vault_id)) == 9
+    condition     = length(split("/", var.webapp_key_vault_id)) == 9
     error_message = "Please specify a valid name."
   }
 }
 
-variable "function_user_assigned_identity_id" {
+variable "webapp_user_assigned_identity_id" {
   description = "Specifies the resource id of the user assigned identity."
   type        = string
   sensitive   = false
   default     = null
 }
 
-variable "function_sku" {
-  description = "Specifies the SKU for the function app."
+variable "webapp_sku" {
+  description = "Specifies the SKU for the webapp app."
+  type        = string
+  sensitive   = false
+  validation {
+    condition     = contains(["B1", "B2", "B3", "S1", "S2", "S3", "EP1", "EP2", "EP3"], var.webapp_sku)
+    error_message = "Please use an allowed value: \"B1\",\"B2\",\"B3\",\"S1\",\"S2\",\"S3\",\"EP1\", \"EP2\", \"EP3\"."
+  }
+}
+
+
+variable "webapp_build_command" {
+  description = "Command to be run before deploy."
   type        = string
   sensitive   = false
 }
 
-variable "function_application_insights_instrumentation_key" {
+variable "webapp_application_insights_instrumentation_key" {
   description = "Specifies the instrumentation key of application insights."
   type        = string
   sensitive   = false
   validation {
-    condition     = length(var.function_application_insights_instrumentation_key) >= 2
+    condition     = length(var.webapp_application_insights_instrumentation_key) >= 2
     error_message = "Please specify a valid name longer than 2 characters."
   }
 }
 
-variable "function_application_insights_connection_string" {
+variable "webapp_application_insights_connection_string" {
   description = "Specifies the instrumentation key of application insights."
   type        = string
   sensitive   = false
   validation {
-    condition     = length(var.function_application_insights_connection_string) >= 2
+    condition     = length(var.webapp_application_insights_connection_string) >= 2
     error_message = "Please specify a valid name longer than 2 characters."
   }
 }
@@ -122,12 +122,6 @@ variable "log_analytics_workspace_id" {
     condition     = length(split("/", var.log_analytics_workspace_id)) == 9
     error_message = "Please specify a valid resource ID."
   }
-}
-
-variable "function_ad_app_client_id" {
-  description = "Specifies the client id of the app registration created"
-  type        = string
-  sensitive   = false
 }
 
 # Network variables
