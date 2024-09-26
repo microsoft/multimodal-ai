@@ -76,6 +76,9 @@ param aoaiVisionModel string
 @sys.description('App Service Plan Sku')
 param appServiceSkuName string
 
+@sys.description('ClientId of an existing Microsoft Entra ID App registration to enable authentication for the Azure Function App.')
+param functionAppClientId string
+
 // Variables
 var locationNormalized = toLower(location)
 var prefixNormalized = toLower(prefix)
@@ -420,7 +423,7 @@ module appServiceRoleAssignmentStorage 'modules/rbac/roleAssignment-appService-s
   }
 }
 
-module azureFunctionAppRegistration 'modules/appRegistration/appRegistration.bicep' = {
+module azureFunctionAppRegistration 'modules/appRegistration/appRegistration.bicep' = if (empty(functionAppClientId)) {
   name: 'modAzureFunctionAppRegistration'
   scope: resourceGroup(resourceGroupNames.apps)
   dependsOn:[
@@ -470,7 +473,7 @@ module azureFunction 'modules/function/function.bicep' = {
     azureFunctionName: resourceNames.functionApp
     azureFunctionStorageName: resourceNames.functionStorageAccountName
     logAnalyticsWorkspaceid: logAnalytics.outputs.logAnalyticsWorkspaceId
-    clientAppId: azureFunctionAppRegistration.outputs.appId
+    clientAppId: empty(functionAppClientId) ? azureFunctionAppRegistration.outputs.appId : functionAppClientId
     documentIntelligenceServiceInstanceName: documentIntelligence.outputs.cognitiveServicesAccountName
     allowedApplications: [
       aiSearchManagedIdentity.outputs.appId
@@ -614,7 +617,7 @@ module aiSearchSkillset 'modules/aiSearch/aiSearch-skillset.bicep' = {
     knowledgeStoreStorageResourceUri: 'ResourceId=${storageAccount.outputs.storageAccountId}'
     knowledgeStoreStorageContainer: storageAccountDocsContainerName
     pdfMergeCustomSkillEndpoint: azureFunction.outputs.pdfTextImageMergeSkillEndpoint
-    aadAppId: azureFunctionAppRegistration.outputs.appId
+    aadAppId: empty(functionAppClientId) ? azureFunctionAppRegistration.outputs.appId : functionAppClientId
     cognitiveServicesAccountId: azureCognitiveServices.outputs.cognitiveServicesAccountId
     managedIdentityId: deploymentScriptIdentity.outputs.managedIdentityId
   }
