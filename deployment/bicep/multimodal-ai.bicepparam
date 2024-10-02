@@ -64,3 +64,16 @@ param aoaiDeployments = [
     }
   }
 ]
+
+@secure()
+param authSettings = {
+  isAuthEnabled: false
+  enforceAccessControl: false
+  serverApp: {
+    appId: ''
+    appSecret: ''
+  }
+  clientApp: {
+    appId: ''
+  }
+}

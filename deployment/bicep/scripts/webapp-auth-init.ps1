@@ -163,6 +163,7 @@ function New-ClientApp {
         RedirectUris          = @("http://localhost:50505/.auth/login/aad/callback")
         ImplicitGrantSettings = @{
             EnableIdTokenIssuance = $true
+            EnableAccessTokenIssuance = $true
         }
     }
 

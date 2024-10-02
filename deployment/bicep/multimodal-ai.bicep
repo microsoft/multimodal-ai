@@ -79,6 +79,9 @@ param appServiceSkuName string
 @sys.description('ClientId of an existing Microsoft Entra ID App registration to enable authentication for the Azure Function App.')
 param functionAppClientId string
 
+@sys.description('Auth settings for the web app.')
+param authSettings object
+
 // Variables
 var locationNormalized = toLower(location)
 var prefixNormalized = toLower(prefix)
@@ -520,6 +523,11 @@ module webApp 'modules/appService/appService.bicep' = {
     appCommandLine: 'python3 -m gunicorn main:app'
     use32BitWorkerProcess: appServiceSkuName == 'F1'
     alwaysOn: appServiceSkuName != 'F1'
+    authSettings: {
+      isAuthEnabled: authSettings.isAuthEnabled
+      clientAppId: authSettings.clientApp.appId
+      serverAppId: authSettings.serverApp.appId
+    }
     appSettings: {
       AZURE_STORAGE_ACCOUNT: resourceNames.storageAccount
       AZURE_STORAGE_CONTAINER: storageAccountDocsContainerName
@@ -543,6 +551,14 @@ module webApp 'modules/appService/appService.bicep' = {
       PYTHON_ENABLE_GUNICORN_MULTIWORKERS: true
       SCM_DO_BUILD_DURING_DEPLOYMENT: true
       ENABLE_ORYX_BUILD: true
+      AZURE_USE_AUTHENTICATION: authSettings.isAuthEnabled
+      AZURE_SERVER_APP_ID: authSettings.serverApp.appId
+      AZURE_SERVER_APP_SECRET: 'TODO'
+      AZURE_CLIENT_APP_ID: authSettings.clientApp.appId
+      AZURE_AUTH_TENANT_ID: tenant().tenantId
+      AZURE_ENFORCE_ACCESS_CONTROL: authSettings.enforceAccessControl
+      AZURE_ENABLE_GLOBAL_DOCUMENT_ACCESS: true
+      AZURE_ENABLE_UNAUTHENTICATED_ACCESS: !authSettings.isAuthEnabled
     }
   }
 }
