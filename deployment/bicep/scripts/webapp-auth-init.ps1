@@ -234,7 +234,7 @@ Write-Host "Creating or updating server application..."
 try {
     $serverApp = New-ServerApp -DisplayName $ServerAppDisplayName
     $serverResult = Set-ApplicationRegistration -AppDisplayName $ServerAppDisplayName -RequestApp $serverApp
-    
+
     if ($serverResult.IsNewApp) {
         # Only add a secret to an existing application to avoid creating multiple secrets.
         # It is not posible to retrieve secrets from an existing application.
