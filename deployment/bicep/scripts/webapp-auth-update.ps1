@@ -50,6 +50,8 @@ try {
         }
     }
 
+    Write-Host $app.Spas.RedirectUris
+
     Update-MgApplication -ApplicationId $ClientObjectId -BodyParameter $app
 }
 catch {

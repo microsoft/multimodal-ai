@@ -160,8 +160,7 @@ try {
 
         . "$PSScriptRoot/scripts/webapp-auth-update.ps1" `
             -ClientObjectId $authDetails.ClientApp.ObjectId `
-            -BackendUri $deployment.Outputs.webAppUri
-
+            -BackendUri $deployment.Outputs.webAppUri.value
     }
     else {
         Write-Verbose "Deploying infrastructure..."
