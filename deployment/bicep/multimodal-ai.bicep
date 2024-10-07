@@ -111,6 +111,7 @@ var resourceNames = {
   aiSearchSkillsetName: '${prefix}-skillset'
   webAppServicePlanName: '${prefixNormalized}-${locationNormalized}-webapp-svcplan'
   webAppName: '${prefixNormalized}-${locationNormalized}-webapp'
+  keyVaultName: '${prefixNormalized}-${locationNormalized}-kv'
 }
 
 var appServicePlan = {
@@ -484,6 +485,31 @@ module azureFunction 'modules/function/function.bicep' = {
   }
 }
 
+module keyVault './modules/keyvault/keyvault.bicep' = {
+  name: 'modKeyVault'
+  scope: resourceGroup(resourceGroupNames.storage)
+  dependsOn:[
+    resourceGroupStorage
+  ]
+  params: {
+    keyVaultName: resourceNames.keyVaultName
+    location: location
+  }
+}
+
+module keyVaultSecret './modules/keyvault/keyvault-secret.bicep' = {
+  name: 'modKeyVaultSecret'
+  scope: resourceGroup(resourceGroupNames.storage)
+  dependsOn:[
+    keyVault
+  ]
+  params: {
+    keyVaultName: resourceNames.keyVaultName
+    secretName: authSettings.serverApp.appSecretName
+    secretValue: authSettings.serverApp.appSecret
+  }
+}
+
 // Azure Web App
 module webAppServicePlan 'modules/appService/appServicePlan.bicep' = {
   name: 'modWebAppServicePlan'
@@ -553,7 +579,7 @@ module webApp 'modules/appService/appService.bicep' = {
       ENABLE_ORYX_BUILD: true
       AZURE_USE_AUTHENTICATION: authSettings.isAuthEnabled
       AZURE_SERVER_APP_ID: authSettings.serverApp.appId
-      AZURE_SERVER_APP_SECRET: 'TODO'
+      AZURE_SERVER_APP_SECRET: '@Microsoft.KeyVault(VaultName=${resourceNames.keyVaultName};SecretName=${authSettings.serverApp.appSecretName})'
       AZURE_CLIENT_APP_ID: authSettings.clientApp.appId
       AZURE_AUTH_TENANT_ID: tenant().tenantId
       AZURE_ENFORCE_ACCESS_CONTROL: authSettings.enforceAccessControl

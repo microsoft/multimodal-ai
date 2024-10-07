@@ -71,6 +71,7 @@ param authSettings = {
   enforceAccessControl: false
   serverApp: {
     appId: ''
+    appSecretName: ''
     appSecret: ''
   }
   clientApp: {
