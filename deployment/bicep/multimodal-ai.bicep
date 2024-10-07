@@ -497,7 +497,7 @@ module keyVault './modules/keyvault/keyvault.bicep' = {
   }
 }
 
-module keyVaultSecret './modules/keyvault/keyvault-secret.bicep' = {
+module keyVaultSecret './modules/keyvault/keyvault-secret.bicep' = if (!empty(authSettings.serverApp.appSecret)) {
   name: 'modKeyVaultSecret'
   scope: resourceGroup(resourceGroupNames.storage)
   dependsOn:[

@@ -283,6 +283,7 @@ $results = @{
     ServerApp = @{
         ApplicationId = $serverResult.ClientId
         ObjectId      = $serverResult.ObjectId
+        ServerAppSecretDisplayName = $ServerAppSecretDisplayName
         Secret        = $serverAppSecret ? (ConvertTo-SecureString $serverAppSecret -AsPlainText -Force) : $null
     }
     ClientApp = @{

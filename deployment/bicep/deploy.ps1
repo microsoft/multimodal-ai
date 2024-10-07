@@ -11,7 +11,9 @@ param (
 
     [Parameter(Mandatory = $true)]
     [ValidateScript({ Test-Path $_ -PathType Leaf })] # Ensures file exists
-    [string]$TemplateParameterFile
+    [string]$TemplateParameterFile,
+
+    [bool]$EnableAuth = $false
 )
 
 # Function to deploy the web app
@@ -110,17 +112,52 @@ function Deploy-CustomSkills {
 $VerbosePreference = 'Continue'
 
 try {
-    Write-Verbose "Deploying infrastructure..."
 
-    # Execute the deployment command with error handling
-    $deployment = New-AzSubscriptionDeployment `
-        -Name $DeploymentName `
-        -Location $Location `
-        -TemplateFile $TemplateFile `
-        -TemplateParameterFile $TemplateParameterFile `
-        -Verbose `
-        -ErrorAction Stop `
-        -ErrorVariable deploymentError
+    if ($EnableAuth) {
+        Write-Verbose "Setting up authentication..."
+
+        $authDetails = . "$PSScriptRoot/scripts/webapp-auth-init.ps1"
+
+        $params = @{
+            isAuthEnabled        = $true
+            enforceAccessControl = $false
+            serverApp            = @{
+                appId         = $authDetails.ServerApp.ApplicationId
+                appSecretName = $authDetails.ServerApp.ServerAppSecretDisplayName
+                appSecret     = ConvertFrom-SecureString $authDetails.ServerApp.Secret
+            }
+            clientApp            = @{
+                appId = $authDetails.ClientApp.ApplicationId
+            }
+        }
+
+        Write-Verbose "Deploying infrastructure..."
+
+        # Execute the deployment command with error handling
+        $deployment = New-AzSubscriptionDeployment `
+            -Name $DeploymentName `
+            -Location $Location `
+            -TemplateFile $TemplateFile `
+            -TemplateParameterFile $TemplateParameterFile `
+            -TemplateParameterObject $params `
+            -Verbose `
+            -ErrorAction Stop `
+            -ErrorVariable deploymentError
+
+    }
+    else {
+        Write-Verbose "Deploying infrastructure..."
+
+        # Execute the deployment command with error handling
+        $deployment = New-AzSubscriptionDeployment `
+            -Name $DeploymentName `
+            -Location $Location `
+            -TemplateFile $TemplateFile `
+            -TemplateParameterFile $TemplateParameterFile `
+            -Verbose `
+            -ErrorAction Stop `
+            -ErrorVariable deploymentError
+    }
 
     # Validate deployment outputs
     if ($deployment.Outputs.appsResourceGroup -and $deployment.Outputs.webAppName -and $deployment.Outputs.functionAppName) {
