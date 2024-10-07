@@ -161,7 +161,7 @@ function New-ClientApp {
     $webApplication = @{
         RedirectUris          = @("http://localhost:50505/.auth/login/aad/callback")
         ImplicitGrantSettings = @{
-            EnableIdTokenIssuance = $true
+            EnableIdTokenIssuance     = $true
             EnableAccessTokenIssuance = $true
         }
     }
@@ -275,12 +275,13 @@ catch {
 
 Write-Host "Authentication setup complete."
 Write-Host "Please securely store the application IDs and secrets."
+Disconnect-MgGraph
 
 # Output application details
 $ServerApp = @{
-    ApplicationId               = $serverResult.ClientId
-    ObjectId                    = $serverResult.ObjectId
-    ServerAppSecretDisplayName  = $ServerAppSecretDisplayName
+    ApplicationId              = $serverResult.ClientId
+    ObjectId                   = $serverResult.ObjectId
+    ServerAppSecretDisplayName = $ServerAppSecretDisplayName
 }
 
 if ($serverAppSecret) {

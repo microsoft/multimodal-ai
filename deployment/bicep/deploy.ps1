@@ -140,7 +140,8 @@ try {
 
         if ('AppSecret' -in $results.ServerApp.Keys) {
             $params.serverApp.appSecret = ConvertFrom-SecureString $authDetails.ServerApp.AppSecret
-        } else {
+        }
+        else {
             Write-Verbose "The Secret property is not present for the server app. Assuming the app registration already exists."
         }
 
@@ -156,6 +157,10 @@ try {
             -Verbose `
             -ErrorAction Stop `
             -ErrorVariable deploymentError
+
+        . "$PSScriptRoot/scripts/webapp-auth-update.ps1" `
+            -ClientObjectId $authDetails.ClientApp.ObjectId `
+            -BackendUri $deployment.Outputs.webAppUri
 
     }
     else {
