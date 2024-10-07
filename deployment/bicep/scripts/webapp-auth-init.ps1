@@ -60,7 +60,7 @@ function Set-ApplicationRegistration {
 
     # Check if application exists based on display name
     Write-Host "Checking if application '$AppDisplayName' exists"
-    $application = Get-MgApplication -Filter "uniqueName eq '$AppDisplayName'"
+    $application = Get-MgApplication -Filter "displayName eq '$AppDisplayName'"
     if ($application) {
         $objectId = $application.Id
         $clientId = $application.AppId
@@ -89,7 +89,6 @@ function New-ServerApp {
     )
     return @{
         DisplayName    = $DisplayName
-        UniqueName     = $DisplayName
         SignInAudience = "AzureADMyOrg"
     }
 }
@@ -176,7 +175,6 @@ function New-ClientApp {
 
     return @{
         DisplayName            = $DisplayName
-        UniqueName             = $DisplayName
         SignInAudience         = "AzureADMyOrg"
         Web                    = $webApplication
         Spa                    = $spaApplication
@@ -198,7 +196,7 @@ function Set-KnownClientApplications {
 }
 
 if (-not $ServerAppDisplayName) {
-    Write-Host "Error: No server app displayname / uniquename set. Provide the server app displayname / uniquename as parameter."
+    Write-Host "Error: No server app displayname set. Provide the server app displayname as parameter."
     exit 1
 }
 
@@ -208,7 +206,7 @@ if (-not $ServerAppSecretDisplayName) {
 }
 
 if (-not $ClientAppDisplayName) {
-    Write-Host "Error: No client app displayname / uniquename set. Provide the client app displayname / uniquename as parameter."
+    Write-Host "Error: No client app displayname set. Provide the client app displayname as parameter."
     exit 1
 }
 
@@ -279,13 +277,18 @@ Write-Host "Authentication setup complete."
 Write-Host "Please securely store the application IDs and secrets."
 
 # Output application details
+$ServerApp = @{
+    ApplicationId               = $serverResult.ClientId
+    ObjectId                    = $serverResult.ObjectId
+    ServerAppSecretDisplayName  = $ServerAppSecretDisplayName
+}
+
+if ($serverAppSecret) {
+    $ServerApp.AppSecret = ConvertTo-SecureString $serverAppSecret -AsPlainText -Force
+}
+
 $results = @{
-    ServerApp = @{
-        ApplicationId = $serverResult.ClientId
-        ObjectId      = $serverResult.ObjectId
-        ServerAppSecretDisplayName = $ServerAppSecretDisplayName
-        Secret        = $serverAppSecret ? (ConvertTo-SecureString $serverAppSecret -AsPlainText -Force) : $null
-    }
+    ServerApp = $ServerApp
     ClientApp = @{
         ApplicationId = $clientResult.ClientId
         ObjectId      = $clientResult.ObjectId

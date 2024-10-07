@@ -13,7 +13,7 @@ param (
     [ValidateScript({ Test-Path $_ -PathType Leaf })] # Ensures file exists
     [string]$TemplateParameterFile,
 
-    [bool]$EnableAuth = $false
+    [switch]$EnableAuth = $false
 )
 
 # Function to deploy the web app
@@ -113,10 +113,17 @@ $VerbosePreference = 'Continue'
 
 try {
 
+    $deployment = $null
+
     if ($EnableAuth) {
         Write-Verbose "Setting up authentication..."
 
-        $authDetails = . "$PSScriptRoot/scripts/webapp-auth-init.ps1"
+        $authDetails = . "$PSScriptRoot/scripts/webapp-auth-init.ps1" `
+            -ServerAppDisplayName "mmai-server-app" `
+            -ClientAppDisplayName "mmai-client-app" `
+            -ServerAppSecretDisplayName "mmai-server-app-secret" `
+            -ErrorAction Stop `
+            -ErrorVariable deploymentError
 
         $params = @{
             isAuthEnabled        = $true
@@ -124,11 +131,17 @@ try {
             serverApp            = @{
                 appId         = $authDetails.ServerApp.ApplicationId
                 appSecretName = $authDetails.ServerApp.ServerAppSecretDisplayName
-                appSecret     = ConvertFrom-SecureString $authDetails.ServerApp.Secret
+                appSecret     = ""
             }
             clientApp            = @{
                 appId = $authDetails.ClientApp.ApplicationId
             }
+        }
+
+        if ('AppSecret' -in $results.ServerApp.Keys) {
+            $params.serverApp.appSecret = ConvertFrom-SecureString $authDetails.ServerApp.AppSecret
+        } else {
+            Write-Verbose "The Secret property is not present for the server app. Assuming the app registration already exists."
         }
 
         Write-Verbose "Deploying infrastructure..."
@@ -139,7 +152,7 @@ try {
             -Location $Location `
             -TemplateFile $TemplateFile `
             -TemplateParameterFile $TemplateParameterFile `
-            -TemplateParameterObject $params `
+            -authSettings $params `
             -Verbose `
             -ErrorAction Stop `
             -ErrorVariable deploymentError
