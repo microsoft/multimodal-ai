@@ -420,9 +420,11 @@ module appServiceRoleAssignmentStorage 'modules/rbac/roleAssignment-appService-s
   dependsOn: [
     webApp
     storageAccount
+    keyVault
   ]
   params: {
     storageAccountId: storageAccount.outputs.storageAccountId
+    keyVaultName: keyVault.outputs.name
     managedIdentityPrincipalId: webApp.outputs.identityPrincipalId
   }
 }
@@ -553,6 +555,9 @@ module webApp 'modules/appService/appService.bicep' = {
       isAuthEnabled: authSettings.isAuthEnabled
       clientAppId: authSettings.clientApp.appId
       serverAppId: authSettings.serverApp.appId
+      allowedApplications: [
+        authSettings.clientApp.appId
+      ]
     }
     appSettings: {
       AZURE_STORAGE_ACCOUNT: resourceNames.storageAccount
@@ -689,4 +694,5 @@ module aiSearchIndexer 'modules/aiSearch/aiSearch-indexer.bicep' = {
 
 output appsResourceGroup string = resourceGroupNames.apps
 output webAppName string = webApp.outputs.name
+output webAppUri string = webApp.outputs.uri
 output functionAppName string = azureFunction.outputs.functionAppName

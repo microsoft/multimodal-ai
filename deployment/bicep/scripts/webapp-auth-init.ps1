@@ -47,7 +47,7 @@ function Add-ClientSecret {
     return $result.SecretText
 }
 
-# Function to create or update an application with a client secret based on display name
+# Function to create an application with a client secret based on display name
 function Set-ApplicationRegistration {
     param (
         [string]$AppDisplayName,
@@ -56,29 +56,23 @@ function Set-ApplicationRegistration {
 
     $objectId = $null
     $clientId = $null
-    $isNewApp = $false
 
     # Check if application exists based on display name
     Write-Host "Checking if application '$AppDisplayName' exists"
     $application = Get-MgApplication -Filter "displayName eq '$AppDisplayName'"
     if ($application) {
-        $objectId = $application.Id
-        $clientId = $application.AppId
-        Write-Host "Application already exists, updating application"
-        Update-MgApplication -ApplicationId $objectId -BodyParameter $RequestApp | Out-Null
+        throw "Application with display name '$AppDisplayName' already exists. Delete the application and try again."
     }
     else {
         Write-Host "Creating application registration"
         $result = New-ApplicationRegistration -RequestApp $RequestApp
         $objectId = $result.ObjectId
         $clientId = $result.ClientId
-        $isNewApp = $true
     }
 
     return @{
         ObjectId = $objectId
         ClientId = $clientId
-        IsNewApp = $isNewApp
     }
 }
 
@@ -227,39 +221,32 @@ catch {
 $permissionScopeId = "406571c1-e45b-4875-a030-2470f350719d"
 $serverAppSecret = $null
 
-# Create or update server application
-Write-Host "Creating or updating server application..."
+Write-Host "Creating server application..."
 
 try {
     $serverApp = New-ServerApp -DisplayName $ServerAppDisplayName
     $serverResult = Set-ApplicationRegistration -AppDisplayName $ServerAppDisplayName -RequestApp $serverApp
 
-    if ($serverResult.IsNewApp) {
-        # Only add a secret to an existing application to avoid creating multiple secrets.
-        # It is not posible to retrieve secrets from an existing application.
-        Write-Host "Adding client secret to server application '$ServerAppDisplayName'"
-        $serverAppSecret = Add-ClientSecret -AppObjectId $serverResult.ObjectId -DisplayName $ServerAppSecretDisplayName
+    Write-Host "Adding client secret to server application '$ServerAppDisplayName'"
+    $serverAppSecret = Add-ClientSecret -AppObjectId $serverResult.ObjectId -DisplayName $ServerAppSecretDisplayName
 
-        # Cannot modify app permissions and scopes for an existing app. Those need to be disabled first.
-        Write-Host "Setting up server application configuration..."
-        $serverAppConfig = Get-ServerAppConfiguration -ServerAppId $serverResult.ClientId -PermissionScopeId $permissionScopeId
-        Update-MgApplication -ApplicationId $serverResult.ObjectId -BodyParameter $serverAppConfig
-    }
+    Write-Host "Setting up server application configuration..."
+    $serverAppConfig = Get-ServerAppConfiguration -ServerAppId $serverResult.ClientId -PermissionScopeId $permissionScopeId
+    Update-MgApplication -ApplicationId $serverResult.ObjectId -BodyParameter $serverAppConfig
 }
 catch {
-    Write-Error "Failed to create or update server application: $_"
+    Write-Error "Failed to create ot update server application: $_"
     exit 1
 }
 
-# Create or update client application
-Write-Host "Creating or updating client application..."
+Write-Host "Creating client application..."
 
 try {
     $clientApp = New-ClientApp -ServerAppId $serverResult.ClientId -ServerAppScopeId $permissionScopeId -DisplayName $ClientAppDisplayName
     $clientResult = Set-ApplicationRegistration -AppDisplayName $ClientAppDisplayName -RequestApp $clientApp
 }
 catch {
-    Write-Error "Failed to create or update client application: $_"
+    Write-Error "Failed to create client application: $_"
     exit 1
 }
 
@@ -278,18 +265,13 @@ Write-Host "Please securely store the application IDs and secrets."
 Disconnect-MgGraph
 
 # Output application details
-$ServerApp = @{
-    ApplicationId              = $serverResult.ClientId
-    ObjectId                   = $serverResult.ObjectId
-    ServerAppSecretDisplayName = $ServerAppSecretDisplayName
-}
-
-if ($serverAppSecret) {
-    $ServerApp.AppSecret = ConvertTo-SecureString $serverAppSecret -AsPlainText -Force
-}
-
 $results = @{
-    ServerApp = $ServerApp
+    ServerApp = @{
+        ApplicationId              = $serverResult.ClientId
+        ObjectId                   = $serverResult.ObjectId
+        ServerAppSecretDisplayName = $ServerAppSecretDisplayName
+        AppSecret                  = ConvertTo-SecureString $serverAppSecret -AsPlainText -Force
+    }
     ClientApp = @{
         ApplicationId = $clientResult.ClientId
         ObjectId      = $clientResult.ObjectId

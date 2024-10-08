@@ -118,10 +118,12 @@ try {
     if ($EnableAuth) {
         Write-Verbose "Setting up authentication..."
 
+        $prefix = (Select-String -Path $TemplateParameterFile -Pattern "^param\s+prefix\s*=\s*'([^']*)'").Matches.Groups[1].Value
+
         $authDetails = . "$PSScriptRoot/scripts/webapp-auth-init.ps1" `
-            -ServerAppDisplayName "mmai-server-app" `
-            -ClientAppDisplayName "mmai-client-app" `
-            -ServerAppSecretDisplayName "mmai-server-app-secret" `
+            -ServerAppDisplayName "$prefix-server-app" `
+            -ClientAppDisplayName "$prefix-client-app" `
+            -ServerAppSecretDisplayName "$prefix-server-app-secret" `
             -ErrorAction Stop `
             -ErrorVariable deploymentError
 
@@ -131,18 +133,11 @@ try {
             serverApp            = @{
                 appId         = $authDetails.ServerApp.ApplicationId
                 appSecretName = $authDetails.ServerApp.ServerAppSecretDisplayName
-                appSecret     = ""
+                appSecret     = ConvertFrom-SecureString $authDetails.ServerApp.AppSecret
             }
             clientApp            = @{
                 appId = $authDetails.ClientApp.ApplicationId
             }
-        }
-
-        if ('AppSecret' -in $results.ServerApp.Keys) {
-            $params.serverApp.appSecret = ConvertFrom-SecureString $authDetails.ServerApp.AppSecret
-        }
-        else {
-            Write-Verbose "The Secret property is not present for the server app. Assuming the app registration already exists."
         }
 
         Write-Verbose "Deploying infrastructure..."
