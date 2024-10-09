@@ -192,6 +192,7 @@ class ChatReadRetrieveReadVisionApproach(ChatApproach):
         data_points = {
             "text": sources_content,
             "images": [d["image_url"] for d in image_list],
+            "parent_ids": {result.sourcepage: result.parent_id for result in results}
         }
 
         extra_info = {

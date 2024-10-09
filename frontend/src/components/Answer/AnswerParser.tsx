@@ -1,13 +1,18 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { getCitationFilePath } from "../../api";
 
-type HtmlParsedAnswer = {
-    answerHtml: string;
-    citations: string[];
+type Citation = {
+    text: string;
+    filePath: string;
 };
 
-export function parseAnswerToHtml(answer: string, isStreaming: boolean, onCitationClicked: (citationFilePath: string) => void): HtmlParsedAnswer {
-    const citations: string[] = [];
+type HtmlParsedAnswer = {
+    answerHtml: string;
+    citations: Citation[];
+};
+
+export function parseAnswerToHtml(answer: string, data_points: any, isStreaming: boolean, onCitationClicked: (citationFilePath: string) => void): HtmlParsedAnswer {
+    const citations: Citation[] = [];
 
     // trim any whitespace from the end of the answer after removing follow-up questions
     let parsedAnswer = answer.trim();
@@ -34,14 +39,26 @@ export function parseAnswerToHtml(answer: string, isStreaming: boolean, onCitati
             return part;
         } else {
             let citationIndex: number;
-            if (citations.indexOf(part) !== -1) {
-                citationIndex = citations.indexOf(part) + 1;
+            let path = getCitationFilePath(part);
+
+            if (citations.findIndex(citation => citation.text === part) !== -1) {
+                citationIndex = citations.findIndex(citation => citation.text === part) + 1;
             } else {
-                citations.push(part);
+                const parentIds: Record<string, string> = !Array.isArray(data_points) && data_points?.parent_ids ? data_points.parent_ids : {};
+
+                if(parentIds && part.endsWith(".jpg")){
+                    const match = part.match(/-([0-9]+)\./);
+                    if (match) {
+                        const page_idx = match[1];
+                        const parent_id = parentIds[part];
+                    
+                        path = getCitationFilePath(`${parent_id}/normalized_images_${page_idx}.jpg`);
+                    }
+                }
+    
+                citations.push({ text: part, filePath: path });
                 citationIndex = citations.length;
             }
-
-            const path = getCitationFilePath(part);
 
             return renderToStaticMarkup(
                 <a className="supContainer" title={part} onClick={() => onCitationClicked(path)}>
