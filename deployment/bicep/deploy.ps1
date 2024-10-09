@@ -124,19 +124,22 @@ try {
             -ServerAppDisplayName "$prefix-server-app" `
             -ClientAppDisplayName "$prefix-client-app" `
             -ServerAppSecretDisplayName "$prefix-server-app-secret" `
+            -ClientAppSecretDisplayName "$prefix-client-app-secret" `
             -ErrorAction Stop `
             -ErrorVariable deploymentError
 
         $params = @{
-            isAuthEnabled        = $true
-            enforceAccessControl = $false
-            serverApp            = @{
+            enableAuth          = $true
+            enableAccessControl = $false
+            serverApp           = @{
                 appId         = $authDetails.ServerApp.ApplicationId
                 appSecretName = $authDetails.ServerApp.ServerAppSecretDisplayName
                 appSecret     = ConvertFrom-SecureString $authDetails.ServerApp.AppSecret
             }
-            clientApp            = @{
-                appId = $authDetails.ClientApp.ApplicationId
+            clientApp           = @{
+                appId         = $authDetails.ClientApp.ApplicationId
+                appSecretName = $authDetails.ClientApp.ClientAppSecretDisplayName
+                appSecret     = ConvertFrom-SecureString $authDetails.ClientApp.AppSecret
             }
         }
 

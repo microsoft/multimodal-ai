@@ -9,7 +9,11 @@ Param(
 
     [Parameter(Mandatory = $true)]
     [ValidateNotNullOrEmpty()]
-    [string]$ClientAppDisplayName
+    [string]$ClientAppDisplayName,
+
+    [Parameter(Mandatory = $true)]
+    [ValidateNotNullOrEmpty()]
+    [string]$ClientAppSecretDisplayName
 )
 
 # Function to create a new application and service principal
@@ -189,23 +193,6 @@ function Set-KnownClientApplications {
     }
 }
 
-if (-not $ServerAppDisplayName) {
-    Write-Host "Error: No server app displayname set. Provide the server app displayname as parameter."
-    exit 1
-}
-
-if (-not $ServerAppSecretDisplayName) {
-    Write-Host "Error: No server app secret displayname set. Provide the server app secret displayname as parameter."
-    exit 1
-}
-
-if (-not $ClientAppDisplayName) {
-    Write-Host "Error: No client app displayname set. Provide the client app displayname as parameter."
-    exit 1
-}
-
-Write-Host "Setting up authentication"
-
 # Connect to Microsoft Graph
 try {
     $tokenRequest = Get-AzAccessToken -ResourceUrl "https://graph.microsoft.com"
@@ -219,7 +206,6 @@ catch {
 
 # Just a self-generated Guid for the self-defined permission scope
 $permissionScopeId = "406571c1-e45b-4875-a030-2470f350719d"
-$serverAppSecret = $null
 
 Write-Host "Creating server application..."
 
@@ -235,7 +221,7 @@ try {
     Update-MgApplication -ApplicationId $serverResult.ObjectId -BodyParameter $serverAppConfig
 }
 catch {
-    Write-Error "Failed to create ot update server application: $_"
+    Write-Error "Failed to create or update server application: $_"
     exit 1
 }
 
@@ -244,6 +230,9 @@ Write-Host "Creating client application..."
 try {
     $clientApp = New-ClientApp -ServerAppId $serverResult.ClientId -ServerAppScopeId $permissionScopeId -DisplayName $ClientAppDisplayName
     $clientResult = Set-ApplicationRegistration -AppDisplayName $ClientAppDisplayName -RequestApp $clientApp
+
+    Write-Host "Adding client secret to client application '$ServerAppDisplayName'"
+    $clientAppSecret = Add-ClientSecret -AppObjectId $clientResult.ObjectId -DisplayName $ClientAppSecretDisplayName
 }
 catch {
     Write-Error "Failed to create client application: $_"
@@ -273,8 +262,10 @@ $results = @{
         AppSecret                  = ConvertTo-SecureString $serverAppSecret -AsPlainText -Force
     }
     ClientApp = @{
-        ApplicationId = $clientResult.ClientId
-        ObjectId      = $clientResult.ObjectId
+        ApplicationId              = $clientResult.ClientId
+        ObjectId                   = $clientResult.ObjectId
+        ClientAppSecretDisplayName = $ClientAppSecretDisplayName
+        AppSecret                  = ConvertTo-SecureString $clientAppSecret -AsPlainText -Force
     }
 }
 

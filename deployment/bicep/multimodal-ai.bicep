@@ -499,8 +499,8 @@ module keyVault './modules/keyvault/keyvault.bicep' = {
   }
 }
 
-module keyVaultSecret './modules/keyvault/keyvault-secret.bicep' = if (!empty(authSettings.serverApp.appSecret)) {
-  name: 'modKeyVaultSecret'
+module serverAppKeyVaultSecret './modules/keyvault/keyvault-secret.bicep' = if (!empty(authSettings.serverApp.appSecret)) {
+  name: 'modServerAppKeyVaultSecret'
   scope: resourceGroup(resourceGroupNames.storage)
   dependsOn:[
     keyVault
@@ -509,6 +509,19 @@ module keyVaultSecret './modules/keyvault/keyvault-secret.bicep' = if (!empty(au
     keyVaultName: resourceNames.keyVaultName
     secretName: authSettings.serverApp.appSecretName
     secretValue: authSettings.serverApp.appSecret
+  }
+}
+
+module clientAppKeyVaultSecret './modules/keyvault/keyvault-secret.bicep' = if (!empty(authSettings.clientApp.appSecret)) {
+  name: 'modClientAppKeyVaultSecret'
+  scope: resourceGroup(resourceGroupNames.storage)
+  dependsOn:[
+    keyVault
+  ]
+  params: {
+    keyVaultName: resourceNames.keyVaultName
+    secretName: authSettings.clientApp.appSecretName
+    secretValue: authSettings.clientApp.appSecret
   }
 }
 
@@ -552,7 +565,7 @@ module webApp 'modules/appService/appService.bicep' = {
     use32BitWorkerProcess: appServiceSkuName == 'F1'
     alwaysOn: appServiceSkuName != 'F1'
     authSettings: {
-      isAuthEnabled: authSettings.isAuthEnabled
+      enableAuth: authSettings.enableAuth
       clientAppId: authSettings.clientApp.appId
       serverAppId: authSettings.serverApp.appId
       allowedApplications: [
@@ -582,14 +595,15 @@ module webApp 'modules/appService/appService.bicep' = {
       PYTHON_ENABLE_GUNICORN_MULTIWORKERS: true
       SCM_DO_BUILD_DURING_DEPLOYMENT: true
       ENABLE_ORYX_BUILD: true
-      AZURE_USE_AUTHENTICATION: authSettings.isAuthEnabled
+      AZURE_USE_AUTHENTICATION: authSettings.enableAuth
       AZURE_SERVER_APP_ID: authSettings.serverApp.appId
       AZURE_SERVER_APP_SECRET: '@Microsoft.KeyVault(VaultName=${resourceNames.keyVaultName};SecretName=${authSettings.serverApp.appSecretName})'
+      MICROSOFT_PROVIDER_AUTHENTICATION_SECRET: '@Microsoft.KeyVault(VaultName=${resourceNames.keyVaultName};SecretName=${authSettings.clientApp.appSecretName})'
       AZURE_CLIENT_APP_ID: authSettings.clientApp.appId
       AZURE_AUTH_TENANT_ID: tenant().tenantId
-      AZURE_ENFORCE_ACCESS_CONTROL: authSettings.enforceAccessControl
+      AZURE_ENFORCE_ACCESS_CONTROL: authSettings.enableAccessControl
       AZURE_ENABLE_GLOBAL_DOCUMENT_ACCESS: true
-      AZURE_ENABLE_UNAUTHENTICATED_ACCESS: !authSettings.isAuthEnabled
+      AZURE_ENABLE_UNAUTHENTICATED_ACCESS: !authSettings.enableAuth
     }
   }
 }

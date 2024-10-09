@@ -41,7 +41,7 @@ param appSettings object = {}
 
 @sys.description('Settings to configure web app authentication.')
 param authSettings object = {
-  isAuthEnabled: false
+  enableAuth: false
   clientAppId: ''
   serverAppId : ''
   allowedApplications: []
@@ -90,7 +90,7 @@ resource appService 'Microsoft.Web/sites@2022-03-01' = {
       })
   }
 
-  resource configAuth 'config' = if (authSettings.isAuthEnabled) {
+  resource configAuth 'config' = if (authSettings.enableAuth) {
     name: 'authsettingsV2'
     properties: {
       globalValidation: {
@@ -106,7 +106,7 @@ resource appService 'Microsoft.Web/sites@2022-03-01' = {
             openIdIssuer: '${environment().authentication.loginEndpoint}${tenant().tenantId}/v2.0'
           }
           login: {
-            loginParameters: [ 'scope=${requiredScopes}' ]
+            loginParameters: [ 'scope=${join(requiredScopes, ' ')}' ]
           }
           validation: {
             allowedAudiences: requiredAudiences

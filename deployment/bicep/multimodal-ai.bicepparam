@@ -1,6 +1,6 @@
 using './multimodal-ai.bicep'
 
-param prefix = 'mmai80'
+param prefix = 'mmai75'
 param location = 'eastus2'
 
 param aiVisionlocation = 'eastus'
@@ -67,8 +67,8 @@ param aoaiDeployments = [
 
 @secure()
 param authSettings = {
-  isAuthEnabled: false
-  enforceAccessControl: false
+  enableAuth: false
+  enableAccessControl: false
   serverApp: {
     appId: ''
     appSecretName: ''
@@ -76,5 +76,7 @@ param authSettings = {
   }
   clientApp: {
     appId: ''
+    appSecretName: ''
+    appSecret: ''
   }
 }
