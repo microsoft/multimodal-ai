@@ -51,11 +51,11 @@ export function parseAnswerToHtml(answer: string, data_points: any, isStreaming:
                     if (match) {
                         const page_idx = match[1];
                         const parent_id = parentIds[part];
-                    
+
                         path = getCitationFilePath(`${parent_id}/normalized_images_${page_idx}.jpg`);
                     }
                 }
-    
+
                 citations.push({ text: part, filePath: path });
                 citationIndex = citations.length;
             }
