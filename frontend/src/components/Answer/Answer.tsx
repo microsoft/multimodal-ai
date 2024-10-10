@@ -44,7 +44,7 @@ export const Answer = ({
 }: Props) => {
     const followupQuestions = answer.context?.followup_questions;
     const messageContent = answer.message.content;
-    const parsedAnswer = useMemo(() => parseAnswerToHtml(messageContent, isStreaming, onCitationClicked), [answer]);
+    const parsedAnswer = useMemo(() => parseAnswerToHtml(messageContent, answer.context.data_points, isStreaming, onCitationClicked), [answer]);
     const { t } = useTranslation();
     const sanitizedAnswerHtml = DOMPurify.sanitize(parsedAnswer.answerHtml);
 
@@ -89,10 +89,10 @@ export const Answer = ({
                     <Stack horizontal wrap tokens={{ childrenGap: 5 }}>
                         <span className={styles.citationLearnMore}>{t("citationWithColon")}</span>
                         {parsedAnswer.citations.map((x, i) => {
-                            const path = getCitationFilePath(x);
+                            const path = x.filePath;
                             return (
-                                <a key={i} className={styles.citation} title={x} onClick={() => onCitationClicked(path)}>
-                                    {`${++i}. ${x}`}
+                                <a key={i} className={styles.citation} title={x.text} onClick={() => onCitationClicked(path)}>
+                                    {`${++i}. ${x.text}`}
                                 </a>
                             );
                         })}
