@@ -62,7 +62,7 @@ export const AnalysisPanel = ({ answer, activeTab, activeCitation, citationHeigh
 
         const fileExtension = activeCitation.split(".").pop()?.toLowerCase();
         switch (fileExtension) {
-            case "png":
+            case "jpg":
                 return <img src={citation} className={styles.citationImg} alt="Citation Image" />;
             case "md":
                 return <MarkdownViewer src={activeCitation} />;
