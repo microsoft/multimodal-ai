@@ -44,6 +44,8 @@ param authSettings object = {
   enableAuth: false
   clientAppId: ''
   serverAppId : ''
+  clientSecretSettingName: ''
+  authenticationIssuerUri: ''
   allowedApplications: []
 }
 
@@ -103,7 +105,8 @@ resource appService 'Microsoft.Web/sites@2022-03-01' = {
           enabled: true
           registration: {
             clientId: authSettings.clientAppId
-            openIdIssuer: '${environment().authentication.loginEndpoint}${tenant().tenantId}/v2.0'
+            clientSecretSettingName: authSettings.clientSecretSettingName
+            openIdIssuer: authSettings.authenticationIssuerUri
           }
           login: {
             loginParameters: [ 'scope=${join(requiredScopes, ' ')}' ]

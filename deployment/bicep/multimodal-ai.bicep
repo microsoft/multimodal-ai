@@ -79,10 +79,12 @@ param appServiceSkuName string
 @sys.description('ClientId of an existing Microsoft Entra ID App registration to enable authentication for the Azure Function App.')
 param functionAppClientId string
 
+@secure()
 @sys.description('Auth settings for the web app.')
 param authSettings object
 
 // Variables
+var authenticationIssuerUri = '${environment().authentication.loginEndpoint}${tenant().tenantId}/v2.0'
 var locationNormalized = toLower(location)
 var prefixNormalized = toLower(prefix)
 
@@ -108,7 +110,7 @@ var resourceNames = {
   logAnalyticsWorkspaceName: '${prefixNormalized}-${locationNormalized}-loganalytics'
   appInsightsName: '${prefixNormalized}-${locationNormalized}-appinsights'
   aiSearchIndexName: '${prefixNormalized}index'
-  aiSearchSkillsetName: '${prefix}-skillset'
+  aiSearchSkillsetName: '${prefixNormalized}-skillset'
   webAppServicePlanName: '${prefixNormalized}-${locationNormalized}-webapp-svcplan'
   webAppName: '${prefixNormalized}-${locationNormalized}-webapp'
   keyVaultName: '${prefixNormalized}-${locationNormalized}-kv'
@@ -436,7 +438,7 @@ module azureFunctionAppRegistration 'modules/appRegistration/appRegistration.bic
     resourceGroupApps
   ]
   params: {
-    clientAppName: '${resourceNames.functionApp}-api'
+    clientAppName: '${prefixNormalized}-custom-skills-functionapp'
   }
 }
 
@@ -481,6 +483,7 @@ module azureFunction 'modules/function/function.bicep' = {
     logAnalyticsWorkspaceid: logAnalytics.outputs.logAnalyticsWorkspaceId
     clientAppId: empty(functionAppClientId) ? azureFunctionAppRegistration.outputs.appId : functionAppClientId
     documentIntelligenceServiceInstanceName: documentIntelligence.outputs.cognitiveServicesAccountName
+    authenticationIssuerUri: authenticationIssuerUri
     allowedApplications: [
       aiSearchManagedIdentity.outputs.appId
     ]
@@ -568,6 +571,8 @@ module webApp 'modules/appService/appService.bicep' = {
       enableAuth: authSettings.enableAuth
       clientAppId: authSettings.clientApp.appId
       serverAppId: authSettings.serverApp.appId
+      clientSecretSettingName: 'MICROSOFT_PROVIDER_AUTHENTICATION_SECRET'
+      authenticationIssuerUri: authenticationIssuerUri
       allowedApplications: [
         authSettings.clientApp.appId
       ]
@@ -604,6 +609,7 @@ module webApp 'modules/appService/appService.bicep' = {
       AZURE_ENFORCE_ACCESS_CONTROL: authSettings.enableAccessControl
       AZURE_ENABLE_GLOBAL_DOCUMENT_ACCESS: true
       AZURE_ENABLE_UNAUTHENTICATED_ACCESS: !authSettings.enableAuth
+      AZURE_AUTHENTICATION_ISSUER_URI: authenticationIssuerUri
     }
   }
 }

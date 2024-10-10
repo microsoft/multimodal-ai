@@ -118,7 +118,7 @@ try {
     if ($EnableAuth) {
         Write-Verbose "Setting up authentication..."
 
-        $prefix = (Select-String -Path $TemplateParameterFile -Pattern "^param\s+prefix\s*=\s*'([^']*)'").Matches.Groups[1].Value
+        $prefix = (Select-String -Path $TemplateParameterFile -Pattern "^param\s+prefix\s*=\s*'([^']*)'").Matches.Groups[1].Value.ToLower()
 
         $authDetails = . "$PSScriptRoot/scripts/webapp-auth-init.ps1" `
             -ServerAppDisplayName "$prefix-server-app" `
@@ -134,12 +134,12 @@ try {
             serverApp           = @{
                 appId         = $authDetails.ServerApp.ApplicationId
                 appSecretName = $authDetails.ServerApp.ServerAppSecretDisplayName
-                appSecret     = ConvertFrom-SecureString $authDetails.ServerApp.AppSecret
+                appSecret     = ConvertFrom-SecureString $authDetails.ServerApp.AppSecret -AsPlainText
             }
             clientApp           = @{
                 appId         = $authDetails.ClientApp.ApplicationId
                 appSecretName = $authDetails.ClientApp.ClientAppSecretDisplayName
-                appSecret     = ConvertFrom-SecureString $authDetails.ClientApp.AppSecret
+                appSecret     = ConvertFrom-SecureString $authDetails.ClientApp.AppSecret -AsPlainText
             }
         }
 
