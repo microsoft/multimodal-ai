@@ -79,7 +79,12 @@ param appServiceSkuName string
 @sys.description('ClientId of an existing Microsoft Entra ID App registration to enable authentication for the Azure Function App.')
 param functionAppClientId string
 
+@secure()
+@sys.description('Auth settings for the web app.')
+param authSettings object
+
 // Variables
+var authenticationIssuerUri = '${environment().authentication.loginEndpoint}${tenant().tenantId}/v2.0'
 var locationNormalized = toLower(location)
 var prefixNormalized = toLower(prefix)
 
@@ -105,9 +110,10 @@ var resourceNames = {
   logAnalyticsWorkspaceName: '${prefixNormalized}-${locationNormalized}-loganalytics'
   appInsightsName: '${prefixNormalized}-${locationNormalized}-appinsights'
   aiSearchIndexName: '${prefixNormalized}index'
-  aiSearchSkillsetName: '${prefix}-skillset'
+  aiSearchSkillsetName: '${prefixNormalized}-skillset'
   webAppServicePlanName: '${prefixNormalized}-${locationNormalized}-webapp-svcplan'
   webAppName: '${prefixNormalized}-${locationNormalized}-webapp'
+  keyVaultName: '${prefixNormalized}-${locationNormalized}-kv'
 }
 
 var appServicePlan = {
@@ -416,9 +422,11 @@ module appServiceRoleAssignmentStorage 'modules/rbac/roleAssignment-appService-s
   dependsOn: [
     webApp
     storageAccount
+    keyVault
   ]
   params: {
     storageAccountId: storageAccount.outputs.storageAccountId
+    keyVaultName: keyVault.outputs.name
     managedIdentityPrincipalId: webApp.outputs.identityPrincipalId
   }
 }
@@ -430,7 +438,7 @@ module azureFunctionAppRegistration 'modules/appRegistration/appRegistration.bic
     resourceGroupApps
   ]
   params: {
-    clientAppName: '${resourceNames.functionApp}-api'
+    clientAppName: '${prefixNormalized}-custom-skills-functionapp'
   }
 }
 
@@ -475,9 +483,48 @@ module azureFunction 'modules/function/function.bicep' = {
     logAnalyticsWorkspaceid: logAnalytics.outputs.logAnalyticsWorkspaceId
     clientAppId: empty(functionAppClientId) ? azureFunctionAppRegistration.outputs.appId : functionAppClientId
     documentIntelligenceServiceInstanceName: documentIntelligence.outputs.cognitiveServicesAccountName
+    authenticationIssuerUri: authenticationIssuerUri
     allowedApplications: [
       aiSearchManagedIdentity.outputs.appId
     ]
+  }
+}
+
+module keyVault './modules/keyvault/keyvault.bicep' = {
+  name: 'modKeyVault'
+  scope: resourceGroup(resourceGroupNames.storage)
+  dependsOn:[
+    resourceGroupStorage
+  ]
+  params: {
+    keyVaultName: resourceNames.keyVaultName
+    location: location
+  }
+}
+
+module serverAppKeyVaultSecret './modules/keyvault/keyvault-secret.bicep' = if (!empty(authSettings.serverApp.appSecret)) {
+  name: 'modServerAppKeyVaultSecret'
+  scope: resourceGroup(resourceGroupNames.storage)
+  dependsOn:[
+    keyVault
+  ]
+  params: {
+    keyVaultName: resourceNames.keyVaultName
+    secretName: authSettings.serverApp.appSecretName
+    secretValue: authSettings.serverApp.appSecret
+  }
+}
+
+module clientAppKeyVaultSecret './modules/keyvault/keyvault-secret.bicep' = if (!empty(authSettings.clientApp.appSecret)) {
+  name: 'modClientAppKeyVaultSecret'
+  scope: resourceGroup(resourceGroupNames.storage)
+  dependsOn:[
+    keyVault
+  ]
+  params: {
+    keyVaultName: resourceNames.keyVaultName
+    secretName: authSettings.clientApp.appSecretName
+    secretValue: authSettings.clientApp.appSecret
   }
 }
 
@@ -520,6 +567,16 @@ module webApp 'modules/appService/appService.bicep' = {
     appCommandLine: 'python3 -m gunicorn main:app'
     use32BitWorkerProcess: appServiceSkuName == 'F1'
     alwaysOn: appServiceSkuName != 'F1'
+    authSettings: {
+      enableAuth: authSettings.enableAuth
+      clientAppId: authSettings.clientApp.appId
+      serverAppId: authSettings.serverApp.appId
+      clientSecretSettingName: 'MICROSOFT_PROVIDER_AUTHENTICATION_SECRET'
+      authenticationIssuerUri: authenticationIssuerUri
+      allowedApplications: [
+        authSettings.clientApp.appId
+      ]
+    }
     appSettings: {
       AZURE_STORAGE_ACCOUNT: resourceNames.storageAccount
       AZURE_STORAGE_CONTAINER: storageAccountDocsContainerName
@@ -543,6 +600,16 @@ module webApp 'modules/appService/appService.bicep' = {
       PYTHON_ENABLE_GUNICORN_MULTIWORKERS: true
       SCM_DO_BUILD_DURING_DEPLOYMENT: true
       ENABLE_ORYX_BUILD: true
+      AZURE_USE_AUTHENTICATION: authSettings.enableAuth
+      AZURE_SERVER_APP_ID: authSettings.serverApp.appId
+      AZURE_SERVER_APP_SECRET: '@Microsoft.KeyVault(VaultName=${resourceNames.keyVaultName};SecretName=${authSettings.serverApp.appSecretName})'
+      MICROSOFT_PROVIDER_AUTHENTICATION_SECRET: '@Microsoft.KeyVault(VaultName=${resourceNames.keyVaultName};SecretName=${authSettings.clientApp.appSecretName})'
+      AZURE_CLIENT_APP_ID: authSettings.clientApp.appId
+      AZURE_AUTH_TENANT_ID: tenant().tenantId
+      AZURE_ENFORCE_ACCESS_CONTROL: authSettings.enableAccessControl
+      AZURE_ENABLE_GLOBAL_DOCUMENT_ACCESS: true
+      AZURE_ENABLE_UNAUTHENTICATED_ACCESS: !authSettings.enableAuth
+      AZURE_AUTHENTICATION_ISSUER_URI: authenticationIssuerUri
     }
   }
 }
@@ -647,4 +714,5 @@ module aiSearchIndexer 'modules/aiSearch/aiSearch-indexer.bicep' = {
 
 output appsResourceGroup string = resourceGroupNames.apps
 output webAppName string = webApp.outputs.name
+output webAppUri string = webApp.outputs.uri
 output functionAppName string = azureFunction.outputs.functionAppName

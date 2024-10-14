@@ -39,12 +39,27 @@ param appCommandLine string
 @secure()
 param appSettings object = {}
 
+@sys.description('Settings to configure web app authentication.')
+param authSettings object = {
+  enableAuth: false
+  clientAppId: ''
+  serverAppId : ''
+  clientSecretSettingName: ''
+  authenticationIssuerUri: ''
+  allowedApplications: []
+}
+
 @sys.description('true to use 32-bit worker process; otherwise, false.')
 param use32BitWorkerProcess bool = false
 
 var runtimeNameAndVersion = '${runtimeName}|${runtimeVersion}'
 var linuxFxVersion = contains(kind, 'linux') ? runtimeNameAndVersion : null
 var ftpsState = 'FtpsOnly'
+
+// .default must be the 1st scope for On-Behalf-Of-Flow combined consent to work properly
+// Please see https://learn.microsoft.com/entra/identity-platform/v2-oauth2-on-behalf-of-flow#default-and-combined-consent
+var requiredScopes = [ 'api://${authSettings.serverAppId}/.default', 'openid', 'profile', 'email', 'offline_access' ]
+var requiredAudiences = [ 'api://${authSettings.serverAppId}' ]
 
 var coreConfig = {
   linuxFxVersion: linuxFxVersion
@@ -75,6 +90,41 @@ resource appService 'Microsoft.Web/sites@2022-03-01' = {
       {
         APPLICATIONINSIGHTS_CONNECTION_STRING: applicationInsights.properties.ConnectionString
       })
+  }
+
+  resource configAuth 'config' = if (authSettings.enableAuth) {
+    name: 'authsettingsV2'
+    properties: {
+      globalValidation: {
+        requireAuthentication: true
+        unauthenticatedClientAction: 'RedirectToLoginPage'
+        redirectToProvider: 'azureactivedirectory'
+      }
+      identityProviders: {
+        azureActiveDirectory: {
+          enabled: true
+          registration: {
+            clientId: authSettings.clientAppId
+            clientSecretSettingName: authSettings.clientSecretSettingName
+            openIdIssuer: authSettings.authenticationIssuerUri
+          }
+          login: {
+            loginParameters: [ 'scope=${join(requiredScopes, ' ')}' ]
+          }
+          validation: {
+            allowedAudiences: requiredAudiences
+            defaultAuthorizationPolicy: {
+              allowedApplications: authSettings.allowedApplications
+            }
+          }
+        }
+      }
+      login: {
+        tokenStore: {
+          enabled: true
+        }
+      }
+    }
   }
 
   resource configLogs 'config' = {

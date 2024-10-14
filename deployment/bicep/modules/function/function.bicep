@@ -46,6 +46,9 @@ param allowedApplications array = []
 @sys.description('Tags you would like to be applied to the resource.')
 param tags object = {}
 
+@sys.description('Uri of token issuer.')
+param authenticationIssuerUri string
+
 //creating a storage account for the Azure Function
 resource storageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' = {
   name: azureFunctionStorageName
@@ -138,7 +141,7 @@ resource functionApp 'Microsoft.Web/sites@2023-12-01' = {
           enabled: true
           registration: {
             clientId: clientAppId
-            openIdIssuer: '${environment().authentication.loginEndpoint}${tenant().tenantId}/v2.0'
+            openIdIssuer: authenticationIssuerUri
           }
           validation: {
             defaultAuthorizationPolicy: {
