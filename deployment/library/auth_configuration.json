@@ -1,0 +1,63 @@
+{
+  "properties": {
+    "globalValidation": {
+      "redirectToProvider": "azureactivedirectory",
+      "requireAuthentication": true,
+      "unauthenticatedClientAction": "RedirectToLoginPage"
+    },
+    "httpSettings": {
+      "forwardProxy": {
+        "convention": "NoProxy"
+      },
+      "requireHttps": true,
+      "routes": {
+        "apiPrefix": "/.auth"
+      }
+    },
+    "identityProviders": {
+      "azureActiveDirectory": {
+        "enabled": true,
+        "login": {
+          "loginParameters": [
+            "scope=api://${server_app_id}/.default openid profile email offline_access"
+          ]
+        },
+        "registration": {
+          "clientId": "${client_app_id}",
+          "clientSecretSettingName": "MICROSOFT_PROVIDER_AUTHENTICATION_SECRET",
+          "openIdIssuer": "https://login.microsoftonline.com/${tenant_id}/v2.0"
+        },
+        "validation": {
+          "allowedAudiences": ["api://${server_app_id}"],
+          "defaultAuthorizationPolicy": {
+            "allowedApplications": ["${client_app_id}"],
+            "allowedPrincipals": {}
+          },
+          "jwtClaimChecks": {}
+        }
+      }
+    },
+    "login": {
+      "cookieExpiration": {
+        "convention": "FixedTime",
+        "timeToExpiration": "08:00:00"
+      },
+      "nonce": {
+        "nonceExpirationInterval": "00:05:00",
+        "validateNonce": true
+      },
+      "preserveUrlFragmentsForLogins": false,
+      "routes": {},
+      "tokenStore": {
+        "azureBlobStorage": {},
+        "enabled": true,
+        "fileSystem": {},
+        "tokenRefreshExtensionHours": 72.0
+      }
+    },
+    "platform": {
+      "enabled": true,
+      "runtimeVersion": "~1"
+    }
+  }
+}
