@@ -15,6 +15,14 @@ Set-AzContext -SubscriptionId <subscriptionId>
 .\deploy.ps1 -DeploymentName <DeploymentName> -Location <Location> -TemplateFile ./multimodal-ai.bicep -TemplateParameterFile ./multimodal-ai.bicepparam
 ```
 
+### Bring your own Auth
+
+If you don't have the necessary permissions to create app registrations in Microsoft Entra ID yourself, but someone can handle this for you, you can run the following script after a successful deployment to configure authentication. Be sure to create secrets in the provisioned Azure KeyVault and supply the required parameters:
+
+```powershell
+.\webapp-auth-configure.ps1 -ClientAppId <APP_ID_OF_THE_CLIENT_APP> -ServerAppId <APP_ID_OF_THE_SERVER_APP> -ClientSecretKeyVaultName <KEYVAULT_SECRET_NAME_OF_THE_CLIENT_APP> -ServerSecretKeyVaultName <KEYVAULT_SECRET_NAME_OF_THE_SERVER_APP> -TenantId <TENANT_ID> -SubscriptionId <SUBSCRIPTION_ID> -ResourceGroupName <RESOURCE_GROUP_NAME> -WebAppName <WEB_APP_NAME> -KeyVaultName <KEYVAULT_NAME>
+```
+
 ### Deploy with Auth enabled
 
 ```powershell

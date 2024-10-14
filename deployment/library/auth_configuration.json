@@ -28,9 +28,13 @@
           "openIdIssuer": "https://login.microsoftonline.com/${tenant_id}/v2.0"
         },
         "validation": {
-          "allowedAudiences": ["api://${server_app_id}"],
+          "allowedAudiences": [
+            "api://${server_app_id}"
+          ],
           "defaultAuthorizationPolicy": {
-            "allowedApplications": ["${client_app_id}"],
+            "allowedApplications": [
+              "${client_app_id}"
+            ],
             "allowedPrincipals": {}
           },
           "jwtClaimChecks": {}

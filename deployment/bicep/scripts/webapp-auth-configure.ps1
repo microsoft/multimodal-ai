@@ -87,7 +87,7 @@ foreach ($key in $replacements.Keys) {
 }
 
 # Obtain Access Token
-Write-Output "Obtaining access token..." 
+Write-Output "Obtaining access token..."
 $token = Get-AccessToken
 
 # Update the Web App Authentication Settings
@@ -114,11 +114,11 @@ $newAppSettings = @{
     "AZURE_ENABLE_UNAUTHENTICATED_ACCESS"      = "false"
 }
 
-ForEach ($item in $appSettings) {  
+ForEach ($item in $appSettings) {
     if (-not $newAppSettings.ContainsKey($item.Name)) {
         $newAppSettings[$item.Name] = $item.Value
     }
-} 
+}
 
 Write-Output "Updating Web App settings..."
 Set-AzWebApp -AppSettings $newAppSettings -Name $WebAppName -ResourceGroupName $ResourceGroupName
