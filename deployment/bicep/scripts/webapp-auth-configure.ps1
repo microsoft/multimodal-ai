@@ -9,11 +9,11 @@ Param(
 
     [Parameter(Mandatory = $true)]
     [ValidateNotNullOrEmpty()]
-    [string]$ClientSecretKeyVaultName,
+    [string]$ClientSecretNameInKeyVault,
 
     [Parameter(Mandatory = $true)]
     [ValidateNotNullOrEmpty()]
-    [string]$ServerSecretKeyVaultName,
+    [string]$ServerSecretNameInKeyVault,
 
     [Parameter(Mandatory = $true)]
     [ValidateNotNullOrEmpty()]
@@ -108,8 +108,8 @@ $newAppSettings = @{
     "AZURE_USE_AUTHENTICATION"                 = "true"
     "AZURE_SERVER_APP_ID"                      = $ServerAppId
     "AZURE_CLIENT_APP_ID"                      = $ClientAppId
-    "AZURE_SERVER_APP_SECRET"                  = "@Microsoft.KeyVault(VaultName=$KeyVaultName;SecretName=$ServerSecretKeyVaultName)"
-    "MICROSOFT_PROVIDER_AUTHENTICATION_SECRET" = "@Microsoft.KeyVault(VaultName=$KeyVaultName;SecretName=$ClientSecretKeyVaultName)"
+    "AZURE_SERVER_APP_SECRET"                  = "@Microsoft.KeyVault(VaultName=$KeyVaultName;SecretName=$ServerSecretNameInKeyVault)"
+    "MICROSOFT_PROVIDER_AUTHENTICATION_SECRET" = "@Microsoft.KeyVault(VaultName=$KeyVaultName;SecretName=$ClientSecretNameInKeyVault)"
     "AZURE_ENFORCE_ACCESS_CONTROL"             = "false"
     "AZURE_ENABLE_UNAUTHENTICATED_ACCESS"      = "false"
 }

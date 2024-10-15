@@ -422,10 +422,21 @@ module appServiceRoleAssignmentStorage 'modules/rbac/roleAssignment-appService-s
   dependsOn: [
     webApp
     storageAccount
-    keyVault
   ]
   params: {
     storageAccountId: storageAccount.outputs.storageAccountId
+    managedIdentityPrincipalId: webApp.outputs.identityPrincipalId
+  }
+}
+
+module appServiceRoleAssignmentApps 'modules/rbac/roleAssignment-appService-apps.bicep' = {
+  name: 'modAppServiceRoleAssignmentApps'
+  scope: resourceGroup(resourceGroupNames.apps)
+  dependsOn: [
+    webApp
+    keyVault
+  ]
+  params: {
     keyVaultName: keyVault.outputs.name
     managedIdentityPrincipalId: webApp.outputs.identityPrincipalId
   }
@@ -492,7 +503,7 @@ module azureFunction 'modules/function/function.bicep' = {
 
 module keyVault './modules/keyvault/keyvault.bicep' = {
   name: 'modKeyVault'
-  scope: resourceGroup(resourceGroupNames.storage)
+  scope: resourceGroup(resourceGroupNames.apps)
   dependsOn:[
     resourceGroupStorage
   ]
@@ -504,7 +515,7 @@ module keyVault './modules/keyvault/keyvault.bicep' = {
 
 module serverAppKeyVaultSecret './modules/keyvault/keyvault-secret.bicep' = if (!empty(authSettings.serverApp.appSecret)) {
   name: 'modServerAppKeyVaultSecret'
-  scope: resourceGroup(resourceGroupNames.storage)
+  scope: resourceGroup(resourceGroupNames.apps)
   dependsOn:[
     keyVault
   ]
@@ -517,7 +528,7 @@ module serverAppKeyVaultSecret './modules/keyvault/keyvault-secret.bicep' = if (
 
 module clientAppKeyVaultSecret './modules/keyvault/keyvault-secret.bicep' = if (!empty(authSettings.clientApp.appSecret)) {
   name: 'modClientAppKeyVaultSecret'
-  scope: resourceGroup(resourceGroupNames.storage)
+  scope: resourceGroup(resourceGroupNames.apps)
   dependsOn:[
     keyVault
   ]
