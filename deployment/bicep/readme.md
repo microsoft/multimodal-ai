@@ -41,6 +41,10 @@ If you don't have the necessary permissions to create app registrations in Micro
 
 `-KeyVaultName` - The name of the Azure KeyVault instance containing the client and server app secrets
 
+> [!TIP]
+>
+> To create secrets in Azure KeyVault with RBAC enabled, you need to have the *"[Key Vault Secrets Officer](https://learn.microsoft.com/en-us/azure/key-vault/general/rbac-guide?tabs=azure-cli#azure-built-in-roles-for-key-vault-data-plane-operations)"* permission on the KeyVault instance.
+
 
 ### Deploy with Auth enabled
 
