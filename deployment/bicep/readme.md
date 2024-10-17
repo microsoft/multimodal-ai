@@ -59,11 +59,11 @@ If you don't have the necessary permissions to create app registrations in Micro
 
 Please note that executing the above command will create application registrations in Microsoft Entra ID, which requires you to have the appropriate permissions.
 
-### Troubleshooting 
+### Troubleshooting
 
 #### Deployment
 
-- *Cannot retrieve the dynamic parameters for the cmdlet. Please use bicep 0.16.1 or higher.* This problem requires you updating the Bicep CLI installation. Check your current version with   `bicep --version` and `az bicep version`. If you have multiple versions installed  you may need to do changes in PATH environment variable. For further guidance in such a problem refer to the [official troubleshooting guidance for multiple versions of bicep](https://learn.microsoft.com/azure/azure-resource-manager/bicep/installation-troubleshoot#multiple-versions-of-bicep-cli-installed) 
+- *Cannot retrieve the dynamic parameters for the cmdlet. Please use bicep 0.16.1 or higher.* This problem requires you updating the Bicep CLI installation. Check your current version with   `bicep --version` and `az bicep version`. If you have multiple versions installed  you may need to do changes in PATH environment variable. For further guidance in such a problem refer to the [official troubleshooting guidance for multiple versions of bicep](https://learn.microsoft.com/azure/azure-resource-manager/bicep/installation-troubleshoot#multiple-versions-of-bicep-cli-installed)
 - *This subscription cannot create CognitiveServices until you agree to Responsible AI terms for this resource. You can agree to Responsible AI terms by creating a resource through the Azure Portal then trying again.* If your subscription is new or you had no Azure AI resources deployed previously there is a manual step that you need to perform first. You do not have to deploy the services but go to the services deployment experience and agree to Responsible AI terms.
 
 #### Troubleshooting Auth Related Issues
@@ -81,7 +81,7 @@ The script has two steps, first controlling the resource groups targeted for del
 #### Control Script
 
 ```powershell
-# Set your prefix variable with the same value you used for 
+# Set your prefix variable with the same value you used for
 # prefix parameter in multimodal-ai.bicepparam file
 $prefix="mmai01"
 
@@ -91,7 +91,7 @@ az group list --query "[?contains(name,'$($prefix)')]" --output table
 
 #### Purge Script
 ```powershell
-# Set your prefix variable with the same value you used for 
+# Set your prefix variable with the same value you used for
 # prefix parameter in multimodal-ai.bicepparam file
 $prefix="mmai01"
 ForEach ($rgList in $(az group list --query "[?contains(name,'$($prefix)') == ``true``].name" --output tsv))
