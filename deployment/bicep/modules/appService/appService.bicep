@@ -10,15 +10,16 @@ param location string
 @sys.description('Tags you would like to be applied to the resource.')
 param tags object = {}
 
+@sys.description('Tier of the App Service to be created.')
 param appServicePlanTier string
 
-@sys.description('Size of the App Service  to be created.')
+@sys.description('Size of the App Service to be created.')
 param appServicePlanSkuName string
 
-@sys.description('Family of the App Service  to be created.')
+@sys.description('Family of the App Service to be created.')
 param appServicePlanFamily string
 
-@sys.description('Capacity of the App Service  to be created.')
+@sys.description('Capacity of the App Service to be created.')
 param appServicePlanCapacity int
 
 @sys.description('Kind of the app.')
