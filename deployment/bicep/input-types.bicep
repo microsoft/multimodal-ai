@@ -48,7 +48,7 @@ type azureOpenAiConfig = {
   @description('The chat model.')
   chatModel: string
 
-  deployments: array
+  deployments: azureOpenAiDeployment[]
 }
 
 @export()
@@ -133,4 +133,21 @@ type logAnalyticsConfig = {
 
   @description('The retention in days.')
   retentionInDays: int
+}
+
+
+type azureOpenAiDeployment = {
+  @description('The name of the deployment.')
+  name: string
+
+  @description('The model to deploy.')
+  model: {
+    format: string
+    version: string
+  }
+
+  @description('The SKU of the deployment.')
+  sku: {
+    capacity: int
+  }
 }

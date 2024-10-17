@@ -493,9 +493,9 @@ module webApp 'modules/appService/appService.bicep' = {
       AZURE_OPENAI_CHATGPT_MODEL: azureOpenAiConfig.chatModel
       AZURE_OPENAI_GPT4V_MODEL: azureOpenAiConfig.visionModel
       AZURE_OPENAI_SERVICE: resourceNames.azureOpenAI
-      AZURE_OPENAI_CHATGPT_DEPLOYMENT: first(filter(azureOpenAiConfig.deployments, deployment => deployment.name == azureOpenAiConfig.chatModel)).name
-      AZURE_OPENAI_EMB_DEPLOYMENT: first(filter(azureOpenAiConfig.deployments, deployment => deployment.name == azureOpenAiConfig.textEmbeddingModel)).name
-      AZURE_OPENAI_GPT4V_DEPLOYMENT: first(filter(azureOpenAiConfig.deployments, deployment => deployment.name == azureOpenAiConfig.visionModel)).name
+      AZURE_OPENAI_CHATGPT_DEPLOYMENT: first(filter(azureOpenAiConfig.deployments, deployment => deployment.name == azureOpenAiConfig.chatModel))!.name
+      AZURE_OPENAI_EMB_DEPLOYMENT: first(filter(azureOpenAiConfig.deployments, deployment => deployment.name == azureOpenAiConfig.textEmbeddingModel))!.name
+      AZURE_OPENAI_GPT4V_DEPLOYMENT: first(filter(azureOpenAiConfig.deployments, deployment => deployment.name == azureOpenAiConfig.visionModel))!.name
       USE_VECTORS: true
       USE_GPT4V: true
       PYTHON_ENABLE_GUNICORN_MULTIWORKERS: true
