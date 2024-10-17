@@ -1,20 +1,34 @@
 @sys.description('Name of the App Service Resource.')
 param name string
 
+@sys.description('Name of the App Service Plan Resource.')
+param appServicePlanName string
+
 @sys.description('Location of the App Service.')
 param location string
 
 @sys.description('Tags you would like to be applied to the resource.')
 param tags object = {}
 
+param appServicePlanTier string
+
+@sys.description('Size of the App Service  to be created.')
+param appServicePlanSkuName string
+
+@sys.description('Family of the App Service  to be created.')
+param appServicePlanFamily string
+
+@sys.description('Capacity of the App Service  to be created.')
+param appServicePlanCapacity int
+
+@sys.description('Kind of the app.')
+param appKind string
+
 @sys.description('Name of the Application Insights resource.')
 param applicationInsightsName string
 
 @sys.description('Name of the Application Insights resource group.')
 param applicationInsightsResourceGroup string
-
-@sys.description('Id of the App Service Plan Resource.')
-param appServicePlanId string
 
 // Runtime Properties
 @sys.description('Runtime to be used.')
@@ -25,12 +39,6 @@ param runtimeName string
 
 @sys.description('Specific runtime verion to be used.')
 param runtimeVersion string
-
-@sys.description('Kind of the App Service Plan Resource: https://github.com/Azure/app-service-linux-docs/blob/master/Things_You_Should_Know/kind_property.md#app-service-resource-kind-reference')
-param kind string = 'app,linux'
-
-@sys.description('Specifies if the runtime should be always on')
-param alwaysOn bool = true
 
 @sys.description('App command line to launch.')
 param appCommandLine string
@@ -49,11 +57,11 @@ param authSettings object = {
   allowedApplications: []
 }
 
-@sys.description('true to use 32-bit worker process; otherwise, false.')
-param use32BitWorkerProcess bool = false
-
+var use32BitWorkerProcess = appServicePlanSkuName == 'F1'
+var alwaysOn = appServicePlanSkuName != 'F1'
+var reserved = contains(toLower(appKind), 'linux')
 var runtimeNameAndVersion = '${runtimeName}|${runtimeVersion}'
-var linuxFxVersion = contains(kind, 'linux') ? runtimeNameAndVersion : null
+var linuxFxVersion = contains(appKind, 'linux') ? runtimeNameAndVersion : null
 var ftpsState = 'FtpsOnly'
 
 // .default must be the 1st scope for On-Behalf-Of-Flow combined consent to work properly
@@ -70,18 +78,31 @@ var coreConfig = {
   use32BitWorkerProcess: use32BitWorkerProcess
 }
 
-var appServiceProperties = {
-  serverFarmId: appServicePlanId
-  siteConfig: coreConfig
-  httpsOnly: true
+resource appServicePlan 'Microsoft.Web/serverfarms@2022-03-01' = {
+  name: appServicePlanName
+  location: location
+  tags: tags
+  sku: {
+    name: appServicePlanSkuName
+    capacity: appServicePlanCapacity
+    tier: appServicePlanTier
+    family: appServicePlanFamily
+  }
+  properties: {
+    reserved: reserved
+  }
 }
 
 resource appService 'Microsoft.Web/sites@2022-03-01' = {
   name: name
   location: location
   tags: tags
-  kind: kind
-  properties: appServiceProperties
+  kind: appKind
+  properties: {
+    serverFarmId: appServicePlan.id
+    siteConfig: coreConfig
+    httpsOnly: true
+  }
   identity: { type: 'SystemAssigned' }
 
   resource configAppSettings 'config' = {

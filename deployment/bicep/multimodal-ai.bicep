@@ -1,6 +1,7 @@
+import * as inputSchema from './input-types.bicep'
+
 targetScope = 'subscription'
 
-// Parameters
 @sys.description('Prefix for the resources to be created')
 @maxLength(8)
 param prefix string
@@ -8,80 +9,39 @@ param prefix string
 @sys.description('Azure Region where the resources will be created.')
 param location string
 
-// Azure OpenAI Parameters
-param aoaiKind string
-param aoaiSku string
-@sys.description('Azure OpenAI deployments to be created.')
-param aoaiDeployments array = []
-
-// Azure Cognitive Services Parameters
-param cogsvcSku string
-param cogsvcKind string
-
-// Azure AI Search Parameters
-param aiSearchLocation string
-param aiSearchSku string
-param aiSearchCapacity int
-param aiSearchSemanticSearch string
-
-// Azure AI Vision Parameters
-param aiVisionKind string
-param aiVisionSku string
-
-@sys.description('Azure Region where AI Vision will be deployed. Supported for AI Vision multimodal embeddings API 2024-02-01 is limited to certain regions.')
-@sys.allowed([
-  'eastus'
-  'westus'
-  'westus2'
-  'francecentral'
-  'northeurope'
-  'westeurope'
-  'swedencentral'
-  'switzerlandnorth'
-  'australiaeast'
-  'southeastasia'
-  'koreacentral'
-  'japaneast'
-])
-param aiVisionlocation string
-
-// Document Intelligence Parameters
-param docIntelKind string
-param docIntelSku string
-
-@sys.description('Azure Region where Document Intelligence will be deployed. Support for API 2024-07-31-preview is limited to certain regions.')
-@sys.allowed([
-  'eastus'
-  'westus2'
-  'westeurope'
-  'northcentralus'
-])
-param docIntelLocation string
+@sys.description('Specifies the tags which will be applied to all resources.')
+param tags object = {}
 
 @sys.description('Specifies the container name to be created in the storage account for documents.')
 param storageAccountDocsContainerName string
 
-@sys.description('Specifies the tags which will be applied to all resources.')
-param tags object = {}
+@sys.description('Deployment configuration for Azure OpenAI.')
+param azureOpenAiConfig inputSchema.azureOpenAiConfig
 
-@sys.description('Specifies the text embedding model to use in Azure OpenAI.')
-param aoaiTextEmbeddingModel string
+@sys.description('Deployment configuration for Azure AI Vision.')
+param aiVisionConfig inputSchema.cognitiveServicesConfig
 
-@sys.description('Specifies the chat model to use in Azure OpenAI.')
-param aoaiChatModel string
+@sys.description('Deployment configuration for Document Intelligence Service.')
+param docIntelConfig inputSchema.cognitiveServicesConfig
 
-@sys.description('Specifies the Vision model to use in Azure OpenAI.')
-param aoaiVisionModel string
+@sys.description('Deployment configuration for Cognitive Services Account.')
+param cognitiveServicesConfig inputSchema.cognitiveServicesConfig
 
-@sys.description('App Service Plan Sku')
-param appServiceSkuName string
+@sys.description('Deployment configuration for Azure AI Search.')
+param aiSearchConfig inputSchema.aiSearchConfig
 
-@sys.description('ClientId of an existing Microsoft Entra ID App registration to enable authentication for the Azure Function App.')
-param functionAppClientId string
+param webAppServicePlanConfig inputSchema.appServicePlanConfig
 
-@secure()
+param functionAppServicePlanConfig inputSchema.appServicePlanConfig
+
+@sys.description('Configuration for the Azure Function App registration.')
+param functionAppEntraIdRegistration inputSchema.appRegistration
+
 @sys.description('Auth settings for the web app.')
-param authSettings object
+param webAppAuthSettings inputSchema.webAppAuthSettings
+
+@sys.description('Deployment configuration for Log Analytics.')
+param logAnalyticsConfig inputSchema.logAnalyticsConfig
 
 // Variables
 var authenticationIssuerUri = '${environment().authentication.loginEndpoint}${tenant().tenantId}/v2.0'
@@ -104,7 +64,7 @@ var resourceNames = {
   storageAccount: take('${prefixNormalized}${locationNormalized}stg',23)
   aiSearchDeploymentScriptIdentity: '${prefixNormalized}-${locationNormalized}-aisearch-depscript-umi'
   aiSearchDocsDataSourceName: '${storageAccountDocsContainerName}-datasource'
-  appServicePlan: '${prefixNormalized}-${locationNormalized}-appserviceplan'
+  functionAppServicePlanName: '${prefixNormalized}-${locationNormalized}-functionapp-svcplan'
   functionApp: '${prefixNormalized}-${locationNormalized}-functionapp'
   functionStorageAccountName: take('${prefixNormalized}${locationNormalized}functionstg',23)
   logAnalyticsWorkspaceName: '${prefixNormalized}-${locationNormalized}-loganalytics'
@@ -115,20 +75,6 @@ var resourceNames = {
   webAppName: '${prefixNormalized}-${locationNormalized}-webapp'
   keyVaultName: '${prefixNormalized}-${locationNormalized}-kv'
 }
-
-var appServicePlan = {
-  tier: 'Standard'
-  name: resourceNames.appServicePlan
-  size: 'S1'
-  family: 'S'
-  capacity: 1
-}
-
-var logAnalyticsSettings = {
-  sku: 'PerGB2018'
-  retentionInDays: 30
-}
-
 // Resources
 
 // Resource Group AI
@@ -180,22 +126,19 @@ module azureOpenAI 'modules/cognitiveServices/cognitiveServices.bicep' = {
     resourceGroupAI
   ]
   params: {
-    location: location
+    location: azureOpenAiConfig.cognitiveServicesConfig.location
     name: resourceNames.azureOpenAI
-    sku: aoaiSku
-    kind: aoaiKind
+    sku: azureOpenAiConfig.cognitiveServicesConfig.sku
+    kind: azureOpenAiConfig.cognitiveServicesConfig.kind
     tags: tags
   }
 }
 
 //Azure OpenAI Model Deployments
 @batchSize(1)
-module azureOpenAIModelDeployments 'modules/aoai/aoaiDeployment.bicep' = [for deployment in aoaiDeployments: {
+module azureOpenAIModelDeployments 'modules/aoai/aoaiDeployment.bicep' = [for deployment in azureOpenAiConfig.deployments: {
   name: 'aoai-deployment-${deployment.name}'
   scope: resourceGroup(resourceGroupNames.ai)
-  dependsOn: [
-    azureOpenAI
-  ]
   params: {
     name: deployment.name
     version: deployment.model.version
@@ -213,10 +156,10 @@ module azureCognitiveServices 'modules/cognitiveServices/cognitiveServices.bicep
     resourceGroupAI
   ]
   params: {
-    location: aiSearchLocation
+    location: cognitiveServicesConfig.location
     name: resourceNames.cognitiveServices
-    sku: cogsvcSku
-    kind: cogsvcKind
+    sku: cognitiveServicesConfig.sku
+    kind: cognitiveServicesConfig.kind
     tags: tags
   }
 }
@@ -229,10 +172,10 @@ module azureAIVision 'modules/cognitiveServices/cognitiveServices.bicep' = {
     resourceGroupAI
   ]
   params: {
-    location: aiVisionlocation
+    location: aiVisionConfig.location
     name: resourceNames.aiVision
-    sku: aiVisionSku
-    kind: aiVisionKind
+    sku: aiVisionConfig.sku
+    kind: aiVisionConfig.kind
     tags: tags
   }
 }
@@ -245,10 +188,10 @@ module documentIntelligence 'modules/cognitiveServices/cognitiveServices.bicep' 
     resourceGroupAI
   ]
   params: {
-    location: docIntelLocation
+    location: docIntelConfig.locationOfdocIntelligenceWithApi2024_07_31_preview ?? docIntelConfig.location
     name: resourceNames.documentIntelligence
-    sku: docIntelSku
-    kind: docIntelKind
+    sku: docIntelConfig.sku
+    kind: docIntelConfig.kind
     tags: tags
   }
 }
@@ -289,11 +232,11 @@ module aiSearch 'modules/aiSearch/aiSearch.bicep' = {
     resourceGroupAI
   ]
   params: {
-    location: aiSearchLocation
+    location: aiSearchConfig.location
     searchName: resourceNames.aiSearch
-    skuName: aiSearchSku
-    skuCapacity: aiSearchCapacity
-    semanticSearch: aiSearchSemanticSearch
+    skuName: aiSearchConfig.sku
+    skuCapacity: aiSearchConfig.capacity
+    semanticSearch: aiSearchConfig.semanticSearchSku
     tags: tags
   }
 }
@@ -308,8 +251,8 @@ module logAnalytics 'modules/logAnalytics/logAnalytics.bicep' = {
   params: {
     location: location
     logAnalyticsWorkspaceName: resourceNames.logAnalyticsWorkspaceName
-    logAnalyticsSku: logAnalyticsSettings.sku
-    logAnalyticsRetentionInDays: logAnalyticsSettings.retentionInDays
+    logAnalyticsSku: logAnalyticsConfig.sku
+    logAnalyticsRetentionInDays: logAnalyticsConfig.retentionInDays
     tags: tags
   }
 }
@@ -318,9 +261,6 @@ module logAnalytics 'modules/logAnalytics/logAnalytics.bicep' = {
 module appInsights 'modules/appInsights/appInsights.bicep' = {
   name: 'modAppInsights'
   scope: resourceGroup(resourceGroupNames.monitoring)
-  dependsOn: [
-    logAnalytics
-  ]
   params: {
     location: location
     appInsightsName: resourceNames.appInsightsName
@@ -333,10 +273,6 @@ module appInsights 'modules/appInsights/appInsights.bicep' = {
 module deploymentScriptIdentityRoleAssignmentAI 'modules/rbac/roleAssignment-deploymentScriptIdentity-ai.bicep' = {
   name: 'modDeploymentScriptIdentityRoleAssignmentAI'
   scope: resourceGroup(resourceGroupNames.ai)
-  dependsOn: [
-    aiSearch
-    deploymentScriptIdentity
-  ]
   params: {
     aiSearchId: aiSearch.outputs.searchResourceId
     managedIdentityPrincipalId: deploymentScriptIdentity.outputs.managedIdentityPrincipalId
@@ -346,12 +282,6 @@ module deploymentScriptIdentityRoleAssignmentAI 'modules/rbac/roleAssignment-dep
 module aiSearchRoleAssignmentAI 'modules/rbac/roleAssignment-searchService-ai.bicep' = {
   name: 'modAISearchRoleAssignmentAI'
   scope: resourceGroup(resourceGroupNames.ai)
-  dependsOn: [
-    aiSearch
-    azureOpenAI
-    azureAIVision
-    documentIntelligence
-  ]
   params: {
     azureOpenAIResourceId: azureOpenAI.outputs.cognitiveServicesAccountId
     azureAIVisionResourceId: azureAIVision.outputs.cognitiveServicesAccountId
@@ -363,10 +293,6 @@ module aiSearchRoleAssignmentAI 'modules/rbac/roleAssignment-searchService-ai.bi
 module functionRoleAssignmentAI 'modules/rbac/roleAssignment-function-ai.bicep' = {
   name: 'modFunctionRoleAssignmentAI'
   scope: resourceGroup(resourceGroupNames.ai)
-  dependsOn: [
-    azureFunction
-    documentIntelligence
-  ]
   params: {
     documentIntelligenceResourceId : documentIntelligence.outputs.cognitiveServicesAccountId
     managedIdentityPrincipalId: azureFunction.outputs.functionAppPrincipalId
@@ -376,10 +302,6 @@ module functionRoleAssignmentAI 'modules/rbac/roleAssignment-function-ai.bicep' 
 module aiSearchRoleAssignmentStorage 'modules/rbac/roleAssignment-searchService-storage.bicep' = {
   name: 'modAISearchRoleAssignmentStorage'
   scope: resourceGroup(resourceGroupNames.storage)
-  dependsOn: [
-    storageAccount
-    aiSearch
-  ]
   params: {
     storageAccountId: storageAccount.outputs.storageAccountId
     managedIdentityPrincipalId: aiSearch.outputs.searchResourcePrincipalId
@@ -389,10 +311,6 @@ module aiSearchRoleAssignmentStorage 'modules/rbac/roleAssignment-searchService-
 module docIntelligenceRoleAssignmentStorage 'modules/rbac/roleAssignment-docIntelligence-storage.bicep' = {
   name: 'modDocIntelligenceRoleAssignmentStorage'
   scope: resourceGroup(resourceGroupNames.storage)
-  dependsOn:[
-    storageAccount
-    documentIntelligence
-  ]
   params: {
     storageAccountId: storageAccount.outputs.storageAccountId
     managedIdentityPrincipalId: documentIntelligence.outputs.cognitiveServicesPrincipalId
@@ -402,12 +320,6 @@ module docIntelligenceRoleAssignmentStorage 'modules/rbac/roleAssignment-docInte
 module appServiceRoleAssignmentAI 'modules/rbac/roleAssignment-appService-ai.bicep' = {
   name: 'modAppServiceRoleAssignmentAI'
   scope: resourceGroup(resourceGroupNames.ai)
-  dependsOn: [
-    webApp
-    aiSearch
-    azureOpenAI
-    azureAIVision
-  ]
   params: {
     azureOpenAIResourceId: azureOpenAI.outputs.cognitiveServicesAccountId
     azureAIVisionResourceId: azureAIVision.outputs.cognitiveServicesAccountId
@@ -419,10 +331,6 @@ module appServiceRoleAssignmentAI 'modules/rbac/roleAssignment-appService-ai.bic
 module appServiceRoleAssignmentStorage 'modules/rbac/roleAssignment-appService-storage.bicep' = {
   name: 'modAppServiceRoleAssignmentStorage'
   scope: resourceGroup(resourceGroupNames.storage)
-  dependsOn: [
-    webApp
-    storageAccount
-  ]
   params: {
     storageAccountId: storageAccount.outputs.storageAccountId
     managedIdentityPrincipalId: webApp.outputs.identityPrincipalId
@@ -432,17 +340,22 @@ module appServiceRoleAssignmentStorage 'modules/rbac/roleAssignment-appService-s
 module appServiceRoleAssignmentApps 'modules/rbac/roleAssignment-appService-apps.bicep' = {
   name: 'modAppServiceRoleAssignmentApps'
   scope: resourceGroup(resourceGroupNames.apps)
-  dependsOn: [
-    webApp
-    keyVault
-  ]
   params: {
     keyVaultName: keyVault.outputs.name
     managedIdentityPrincipalId: webApp.outputs.identityPrincipalId
   }
 }
 
-module azureFunctionAppRegistration 'modules/appRegistration/appRegistration.bicep' = if (empty(functionAppClientId)) {
+module functionRoleAssignmentStorage 'modules/rbac/roleAssignment-function-storage.bicep' = {
+  name: 'modFunctionRoleAssignmentStorage'
+  scope: resourceGroup(resourceGroupNames.storage)
+  params: {
+    storageAccountId: storageAccount.outputs.storageAccountId
+    managedIdentityPrincipalId: azureFunction.outputs.functionAppPrincipalId
+  }
+}
+
+module azureFunctionAppRegistration 'modules/appRegistration/appRegistration.bicep' = if (empty(functionAppEntraIdRegistration.appId)) {
   name: 'modAzureFunctionAppRegistration'
   scope: resourceGroup(resourceGroupNames.apps)
   dependsOn:[
@@ -453,51 +366,44 @@ module azureFunctionAppRegistration 'modules/appRegistration/appRegistration.bic
   }
 }
 
-// Azure Function App for AI Search Custom Skills
-
 module aiSearchManagedIdentity 'modules/aiSearch/aiSearch-managedIdentity.bicep' = {
   name: 'modAiSearchManagedIdentity'
   scope: resourceGroup(resourceGroupNames.ai)
-  dependsOn:[
-    aiSearch
-  ]
   params: {
     searchResourceName: aiSearch.outputs.searchResourceName
   }
 }
 
+// Azure Function App for AI Search Custom Skills
 module azureFunction 'modules/function/function.bicep' = {
   name: 'modAzureFunction'
   scope: resourceGroup(resourceGroupNames.apps)
   dependsOn: [
     resourceGroupAI
-    storageAccount
-    logAnalytics
-    appInsights
-    documentIntelligence
     docIntelligenceRoleAssignmentStorage
-    azureFunctionAppRegistration
-    aiSearchManagedIdentity
   ]
   params: {
     location: location
     tags: tags
     applicationInsightsName: appInsights.outputs.appInsightsResourceName
     applicationInsightsResourceGroup: resourceGroupNames.monitoring
-    appServiceCapacity: appServicePlan.capacity
-    appServiceFamily: appServicePlan.family
-    appServiceName: appServicePlan.name
-    appServiceSize: appServicePlan.size
-    appServiceTier: appServicePlan.tier
+    appServicePlanName: resourceNames.functionAppServicePlanName
+    appKind: functionAppServicePlanConfig.kind
+    appServicePlanCapacity: functionAppServicePlanConfig.capacity
+    appServicePlanFamily: functionAppServicePlanConfig.family
+    appServicePlanSkuName: functionAppServicePlanConfig.skuName
+    appServicePlanTier: functionAppServicePlanConfig.tier
     azureFunctionName: resourceNames.functionApp
     azureFunctionStorageName: resourceNames.functionStorageAccountName
     logAnalyticsWorkspaceid: logAnalytics.outputs.logAnalyticsWorkspaceId
-    clientAppId: empty(functionAppClientId) ? azureFunctionAppRegistration.outputs.appId : functionAppClientId
+    authSettings: {
+      clientAppId: empty(functionAppEntraIdRegistration.appId) ? azureFunctionAppRegistration.outputs.appId : functionAppEntraIdRegistration.appId
+      authenticationIssuerUri: authenticationIssuerUri
+      allowedApplications: [
+        aiSearchManagedIdentity.outputs.appId
+      ]
+    }
     documentIntelligenceServiceInstanceName: documentIntelligence.outputs.cognitiveServicesAccountName
-    authenticationIssuerUri: authenticationIssuerUri
-    allowedApplications: [
-      aiSearchManagedIdentity.outputs.appId
-    ]
   }
 }
 
@@ -510,10 +416,11 @@ module keyVault './modules/keyvault/keyvault.bicep' = {
   params: {
     keyVaultName: resourceNames.keyVaultName
     location: location
+    tags: tags
   }
 }
 
-module serverAppKeyVaultSecret './modules/keyvault/keyvault-secret.bicep' = if (!empty(authSettings.serverApp.appSecret)) {
+module serverAppKeyVaultSecret './modules/keyvault/keyvault-secret.bicep' = if (!empty(webAppAuthSettings.serverApp.appSecret)) {
   name: 'modServerAppKeyVaultSecret'
   scope: resourceGroup(resourceGroupNames.apps)
   dependsOn:[
@@ -521,12 +428,12 @@ module serverAppKeyVaultSecret './modules/keyvault/keyvault-secret.bicep' = if (
   ]
   params: {
     keyVaultName: resourceNames.keyVaultName
-    secretName: authSettings.serverApp.appSecretName
-    secretValue: authSettings.serverApp.appSecret
+    secretName: webAppAuthSettings.serverApp.appSecretName!
+    secretValue: webAppAuthSettings.serverApp.appSecret!
   }
 }
 
-module clientAppKeyVaultSecret './modules/keyvault/keyvault-secret.bicep' = if (!empty(authSettings.clientApp.appSecret)) {
+module clientAppKeyVaultSecret './modules/keyvault/keyvault-secret.bicep' = if (!empty(webAppAuthSettings.clientApp.appSecret)) {
   name: 'modClientAppKeyVaultSecret'
   scope: resourceGroup(resourceGroupNames.apps)
   dependsOn:[
@@ -534,37 +441,17 @@ module clientAppKeyVaultSecret './modules/keyvault/keyvault-secret.bicep' = if (
   ]
   params: {
     keyVaultName: resourceNames.keyVaultName
-    secretName: authSettings.clientApp.appSecretName
-    secretValue: authSettings.clientApp.appSecret
+    secretName: webAppAuthSettings.clientApp.appSecretName!
+    secretValue: webAppAuthSettings.clientApp.appSecret!
   }
 }
 
 // Azure Web App
-module webAppServicePlan 'modules/appService/appServicePlan.bicep' = {
-  name: 'modWebAppServicePlan'
-  scope: resourceGroup(resourceGroupNames.apps)
-  dependsOn:[
-    resourceGroupApps
-  ]
-  params: {
-    name: resourceNames.webAppServicePlanName
-    location: location
-    tags: tags
-    sku: {
-      name: appServiceSkuName
-      capacity: 1
-    }
-    kind: 'linux'
-  }
-}
-
 module webApp 'modules/appService/appService.bicep' = {
   name: 'modWebApp'
   scope: resourceGroup(resourceGroupNames.apps)
   dependsOn: [
     resourceGroupApps
-    webAppServicePlan
-    appInsights
   ]
   params: {
     name: resourceNames.webAppName
@@ -572,20 +459,23 @@ module webApp 'modules/appService/appService.bicep' = {
     tags: tags
     applicationInsightsName: appInsights.outputs.appInsightsResourceName
     applicationInsightsResourceGroup: resourceGroupNames.monitoring
-    appServicePlanId: webAppServicePlan.outputs.id
+    appKind: webAppServicePlanConfig.kind
+    appServicePlanCapacity: webAppServicePlanConfig.capacity
+    appServicePlanFamily: webAppServicePlanConfig.family
+    appServicePlanSkuName: webAppServicePlanConfig.skuName
+    appServicePlanTier: webAppServicePlanConfig.tier
+    appServicePlanName: resourceNames.webAppServicePlanName
     runtimeName: 'python'
     runtimeVersion: '3.11'
     appCommandLine: 'python3 -m gunicorn main:app'
-    use32BitWorkerProcess: appServiceSkuName == 'F1'
-    alwaysOn: appServiceSkuName != 'F1'
     authSettings: {
-      enableAuth: authSettings.enableAuth
-      clientAppId: authSettings.clientApp.appId
-      serverAppId: authSettings.serverApp.appId
+      enableAuth: webAppAuthSettings.enableAuth
+      clientAppId: webAppAuthSettings.clientApp.appId
+      serverAppId: webAppAuthSettings.serverApp.appId
       clientSecretSettingName: 'MICROSOFT_PROVIDER_AUTHENTICATION_SECRET'
       authenticationIssuerUri: authenticationIssuerUri
       allowedApplications: [
-        authSettings.clientApp.appId
+        webAppAuthSettings.clientApp.appId
       ]
     }
     appSettings: {
@@ -598,42 +488,38 @@ module webApp 'modules/appService/appService.bicep' = {
       AZURE_SEARCH_QUERY_LANGUAGE: 'en-us'
       AZURE_SEARCH_QUERY_SPELLER: 'lexicon'
       OPENAI_HOST: 'azure'
-      AZURE_OPENAI_EMB_MODEL_NAME: aoaiTextEmbeddingModel
+      AZURE_OPENAI_EMB_MODEL_NAME: azureOpenAiConfig.textEmbeddingModel
       AZURE_OPENAI_EMB_DIMENSIONS: 1536
-      AZURE_OPENAI_CHATGPT_MODEL: aoaiChatModel
-      AZURE_OPENAI_GPT4V_MODEL: aoaiVisionModel
+      AZURE_OPENAI_CHATGPT_MODEL: azureOpenAiConfig.chatModel
+      AZURE_OPENAI_GPT4V_MODEL: azureOpenAiConfig.visionModel
       AZURE_OPENAI_SERVICE: resourceNames.azureOpenAI
-      AZURE_OPENAI_CHATGPT_DEPLOYMENT: first(filter(aoaiDeployments, deployment => deployment.name == aoaiChatModel)).name
-      AZURE_OPENAI_EMB_DEPLOYMENT: first(filter(aoaiDeployments, deployment => deployment.name == aoaiTextEmbeddingModel)).name
-      AZURE_OPENAI_GPT4V_DEPLOYMENT: first(filter(aoaiDeployments, deployment => deployment.name == aoaiVisionModel)).name
+      AZURE_OPENAI_CHATGPT_DEPLOYMENT: first(filter(azureOpenAiConfig.deployments, deployment => deployment.name == azureOpenAiConfig.chatModel)).name
+      AZURE_OPENAI_EMB_DEPLOYMENT: first(filter(azureOpenAiConfig.deployments, deployment => deployment.name == azureOpenAiConfig.textEmbeddingModel)).name
+      AZURE_OPENAI_GPT4V_DEPLOYMENT: first(filter(azureOpenAiConfig.deployments, deployment => deployment.name == azureOpenAiConfig.visionModel)).name
       USE_VECTORS: true
       USE_GPT4V: true
       PYTHON_ENABLE_GUNICORN_MULTIWORKERS: true
       SCM_DO_BUILD_DURING_DEPLOYMENT: true
       ENABLE_ORYX_BUILD: true
-      AZURE_USE_AUTHENTICATION: authSettings.enableAuth
-      AZURE_SERVER_APP_ID: authSettings.serverApp.appId
-      AZURE_SERVER_APP_SECRET: '@Microsoft.KeyVault(VaultName=${resourceNames.keyVaultName};SecretName=${authSettings.serverApp.appSecretName})'
-      MICROSOFT_PROVIDER_AUTHENTICATION_SECRET: '@Microsoft.KeyVault(VaultName=${resourceNames.keyVaultName};SecretName=${authSettings.clientApp.appSecretName})'
-      AZURE_CLIENT_APP_ID: authSettings.clientApp.appId
+      AZURE_USE_AUTHENTICATION: webAppAuthSettings.enableAuth
+      AZURE_SERVER_APP_ID: webAppAuthSettings.serverApp.appId
+      AZURE_SERVER_APP_SECRET: '@Microsoft.KeyVault(VaultName=${resourceNames.keyVaultName};SecretName=${webAppAuthSettings.serverApp.appSecretName})'
+      MICROSOFT_PROVIDER_AUTHENTICATION_SECRET: '@Microsoft.KeyVault(VaultName=${resourceNames.keyVaultName};SecretName=${webAppAuthSettings.clientApp.appSecretName})'
+      AZURE_CLIENT_APP_ID: webAppAuthSettings.clientApp.appId
       AZURE_AUTH_TENANT_ID: tenant().tenantId
-      AZURE_ENFORCE_ACCESS_CONTROL: authSettings.enableAccessControl
+      AZURE_ENFORCE_ACCESS_CONTROL: webAppAuthSettings.enableAccessControl
       AZURE_ENABLE_GLOBAL_DOCUMENT_ACCESS: true
-      AZURE_ENABLE_UNAUTHENTICATED_ACCESS: !authSettings.enableAuth
+      AZURE_ENABLE_UNAUTHENTICATED_ACCESS: !webAppAuthSettings.enableAuth
       AZURE_AUTHENTICATION_ISSUER_URI: authenticationIssuerUri
     }
   }
 }
 
 // Azure AI Search Configuration
-
-// Create data source
 module aiSearchDataSource 'modules/aiSearch/aiSearch-datasource.bicep' = {
   name: 'modAiSearchDataSource'
   scope: resourceGroup(resourceGroupNames.ai)
   dependsOn: [
-    aiSearch
-    storageAccount
     deploymentScriptIdentityRoleAssignmentAI
     aiSearchRoleAssignmentAI
     aiSearchRoleAssignmentStorage
@@ -653,7 +539,6 @@ module aiSearchIndex 'modules/aiSearch/aiSearch-index.bicep' = {
   name: 'modAiSearchIndex'
   scope: resourceGroup(resourceGroupNames.ai)
   dependsOn: [
-    aiSearch
     deploymentScriptIdentityRoleAssignmentAI
     aiSearchRoleAssignmentAI
     aiSearchRoleAssignmentStorage
@@ -663,7 +548,7 @@ module aiSearchIndex 'modules/aiSearch/aiSearch-index.bicep' = {
     aiSearchEndpoint: last(split(aiSearch.outputs.searchResourceId, '/'))
     indexName: resourceNames.aiSearchIndexName
     azureOpenAIEndpoint: 'https://${azureOpenAI.outputs.cognitiveServicesAccountName}.openai.azure.com/'
-    azureOpenAITextModelName: aoaiTextEmbeddingModel
+    azureOpenAITextModelName: azureOpenAiConfig.textEmbeddingModel
     cognitiveServicesEndpoint: 'https://${azureAIVision.outputs.cognitiveServicesAccountName}.cognitiveservices.azure.com'
     managedIdentityId: deploymentScriptIdentity.outputs.managedIdentityId
   }
@@ -674,12 +559,7 @@ module aiSearchSkillset 'modules/aiSearch/aiSearch-skillset.bicep' = {
   name: 'modAiSearchSkillset'
   scope: resourceGroup(resourceGroupNames.ai)
   dependsOn: [
-    aiSearch
     aiSearchIndex
-    storageAccount
-    azureCognitiveServices
-    azureOpenAI
-    azureFunction
     deploymentScriptIdentityRoleAssignmentAI
     aiSearchRoleAssignmentAI
     aiSearchRoleAssignmentStorage
@@ -691,11 +571,11 @@ module aiSearchSkillset 'modules/aiSearch/aiSearch-skillset.bicep' = {
     indexName: resourceNames.aiSearchIndexName
     skillsetName: resourceNames.aiSearchSkillsetName
     azureOpenAIEndpoint: 'https://${azureOpenAI.outputs.cognitiveServicesAccountName}.openai.azure.com/'
-    azureOpenAITextModelName: aoaiTextEmbeddingModel
+    azureOpenAITextModelName: azureOpenAiConfig.textEmbeddingModel
     knowledgeStoreStorageResourceUri: 'ResourceId=${storageAccount.outputs.storageAccountId}'
     knowledgeStoreStorageContainer: storageAccountDocsContainerName
     pdfMergeCustomSkillEndpoint: azureFunction.outputs.pdfTextImageMergeSkillEndpoint
-    aadAppId: empty(functionAppClientId) ? azureFunctionAppRegistration.outputs.appId : functionAppClientId
+    aadAppId: empty(functionAppEntraIdRegistration.appId) ? azureFunctionAppRegistration.outputs.appId : functionAppEntraIdRegistration.appId
     cognitiveServicesAccountId: azureCognitiveServices.outputs.cognitiveServicesAccountId
     managedIdentityId: deploymentScriptIdentity.outputs.managedIdentityId
   }
@@ -706,7 +586,6 @@ module aiSearchIndexer 'modules/aiSearch/aiSearch-indexer.bicep' = {
   name: 'modAiSearchIndexer'
   scope: resourceGroup(resourceGroupNames.ai)
   dependsOn: [
-    aiSearch
     aiSearchIndex
     aiSearchSkillset
     deploymentScriptIdentityRoleAssignmentAI
