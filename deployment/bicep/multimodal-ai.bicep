@@ -30,8 +30,10 @@ param cognitiveServicesConfig inputSchema.cognitiveServicesConfig
 @sys.description('Deployment configuration for Azure AI Search.')
 param aiSearchConfig inputSchema.aiSearchConfig
 
+@sys.description('Deployment configuration for the web app service plan.')
 param webAppServicePlanConfig inputSchema.appServicePlanConfig
 
+@sys.description('Deployment configuration for the function app service plan.')
 param functionAppServicePlanConfig inputSchema.appServicePlanConfig
 
 @sys.description('Configuration for the Azure Function App registration.')
@@ -75,7 +77,8 @@ var resourceNames = {
   webAppName: '${prefixNormalized}-${locationNormalized}-webapp'
   keyVaultName: '${prefixNormalized}-${locationNormalized}-kv'
 }
-// Resources
+
+/**** Resources ****/
 
 // Resource Group AI
 module resourceGroupAI './modules/resourceGroup/resourceGroup.bicep' = {
@@ -115,8 +118,6 @@ module resourceGroupApps './modules/resourceGroup/resourceGroup.bicep' = {
     tags: tags
   }
 }
-
-// Azure Resources
 
 // Azure OpenAI
 module azureOpenAI 'modules/cognitiveServices/cognitiveServices.bicep' = {
@@ -274,7 +275,7 @@ module deploymentScriptIdentityRoleAssignmentAI 'modules/rbac/roleAssignment-dep
   name: 'modDeploymentScriptIdentityRoleAssignmentAI'
   scope: resourceGroup(resourceGroupNames.ai)
   params: {
-    aiSearchId: aiSearch.outputs.searchResourceId
+    aiSearchName: aiSearch.outputs.searchResourceName
     managedIdentityPrincipalId: deploymentScriptIdentity.outputs.managedIdentityPrincipalId
   }
 }
@@ -283,9 +284,9 @@ module aiSearchRoleAssignmentAI 'modules/rbac/roleAssignment-searchService-ai.bi
   name: 'modAISearchRoleAssignmentAI'
   scope: resourceGroup(resourceGroupNames.ai)
   params: {
-    azureOpenAIResourceId: azureOpenAI.outputs.cognitiveServicesAccountId
-    azureAIVisionResourceId: azureAIVision.outputs.cognitiveServicesAccountId
-    documentIntelligenceResourceId: documentIntelligence.outputs.cognitiveServicesAccountId
+    azureOpenAIResourceName: azureOpenAI.outputs.cognitiveServicesAccountName
+    azureAIVisionResourceName: azureAIVision.outputs.cognitiveServicesAccountName
+    documentIntelligenceResourceName: documentIntelligence.outputs.cognitiveServicesAccountName
     managedIdentityPrincipalId: aiSearch.outputs.searchResourcePrincipalId
   }
 }
@@ -294,7 +295,7 @@ module functionRoleAssignmentAI 'modules/rbac/roleAssignment-function-ai.bicep' 
   name: 'modFunctionRoleAssignmentAI'
   scope: resourceGroup(resourceGroupNames.ai)
   params: {
-    documentIntelligenceResourceId : documentIntelligence.outputs.cognitiveServicesAccountId
+    documentIntelligenceResourceName: documentIntelligence.outputs.cognitiveServicesAccountName
     managedIdentityPrincipalId: azureFunction.outputs.functionAppPrincipalId
   }
 }
@@ -321,9 +322,9 @@ module appServiceRoleAssignmentAI 'modules/rbac/roleAssignment-appService-ai.bic
   name: 'modAppServiceRoleAssignmentAI'
   scope: resourceGroup(resourceGroupNames.ai)
   params: {
-    azureOpenAIResourceId: azureOpenAI.outputs.cognitiveServicesAccountId
-    azureAIVisionResourceId: azureAIVision.outputs.cognitiveServicesAccountId
-    azureAISearchResourceId: aiSearch.outputs.searchResourceId
+    azureOpenAIResourceName: azureOpenAI.outputs.cognitiveServicesAccountName
+    azureAIVisionResourceName: azureAIVision.outputs.cognitiveServicesAccountName
+    azureAISearchResourceName: aiSearch.outputs.searchResourceName
     managedIdentityPrincipalId: webApp.outputs.identityPrincipalId
   }
 }
@@ -527,7 +528,7 @@ module aiSearchDataSource 'modules/aiSearch/aiSearch-datasource.bicep' = {
   params: {
     location: location
     dataSourceName: resourceNames.aiSearchDocsDataSourceName
-    aiSearchEndpoint: last(split(aiSearch.outputs.searchResourceId, '/'))
+    aiSearchEndpoint: aiSearch.outputs.searchResourceName
     storageAccountResourceId: storageAccount.outputs.storageAccountId
     containerName: storageAccountDocsContainerName
     managedIdentityId: deploymentScriptIdentity.outputs.managedIdentityId
@@ -545,7 +546,7 @@ module aiSearchIndex 'modules/aiSearch/aiSearch-index.bicep' = {
   ]
   params: {
     location: location
-    aiSearchEndpoint: last(split(aiSearch.outputs.searchResourceId, '/'))
+    aiSearchEndpoint: aiSearch.outputs.searchResourceName
     indexName: resourceNames.aiSearchIndexName
     azureOpenAIEndpoint: 'https://${azureOpenAI.outputs.cognitiveServicesAccountName}.openai.azure.com/'
     azureOpenAITextModelName: azureOpenAiConfig.textEmbeddingModel
@@ -567,7 +568,7 @@ module aiSearchSkillset 'modules/aiSearch/aiSearch-skillset.bicep' = {
   ]
   params: {
     location: location
-    aiSearchEndpoint: last(split(aiSearch.outputs.searchResourceId, '/'))
+    aiSearchEndpoint: aiSearch.outputs.searchResourceName
     indexName: resourceNames.aiSearchIndexName
     skillsetName: resourceNames.aiSearchSkillsetName
     azureOpenAIEndpoint: 'https://${azureOpenAI.outputs.cognitiveServicesAccountName}.openai.azure.com/'
@@ -594,7 +595,7 @@ module aiSearchIndexer 'modules/aiSearch/aiSearch-indexer.bicep' = {
   ]
   params: {
     location: location
-    aiSearchEndpoint: last(split(aiSearch.outputs.searchResourceId, '/'))
+    aiSearchEndpoint: aiSearch.outputs.searchResourceName
     indexName: resourceNames.aiSearchIndexName
     skillsetName : resourceNames.aiSearchSkillsetName
     dataSourceName: resourceNames.aiSearchDocsDataSourceName
