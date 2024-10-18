@@ -3,21 +3,23 @@ targetScope = 'resourceGroup'
 @sys.description('Azure Region where the App Service and Function will be created.')
 param location string
 
-// App Service Plan
-@sys.description('Tier of the App Service  to be created.')
-param appServiceTier string
-
 @sys.description('Name of the App Service to be created.')
-param appServiceName string
+param appServicePlanName string
+
+@sys.description('Tier of the App Service  to be created.')
+param appServicePlanTier string
 
 @sys.description('Size of the App Service  to be created.')
-param appServiceSize string
+param appServicePlanSkuName string
 
 @sys.description('Family of the App Service  to be created.')
-param appServiceFamily string
+param appServicePlanFamily string
 
 @sys.description('Capacity of the App Service  to be created.')
-param appServiceCapacity int
+param appServicePlanCapacity int
+
+@sys.description('Kind of the app.')
+param appKind string
 
 @sys.description('Name of the Azure Function to be created.')
 param azureFunctionName string
@@ -37,17 +39,21 @@ param applicationInsightsResourceGroup string
 @sys.description('Name of the document intelligence service instance to be used.')
 param documentIntelligenceServiceInstanceName string
 
-@sys.description('Id of the Microsoft Entra Id app.')
-param clientAppId string
-
-@sys.description('Application IDs of application that are allowed to access function.')
-param allowedApplications array = []
-
 @sys.description('Tags you would like to be applied to the resource.')
 param tags object = {}
 
-@sys.description('Uri of token issuer.')
-param authenticationIssuerUri string
+@sys.description('Settings to configure function app authentication.')
+param authSettings object = {
+  clientAppId: ''
+  authenticationIssuerUri: ''
+  allowedApplications: []
+}
+
+// Reference to existing Application Insights resource
+resource applicationInsights 'Microsoft.Insights/components@2020-02-02' existing = {
+  name: applicationInsightsName
+  scope: resourceGroup(applicationInsightsResourceGroup)
+}
 
 //creating a storage account for the Azure Function
 resource storageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' = {
@@ -63,24 +69,18 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' = {
   }
 }
 
-// Reference to existing Application Insights resource
-resource applicationInsights 'Microsoft.Insights/components@2020-02-02' existing = {
-  name: applicationInsightsName
-  scope: resourceGroup(applicationInsightsResourceGroup)
-}
-
 // create hosting plan
 resource hostingPlan 'Microsoft.Web/serverfarms@2023-12-01' = {
-  name: appServiceName
+  name: appServicePlanName
   location: location
-  kind: 'functionapp,linux'
+  kind: appKind
   tags: tags
   sku: {
-    tier: appServiceTier
-    name: appServiceSize
-    size: appServiceSize
-    family: appServiceFamily
-    capacity: appServiceCapacity
+    tier: appServicePlanTier
+    name: appServicePlanSkuName
+    size: appServicePlanSkuName
+    family: appServicePlanFamily
+    capacity: appServicePlanCapacity
   }
   properties: {
     reserved: true
@@ -92,7 +92,7 @@ resource functionApp 'Microsoft.Web/sites@2023-12-01' = {
   name: azureFunctionName
   location: location
   tags: tags
-  kind: 'functionapp,linux'
+  kind: appKind
 
   identity: {
     type: 'SystemAssigned'
@@ -140,26 +140,17 @@ resource functionApp 'Microsoft.Web/sites@2023-12-01' = {
         azureActiveDirectory: {
           enabled: true
           registration: {
-            clientId: clientAppId
-            openIdIssuer: authenticationIssuerUri
+            clientId: authSettings.clientAppId
+            openIdIssuer: authSettings.authenticationIssuerUri
           }
           validation: {
             defaultAuthorizationPolicy: {
-              allowedApplications: allowedApplications
+              allowedApplications: authSettings.allowedApplications
             }
           }
         }
       }
     }
-  }
-}
-
-// Grant Blob Data Contributor assignment to the Function managed identity
-module functionRoleAssignmentStorage '../rbac/roleAssignment-function-storage.bicep' = {
-  name: 'functionRoleAssignmentStorage'
-  params: {
-    storageAccountId: storageAccount.id
-    managedIdentityPrincipalId: functionApp.identity.principalId
   }
 }
 

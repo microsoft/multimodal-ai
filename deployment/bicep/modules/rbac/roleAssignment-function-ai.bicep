@@ -1,12 +1,9 @@
 // Parameters
-@sys.description('Specifies the Id of the Azure AI Vision resource.')
-param documentIntelligenceResourceId string
+@sys.description('Specifies the name of the Azure AI Vision resource.')
+param documentIntelligenceResourceName string
 
 @sys.description('Managed Identity Principla Id to be assigned access to the search service.')
 param managedIdentityPrincipalId string
-
-// Variables
-var documentIntelligenceResourceName = last(split(documentIntelligenceResourceId, '/'))
 
 // Resources
 resource documentIntelligenceResource 'Microsoft.CognitiveServices/accounts@2024-04-01-preview' existing = {

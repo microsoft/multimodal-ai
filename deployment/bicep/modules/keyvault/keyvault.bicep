@@ -4,6 +4,9 @@ param keyVaultName string
 @description('Specifies the Azure location where the key vault should be created.')
 param location string
 
+@sys.description('Tags you would like to be applied to the resource.')
+param tags object = {}
+
 @description('Specifies whether Azure Virtual Machines are permitted to retrieve certificates stored as secrets from the key vault.')
 param enabledForDeployment bool = false
 
@@ -26,6 +29,7 @@ param skuName string = 'standard'
 resource kv 'Microsoft.KeyVault/vaults@2023-07-01' = {
   name: keyVaultName
   location: location
+  tags: tags
   properties: {
     enabledForDeployment: enabledForDeployment
     enabledForDiskEncryption: enabledForDiskEncryption
