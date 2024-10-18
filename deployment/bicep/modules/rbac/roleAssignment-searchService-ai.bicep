@@ -1,20 +1,15 @@
 // Parameters
-@sys.description('Specifies the Id of the Azure OpenAI resource.')
-param azureOpenAIResourceId string
+@sys.description('Specifies the name of the Azure OpenAI resource.')
+param azureOpenAIResourceName string
 
-@sys.description('Specifies the Id of the Azure AI Vision resource.')
-param azureAIVisionResourceId string
+@sys.description('Specifies the name of the Azure AI Vision resource.')
+param azureAIVisionResourceName string
 
-@sys.description('Specifies the Id of the Azure AI Vision resource.')
-param documentIntelligenceResourceId string
+@sys.description('Specifies the name of the Azure AI Vision resource.')
+param documentIntelligenceResourceName string
 
 @sys.description('Managed Identity Principla Id to be assigned access to the search service.')
 param managedIdentityPrincipalId string
-
-// Variables
-var azureOpenAIResourceName = last(split(azureOpenAIResourceId, '/'))
-var azureAIVisionResourceName = last(split(azureAIVisionResourceId, '/'))
-var documentIntelligenceResourceName = last(split(documentIntelligenceResourceId, '/'))
 
 // Resources
 resource documentIntelligenceResource 'Microsoft.CognitiveServices/accounts@2024-04-01-preview' existing = {
