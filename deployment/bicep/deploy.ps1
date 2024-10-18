@@ -151,7 +151,7 @@ try {
             -Location $Location `
             -TemplateFile $TemplateFile `
             -TemplateParameterFile $TemplateParameterFile `
-            -authSettings $params `
+            -webAppAuthSettings $params `
             -Verbose `
             -ErrorAction Stop `
             -ErrorVariable deploymentError
