@@ -260,12 +260,12 @@ export function Component(): JSX.Element {
             </div>
             <div className={styles.askBottomSection}>
                 {isLoading && <Spinner label={t("generatingAnswer")} />}
-                {!lastQuestionRef.current && (
+                {/* {!lastQuestionRef.current && (
                     <div className={styles.askTopSection}>
                         {showLanguagePicker && <LanguagePicker onLanguageChange={newLang => i18n.changeLanguage(newLang)} />}
                         <ExampleList onExampleClicked={onExampleClicked} useGPT4V={useGPT4V} />
                     </div>
-                )}
+                )} */}
                 {!isLoading && answer && !error && (
                     <div className={styles.askAnswerContainer}>
                         <Answer
