@@ -323,7 +323,6 @@ module appServiceRoleAssignmentAI 'modules/rbac/roleAssignment-appService-ai.bic
   scope: resourceGroup(resourceGroupNames.ai)
   params: {
     azureOpenAIResourceName: azureOpenAI.outputs.cognitiveServicesAccountName
-    azureAIVisionResourceName: azureAIVision.outputs.cognitiveServicesAccountName
     azureAISearchResourceName: aiSearch.outputs.searchResourceName
     managedIdentityPrincipalId: webApp.outputs.identityPrincipalId
   }
@@ -485,17 +484,13 @@ module webApp 'modules/appService/appService.bicep' = {
       AZURE_SEARCH_INDEX: resourceNames.aiSearchIndexName
       AZURE_SEARCH_SERVICE: resourceNames.aiSearch
       AZURE_SEARCH_SEMANTIC_RANKER: 'standard'
-      AZURE_VISION_ENDPOINT: 'https://${resourceNames.aiVision}.cognitiveservices.azure.com'
       AZURE_SEARCH_QUERY_LANGUAGE: 'en-us'
       AZURE_SEARCH_QUERY_SPELLER: 'lexicon'
       OPENAI_HOST: 'azure'
-      AZURE_OPENAI_EMB_MODEL_NAME: azureOpenAiConfig.textEmbeddingModel
-      AZURE_OPENAI_EMB_DIMENSIONS: 1536
       AZURE_OPENAI_CHATGPT_MODEL: azureOpenAiConfig.chatModel
       AZURE_OPENAI_GPT4V_MODEL: azureOpenAiConfig.visionModel
       AZURE_OPENAI_SERVICE: resourceNames.azureOpenAI
       AZURE_OPENAI_CHATGPT_DEPLOYMENT: first(filter(azureOpenAiConfig.deployments, deployment => deployment.name == azureOpenAiConfig.chatModel))!.name
-      AZURE_OPENAI_EMB_DEPLOYMENT: first(filter(azureOpenAiConfig.deployments, deployment => deployment.name == azureOpenAiConfig.textEmbeddingModel))!.name
       AZURE_OPENAI_GPT4V_DEPLOYMENT: first(filter(azureOpenAiConfig.deployments, deployment => deployment.name == azureOpenAiConfig.visionModel))!.name
       USE_VECTORS: true
       USE_GPT4V: true
