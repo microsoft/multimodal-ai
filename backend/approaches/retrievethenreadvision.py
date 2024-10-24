@@ -1,4 +1,4 @@
-from typing import Any, Awaitable, Callable, Optional
+from typing import Any, Optional
 
 from azure.search.documents.aio import SearchClient
 from azure.storage.blob.aio import ContainerClient
@@ -42,31 +42,21 @@ class RetrieveThenReadVisionApproach(Approach):
         auth_helper: AuthenticationHelper,
         gpt4v_deployment: Optional[str],
         gpt4v_model: str,
-        embedding_deployment: Optional[str],  # Not needed for non-Azure OpenAI or for retrieval_mode="text"
-        embedding_model: str,
-        embedding_dimensions: int,
         sourcepage_field: str,
         content_field: str,
         query_language: str,
-        query_speller: str,
-        vision_endpoint: str,
-        vision_token_provider: Callable[[], Awaitable[str]]
+        query_speller: str
     ):
         self.search_client = search_client
         self.blob_container_client = blob_container_client
         self.openai_client = openai_client
         self.auth_helper = auth_helper
-        self.embedding_model = embedding_model
-        self.embedding_deployment = embedding_deployment
-        self.embedding_dimensions = embedding_dimensions
         self.sourcepage_field = sourcepage_field
         self.content_field = content_field
         self.gpt4v_deployment = gpt4v_deployment
         self.gpt4v_model = gpt4v_model
         self.query_language = query_language
         self.query_speller = query_speller
-        self.vision_endpoint = vision_endpoint
-        self.vision_token_provider = vision_token_provider
         self.gpt4v_token_limit = get_token_limit(gpt4v_model)
 
     async def run(
@@ -99,9 +89,9 @@ class RetrieveThenReadVisionApproach(Approach):
         if use_vector_search:
             for field in vector_fields:
                 vector = (
-                    await self.compute_text_embedding(q)
+                    await self.get_vectorizable_text_query(q)
                     if field == "embedding"
-                    else await self.compute_image_embedding(q)
+                    else await self.get_vectorizable_image_query(q)
                 )
                 vectors.append(vector)
 

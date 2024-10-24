@@ -2,9 +2,6 @@
 @sys.description('Specifies the Id of the Azure OpenAI resource.')
 param azureOpenAIResourceName string
 
-@sys.description('Specifies the Id of the Azure AI Vision resource.')
-param azureAIVisionResourceName string
-
 @sys.description('Specifies the Id of the AI Search resource.')
 param azureAISearchResourceName string
 
@@ -12,10 +9,6 @@ param azureAISearchResourceName string
 param managedIdentityPrincipalId string
 
 // Resources
-resource azureAIVisionResource 'Microsoft.CognitiveServices/accounts@2024-04-01-preview' existing = {
-  name: azureAIVisionResourceName
-}
-
 resource azureOpenAIResource 'Microsoft.CognitiveServices/accounts@2024-04-01-preview' existing = {
   name: azureOpenAIResourceName
 }
@@ -35,12 +28,6 @@ resource roleDefinitionAzureAISearchReader 'Microsoft.Authorization/roleDefiniti
 resource roleDefinitionAzureAISearchIndexDataReader 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
   scope: azureAISearchResource
   name: '1407120a-92aa-4202-b7e9-c0e197c71c8f'
-}
-
-@description('Lets you read and list keys of Cognitive Services. See https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles/ai-machine-learning#cognitive-services-user')
-resource roleDefinitionAzureAIVisionCognitiveServicesUser 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
-  scope: azureAIVisionResource
-  name: 'a97b65f3-24c7-4388-baec-2e87135dc908'
 }
 
 @description('Read access to view files, models, deployments. The ability to create completion and embedding calls. See https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles/ai-machine-learning#cognitive-services-openai-user')
@@ -70,16 +57,6 @@ resource roleAssignmentAzureAISearchIndexDataReader 'Microsoft.Authorization/rol
     principalType: 'ServicePrincipal'
   }
   scope: azureAISearchResource
-}
-
-resource roleAssignmentAzureAIVisionCognitiveServicesUser 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid('roleDefinition', roleDefinitionAzureAIVisionCognitiveServicesUser.id, managedIdentityPrincipalId)
-  properties: {
-    roleDefinitionId: roleDefinitionAzureAIVisionCognitiveServicesUser.id
-    principalId: managedIdentityPrincipalId
-    principalType: 'ServicePrincipal'
-  }
-  scope: azureAIVisionResource
 }
 
 resource roleAssignmentAzureOpenAIUser 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
