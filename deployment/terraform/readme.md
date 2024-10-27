@@ -127,21 +127,6 @@ By default web application is deployed with Azure Active Directory authenticatio
 
 ### Manually creating app registrations
 
-#### Client app registration
-
-- Navigate to Microsoft Entra ID in Azure Portal
-- Click on "Manage" > "App registrations" and then "New registration"
-- Provide a name for the app registration
-- Select "Accounts in this organizational directory only" for supported account types
-- Provide a redirect URI for "web" in the format **https://<web-app-name>.azurewebsites.net/.auth/login/aad/callback**
-- Provide a redirect URI for "Single-page application (SPA)" in the format **https://<web-app-name>.azurewebsites.net/redirect**
-- Note that you can also set these redirect URIs after you deployed the solution using **terraform apply** ("Manage" > "App registrations" > name-of-app-registration > "Manage" > "Authentication")
-- Click "Register" to create the app registration
-- Take note of the "Application (client) ID" from the app registration
-- After registration is completed navigate to "Manage" > "App registrations" > name-of-app-registration > "Manage" > "Certificates & secrets"
-- Click "New client secret" to create a new secret
-- Take note of the secret value before navigating away from the page, because it will not be shown again
-
 #### Server app registration
 
 - Navigate to Microsoft Entra ID in Azure Portal
@@ -151,7 +136,6 @@ By default web application is deployed with Azure Active Directory authenticatio
 - Click "Register" to create the app registration
 - Take note of the "Application (client) ID" from the app registration
 - After registration is completed navigate to "Manage" > "App registrations" > name-of-app-registration > "Manage" > "API permissions"
-- Navigate to "Manage" > "App registrations" > name-of-app-registration > "Manage" > "API permissions"
 - Add following delegated permissions for "Microsoft.Graph"
   - email
   - offline_access
@@ -172,9 +156,30 @@ By default web application is deployed with Azure Active Directory authenticatio
 - Click "New client secret" to create a new secret
 - Take note of the secret value before navigating away from the page, because it will not be shown again
 
+#### Client app registration
+
+- Navigate to Microsoft Entra ID in Azure Portal
+- Click on "Manage" > "App registrations" and then "New registration"
+- Provide a name for the app registration
+- Select "Accounts in this organizational directory only" for supported account types
+- Provide a redirect URI for "web" in the format **https://<web-app-name>.azurewebsites.net/.auth/login/aad/callback**
+- Provide a redirect URI for "Single-page application (SPA)" in the format **https://<web-app-name>.azurewebsites.net/redirect**
+- Note that you can also set these redirect URIs after you deployed the solution using **terraform apply** ("Manage" > "App registrations" > name-of-app-registration > "Manage" > "Authentication")
+- Click "Register" to create the app registration
+- Take note of the "Application (client) ID" from the app registration
+- After registration is completed navigate to "Manage" > "App registrations" > name-of-app-registration > "Manage" > "API permissions"
+- Click "Add a permission" and select "My APIs"
+- Select **Delegated Permissions**.
+- Select the server app registration (**mmai-serverapp-XXXXXX**) created in previous steps
+- Select the **access_as_user** permission
+- Click "Add permissions" to add the permission
+- Navigate to "Manage" > "App registrations" > name-of-app-registration > "Manage" > "Certificates & secrets"
+- Click "New client secret" to create a new secret
+- Take note of the secret value before navigating away from the page, because it will not be shown again
+
 #### Update terraform.tfvars
 
-Finally update the **terraform.tfvars** file with the app registration details you collected in previous steps and run [deployment](#deployment).
+Finally update the **terraform.tfvars** file with the app registration details you collected in previous steps and run [deployment](#deployment). Note that if you don't want to use secrets in the terraform.tfvars file, you can leave them empty. After terraform deployment is complete you can update the secrets in the keyvault instance created.
 
 ```json
 webapp_auth_settings = {
