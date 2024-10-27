@@ -19,13 +19,13 @@ resource "null_resource" "linux_webapp_build" {
   depends_on = [azurerm_linux_web_app.linux_webapp]
 }
 
-# wait for 1m between creation and deployment
+# wait for 5m between creation and deployment
 resource "time_sleep" "wait_after_webapp_creation" {
   depends_on      = [azurerm_linux_web_app.linux_webapp]
-  create_duration = "1m"
+  create_duration = "5m"
 }
 
-#use following to update any appsettings that are not set during weapp creation
+#use following to update any appsettings that are not set during webapp creation
 #   az webapp config appsettings set --resource-group <group-name> --name <app-name> --settings SCM_DO_BUILD_DURING_DEPLOYMENT=true
 #Following is th enew command to deploy zip file. However there is currently a bug that causes 504 timeout errors so reverted to the old command "az webapp deployment source config-zip"
 #      az webapp deploy --resource-group ${var.resource_group_name} --name ${var.webapp_name} --src-path ${one(data.archive_file.file_function[*].output_path)} --type zip --timeout 600000

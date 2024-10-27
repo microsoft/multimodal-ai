@@ -54,8 +54,20 @@ variable "key_vault_keys" {
       # length([for curve in values(var.key_vault_keys)[*].curve : curve if !contains(["P-256", "P-256K", "P-384", "P-521"], curve)]) <= 0,
       length([for key_type in values(var.key_vault_keys)[*].key_type : key_type if !contains(["EC", "EC-HSM", "RSA", "RSA-HSM"], key_type)]) <= 0,
     ])
-    error_message = "Please specify a valid language extension."
+    error_message = "Please specify a valid key spec."
   }
+}
+
+
+variable "key_vault_secrets" {
+  description = "Specifies the key vault secrets that should be deployed."
+  type = list(object({
+    secret_name  = string
+    secret_value = string
+  }))
+  sensitive = false
+  nullable  = false
+  default   = []
 }
 
 # Monitoring variables

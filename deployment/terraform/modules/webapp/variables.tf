@@ -39,6 +39,37 @@ variable "webapp_name" {
   }
 }
 
+variable "enable_auth" {
+  description = "Specifies if auth is enabled for the webapp."
+  type        = bool
+  default     = false
+}
+
+variable "client_app_id" {
+  description = "Specifies the client app registration app id."
+  type        = string
+  default     = ""
+}
+
+variable "server_app_id" {
+  description = "Specifies the server app registration app id."
+  type        = string
+  default     = ""
+}
+
+variable "resource_token" {
+  description = "Specifies the token appended to resource names to differentiate deployments."
+  type        = string
+}
+
+variable "client_secret_setting_name" {
+  description = "Specifies the name of the app setting which contains client secret."
+  type        = string
+  default     = ""
+}
+
+
+
 # Service variables
 variable "webapp_application_settings" {
   description = "Specifies app settings this is then merged with local app settings"

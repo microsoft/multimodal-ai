@@ -121,6 +121,99 @@ az webapp deployment source config-zip --resource-group rg-mmai-00000000 --name 
 - Click on "Run" to start indexing the documents and wait for process to finish.
 - Access the web application using the URL provided in the terraform output variable **multimodel_ai_web_site**.
 
+## Configuring authentication
+
+By default web application is deployed with Azure Active Directory authentication enabled. Deployment configuration also creates client and server app registrations in Azure Entra ID. However, if you don't have privileges to create app registrations, you can either have your Entra ID admin to create app registrations for you or disable authentication.
+
+### Manually creating app registrations
+
+#### Client app registration
+
+- Navigate to Microsoft Entra ID in Azure Portal
+- Click on "Manage" > "App registrations" and then "New registration"
+- Provide a name for the app registration
+- Select "Accounts in this organizational directory only" for supported account types
+- Provide a redirect URI for "web" in the format **https://<web-app-name>.azurewebsites.net/.auth/login/aad/callback**
+- Provide a redirect URI for "Single-page application (SPA)" in the format **https://<web-app-name>.azurewebsites.net/redirect**
+- Note that you can also set these redirect URIs after you deployed the solution using **terraform apply** ("Manage" > "App registrations" > name-of-app-registration > "Manage" > "Authentication")
+- Click "Register" to create the app registration
+- Take note of the "Application (client) ID" from the app registration
+- After registration is completed navigate to "Manage" > "App registrations" > name-of-app-registration > "Manage" > "Certificates & secrets"
+- Click "New client secret" to create a new secret
+- Take note of the secret value before navigating away from the page, because it will not be shown again
+
+#### Server app registration
+
+- Navigate to Microsoft Entra ID in Azure Portal
+- Click on "Manage" > "App registrations" and then "New registration"
+- Provide a name for the app registration
+- Select "Accounts in this organizational directory only" for supported account types
+- Click "Register" to create the app registration
+- Take note of the "Application (client) ID" from the app registration
+- After registration is completed navigate to "Manage" > "App registrations" > name-of-app-registration > "Manage" > "API permissions"
+- Navigate to "Manage" > "App registrations" > name-of-app-registration > "Manage" > "API permissions"
+- Add following delegated permissions for "Microsoft.Graph"
+  - email
+  - offline_access
+  - openid
+  - profile
+  - User.ReadWrite
+- Navigate to "Manage" > "App registrations" > name-of-app-registration > "Manage" > "Expose an API"
+- Click "Add a scope" and enter following values
+  - Scope name: **access_as_user**
+  - Who can consent: **Admins and users**
+  - Admin consent display name: **Access Azure Search OpenAI Chat API**
+  - Admin consent description: **Allows the app to access Azure Search OpenAI Chat API as the signed-in user.**
+  - User consent display name: **Access Azure Search OpenAI Chat API**
+  - User consent description: **Allow the app to access Azure Search OpenAI Chat API on your behalf**
+  - State: Enabled
+  - Click "Add scope" to create the scope
+- Navigate to "Manage" > "App registrations" > name-of-app-registration > "Manage" > "Certificates & secrets"
+- Click "New client secret" to create a new secret
+- Take note of the secret value before navigating away from the page, because it will not be shown again
+
+#### Update terraform.tfvars
+
+Finally update the **terraform.tfvars** file with the app registration details you collected in previous steps and run [deployment](#deployment).
+
+```json
+webapp_auth_settings = {
+  enable_auth           = true
+  enable_access_control = true
+  server_app = {
+    app_id           = "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
+    app_secret_name  = "<serverapp-secret-name>"
+    app_secret_value = "<serverapp-secret-value>"
+  }
+  client_app = {
+    app_id           = "YYYYYYYY-YYYY-YYYY-YYYY-YYYYYYYYYYYY"
+    app_secret_name  = "<clientapp-secret-name>"
+    app_secret_value = "<clientapp-secret-value>"
+  }
+}
+```
+
+### Disabling authentication
+
+Disabling authentication for public facing web apps is not recommended. If you need to disable authentication, make sure web application is only accessible through private network. Set  **enable_auth** and **enable_access_control** to false under **webapp_auth_settings** in **terraform.tfvars** file.
+
+```json
+webapp_auth_settings = {
+  enable_auth           = false
+  enable_access_control = false
+  server_app = {
+    app_id           = ""
+    app_secret_name  = ""
+    app_secret_value = ""
+  }
+  client_app = {
+    app_id           = ""
+    app_secret_name  = ""
+    app_secret_value = ""
+  }
+}
+```
+
 ## Delete Deployment
 - To delete the deployment you need to delete the resource group and app registration. Commands for both are provided in the terraform output variable **cleanup_command**. But if you don't have the output, you can use the following:
 
@@ -133,7 +226,7 @@ az webapp deployment source config-zip --resource-group rg-mmai-00000000 --name 
     az group delete --name <resource_group_name>
     ```
 
-  - To delete the app registration, run the following command. Note that this command generates commands to delete all app registrations whose name start with "skills". You need to run commands separately from command shell.
+  - To delete app registration created by this terraform script, run the following command. Note that this command generates commands to delete all app registrations whose name start with "skills". You need to run commands separately from command shell.
     ```powershell
-    az ad app list --show-mine | ConvertFrom-Json | Where-Object { $_.displayName -like "skills*" } | select-object -Property @{Name = 'Command'; Expression = {"az ad app delete --id "+$_.appId+" #"+$_.displayName}} | Format-Table -AutoSize
+    az ad app list --show-mine | ConvertFrom-Json | Where-Object { $_.displayName -like "mmai-functionapp*" -or $_.displayName -like "mmai-clientapp*" -or $_.displayName -like "mmai-serverapp*" } | select-object -Property @{Name = 'Command'; Expression = {"az ad app delete --id "+$_.appId+" #"+$_.displayName}} | Format-Table -AutoSize
     ```
