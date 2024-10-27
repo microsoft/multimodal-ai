@@ -177,7 +177,7 @@ By default web application is deployed with Azure Active Directory authenticatio
 - Click "New client secret" to create a new secret
 - Take note of the secret value before navigating away from the page, because it will not be shown again
 
-#### Update terraform.tfvars
+#### Update Deployment Parameters
 
 Finally update the **terraform.tfvars** file with the app registration details you collected in previous steps and run [deployment](#deployment). Note that if you don't want to use secrets in the terraform.tfvars file, you can leave them empty. After terraform deployment is complete you can update the secrets in the keyvault instance created.
 
