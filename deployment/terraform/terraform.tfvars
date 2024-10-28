@@ -47,7 +47,7 @@ azure_openai_chatgpt_deployment_name = "gpt-4o"
 azure_openai_gpt4v_model_name        = "gpt-4o"
 azure_openai_gpt4v_deployment_name   = "gpt-4o"
 
-function_ad_app_client_id = ""
+skills_function_appregistration_client_id = ""
 
 webapp_auth_settings = {
   enable_auth           = true

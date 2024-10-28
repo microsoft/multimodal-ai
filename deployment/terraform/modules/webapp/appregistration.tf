@@ -26,13 +26,17 @@ resource "azuread_application" "server_app" {
   required_resource_access {
     resource_app_id = data.azuread_application_published_app_ids.well_known.result.MicrosoftGraph
 
-    resource_access {
-      id   = azuread_service_principal.msgraph.app_role_ids["User.Read.All"]
-      type = "Role"
-    }
+    # resource_access {
+    #   id   = azuread_service_principal.msgraph.app_role_ids["User.Read.All"]
+    #   type = "Role"
+    # }
 
+    # resource_access {
+    #   id   = azuread_service_principal.msgraph.oauth2_permission_scope_ids["User.ReadWrite"]
+    #   type = "Scope"
+    # }
     resource_access {
-      id   = azuread_service_principal.msgraph.oauth2_permission_scope_ids["User.ReadWrite"]
+      id   = azuread_service_principal.msgraph.oauth2_permission_scope_ids["User.Read"]
       type = "Scope"
     }
     resource_access {
@@ -68,8 +72,8 @@ resource "azuread_application" "server_app" {
 
 resource "azuread_application_identifier_uri" "server_app_identifier_uri" {
   count          = length(azuread_application.server_app) > 0 ? 1 : 0
-  application_id = azuread_application.server_app[0].id
-  identifier_uri = "api://${azuread_application.server_app[0].client_id}"
+  application_id = azuread_application.server_app[0].id #"/applications/${local.server_app_id}"
+  identifier_uri = "api://${local.server_app_id}"       #"api://${azuread_application.server_app[0].client_id}"
 }
 
 resource "azuread_application" "client_app" {
@@ -88,13 +92,19 @@ resource "azuread_application" "client_app" {
   required_resource_access {
     resource_app_id = data.azuread_application_published_app_ids.well_known.result.MicrosoftGraph
 
+    # resource_access {
+    #   id   = azuread_service_principal.msgraph.app_role_ids["User.Read.All"]
+    #   type = "Role"
+    # }
     resource_access {
-      id   = azuread_service_principal.msgraph.app_role_ids["User.Read.All"]
-      type = "Role"
+      id   = azuread_service_principal.msgraph.oauth2_permission_scope_ids["User.Read"]
+      type = "Scope"
     }
+
   }
 
   web {
+    #set below in azuread_application_redirect_uris resource
     # redirect_uris = ["https://${azurerm_linux_web_app.linux_webapp.default_hostname}/.auth/login/aad/callback"]
 
     implicit_grant {
@@ -103,6 +113,7 @@ resource "azuread_application" "client_app" {
     }
   }
 
+  # set below in azuread_application_redirect_uris resource
   # single_page_application {
   #   redirect_uris = [
   #       "https://${azurerm_linux_web_app.linux_webapp.default_hostname}/redirect",
@@ -126,7 +137,7 @@ resource "azuread_application" "client_app" {
 
 resource "azuread_application_redirect_uris" "client_app_spa" {
   count          = length(azuread_application.client_app) > 0 ? 1 : 0
-  application_id = azuread_application.client_app[0].id
+  application_id = azuread_application.client_app[0].id #"/applications/${local.client_app_id}"
   type           = "SPA"
 
   redirect_uris = [
@@ -136,7 +147,7 @@ resource "azuread_application_redirect_uris" "client_app_spa" {
 
 resource "azuread_application_redirect_uris" "client_app_web" {
   count          = length(azuread_application.client_app) > 0 ? 1 : 0
-  application_id = azuread_application.client_app[0].id
+  application_id = azuread_application.client_app[0].id #"/applications/${local.client_app_id}"
   type           = "Web"
 
   redirect_uris = ["https://${azurerm_linux_web_app.linux_webapp.default_hostname}/.auth/login/aad/callback"]

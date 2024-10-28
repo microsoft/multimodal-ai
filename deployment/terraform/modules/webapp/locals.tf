@@ -38,11 +38,11 @@ locals {
   client_app_display_name = "mmai-clientapp-${var.resource_token}"
   client_app_secret_name  = "clientapp-secret-${var.resource_token}"
 
-  server_app_password  = length(azuread_application.server_app) > 0 ? tolist(azuread_application.server_app[0].password).0.value : ""
+  server_app_password  = length(azuread_application.server_app) > 0 ? tolist(azuread_application.server_app[0].password)[0].value : ""
   server_app_id        = length(azuread_application.server_app) > 0 ? azuread_application.server_app[0].client_id : var.server_app_id
   server_app_name      = length(azuread_application.server_app) > 0 ? azuread_application.server_app[0].display_name : ""
   server_app_object_id = length(azuread_application.server_app) > 0 ? azuread_application.server_app[0].object_id : ""
-  client_app_password  = length(azuread_application.client_app) > 0 ? tolist(azuread_application.client_app[0].password).0.value : ""
+  client_app_password  = length(azuread_application.client_app) > 0 ? tolist(azuread_application.client_app[0].password)[0].value : ""
   client_app_id        = length(azuread_application.client_app) > 0 ? azuread_application.client_app[0].client_id : var.client_app_id
   client_app_name      = length(azuread_application.client_app) > 0 ? azuread_application.client_app[0].display_name : ""
   client_app_object_id = length(azuread_application.client_app) > 0 ? azuread_application.client_app[0].object_id : ""

@@ -87,7 +87,9 @@ terraform apply
   - multimodel_ai_web_site: The web site URL for the Multimodel AI web application.
   - documents_source_storage : Name of the storage account to store documents to be indexed.
   - documents_source_container : Name of the container to store documents to be indexed.
-  - skills_function_ad_appregistration_client_id : Application ID of the Azure Function App registration in Azure Active Directory.
+  - skills_function_appregistration_client_id : Application ID of the Azure Function App registration in Azure Active Directory.
+  - webapp_client_appregistration_client_id   : Application ID of the backend web app's client app registration in Azure Active Directory, used to support Azure Entra ID authentication for web app.
+  - webapp_server_appregistration_client_id   : Application ID of the backend web app's server app registration in Azure Active Directory, used to support Azure Entra ID authentication for web app.
   - cleanup_command : Command to delete the resources group and app registration created by the deployment.
 
 ## Handling Transient Errors During Deployment
@@ -127,55 +129,71 @@ By default web application is deployed with Azure Active Directory authenticatio
 
 ### Manually creating app registrations
 
-#### Server app registration
+#### Server app registration for Web App
 
 - Navigate to Microsoft Entra ID in Azure Portal
 - Click on "Manage" > "App registrations" and then "New registration"
-- Provide a name for the app registration
+- Provide a name for the app registration (e.g. mmai-serverapp)
 - Select "Accounts in this organizational directory only" for supported account types
 - Click "Register" to create the app registration
 - Take note of the "Application (client) ID" from the app registration
-- After registration is completed navigate to "Manage" > "App registrations" > name-of-app-registration > "Manage" > "API permissions"
+- After registration is completed navigate to "Manage" > "App registrations" > mmai-serverapp > "Manage" > "API permissions"
 - Add following delegated permissions for "Microsoft.Graph"
   - email
   - offline_access
   - openid
   - profile
   - User.ReadWrite
-- Navigate to "Manage" > "App registrations" > name-of-app-registration > "Manage" > "Expose an API"
-- Click "Add a scope" and enter following values
+- Navigate to "Manage" > "App registrations" > mmai-serverapp > "Manage" > "Expose an API"
+- Click "Add a scope"
+- Click "Save and continue" to accept Application ID URI given (it should look like api://XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX)
+- Enter following values
   - Scope name: **access_as_user**
   - Who can consent: **Admins and users**
   - Admin consent display name: **Access Azure Search OpenAI Chat API**
   - Admin consent description: **Allows the app to access Azure Search OpenAI Chat API as the signed-in user.**
   - User consent display name: **Access Azure Search OpenAI Chat API**
-  - User consent description: **Allow the app to access Azure Search OpenAI Chat API on your behalf**
+  - User consent description: **Allow the app to access Azure Search OpenAI Chat API on your behalf.**
   - State: Enabled
   - Click "Add scope" to create the scope
-- Navigate to "Manage" > "App registrations" > name-of-app-registration > "Manage" > "Certificates & secrets"
+- Navigate to "Manage" > "App registrations" > mmai-serverapp > "Manage" > "Certificates & secrets"
 - Click "New client secret" to create a new secret
+- Enter a description (e.g serverapp-secret) and click "Add"
 - Take note of the secret value before navigating away from the page, because it will not be shown again
 
-#### Client app registration
+#### Client app registration for Web App
 
 - Navigate to Microsoft Entra ID in Azure Portal
 - Click on "Manage" > "App registrations" and then "New registration"
-- Provide a name for the app registration
+- Provide a name for the app registration (e.g. mmai-client-appreg)
 - Select "Accounts in this organizational directory only" for supported account types
 - Provide a redirect URI for "web" in the format **https://<web-app-name>.azurewebsites.net/.auth/login/aad/callback**
 - Provide a redirect URI for "Single-page application (SPA)" in the format **https://<web-app-name>.azurewebsites.net/redirect**
-- Note that you can also set these redirect URIs after you deployed the solution using **terraform apply** ("Manage" > "App registrations" > name-of-app-registration > "Manage" > "Authentication")
+  ** Note that there are two ways you can set these redirect URIs
+     1) You may set **web-app-name** with **backend_service_name** parameter for terraform, instead of having code to generate a unique name. This way you donn't need to wait for deployment to complete to find out the unique name generated for web app and hence you may set redirect URIs before deploying the solution.
+     1) You can also set these redirect URIs after you deployed the solution using **terraform apply** and found out the **web-app-name** ("Manage" > "App registrations" > mmai-client-appreg > "Manage" > "Authentication" >  "Add a platform").
+- Select checkbox "ID tokens (used for implicit and hybrid flows)"
 - Click "Register" to create the app registration
 - Take note of the "Application (client) ID" from the app registration
-- After registration is completed navigate to "Manage" > "App registrations" > name-of-app-registration > "Manage" > "API permissions"
-- Click "Add a permission" and select "My APIs"
+- After registration is completed navigate to "Manage" > "App registrations" > mmai-client-appreg > "Manage" > "API permissions"
+- Click "Add a permission" and select "APIs my organization uses"
 - Select **Delegated Permissions**.
-- Select the server app registration (**mmai-serverapp-XXXXXX**) created in previous steps
+- Select the server app registration you created earlier (e.g. **mmai-server-appreg**)
 - Select the **access_as_user** permission
 - Click "Add permissions" to add the permission
-- Navigate to "Manage" > "App registrations" > name-of-app-registration > "Manage" > "Certificates & secrets"
+- Navigate to "Manage" > "App registrations" > mmai-client-appreg > "Manage" > "Certificates & secrets"
 - Click "New client secret" to create a new secret
+- Enter a description (e.g clientapp-secret) and click "Add"
 - Take note of the secret value before navigating away from the page, because it will not be shown again
+
+
+#### App registration for Skills Function App
+
+- Navigate to Microsoft Entra ID in Azure Portal
+- Click on "Manage" > "App registrations" and then "New registration"
+- Provide a name for the app registration (e.g. mmai-client-appreg)
+- Select "Accounts in this organizational directory only" for supported account types
+- Take note of the "Application (client) ID" from the app registration
 
 #### Update Deployment Parameters
 
@@ -186,17 +204,21 @@ webapp_auth_settings = {
   enable_auth           = true
   enable_access_control = true
   server_app = {
-    app_id           = "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
+    app_id           = "<Server app registration for Web App>"
     app_secret_name  = "<serverapp-secret-name>"
     app_secret_value = "<serverapp-secret-value>"
   }
   client_app = {
-    app_id           = "YYYYYYYY-YYYY-YYYY-YYYY-YYYYYYYYYYYY"
+    app_id           = "<Client app registration for Web App>"
     app_secret_name  = "<clientapp-secret-name>"
     app_secret_value = "<clientapp-secret-value>"
   }
 }
+
+skills_function_appregistration_client_id = "<App registration for Skills Function App>"
 ```
+
+
 
 ### Disabling authentication
 

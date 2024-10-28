@@ -27,18 +27,19 @@ module "keyvault" {
   key_vault_sku_name         = var.key_vault_sku_name
 
   key_vault_secrets = var.webapp_auth_settings.enable_auth == false ? [] : concat(
-    var.webapp_auth_settings.server_app.app_secret_name == "" && var.webapp_auth_settings.server_app.app_secret_value == "" ? [] : [
+    [
       {
         secret_name  = var.webapp_auth_settings.server_app.app_secret_name == "" ? module.backend_webapp.server_app_secret_name : var.webapp_auth_settings.server_app.app_secret_name
-        secret_value = var.webapp_auth_settings.server_app.app_secret_value == "" ? module.backend_webapp.server_app_password : var.webapp_auth_settings.server_app.app_secret_value
-    }]
+        secret_value = var.webapp_auth_settings.server_app.app_secret_name == "" ? module.backend_webapp.server_app_password : var.webapp_auth_settings.server_app.app_secret_value
+      }
+    ]
     ,
-
-    var.webapp_auth_settings.client_app.app_secret_name == "" && var.webapp_auth_settings.client_app.app_secret_value == "" ? [] : [
+    [
       {
         secret_name  = var.webapp_auth_settings.client_app.app_secret_name == "" ? module.backend_webapp.client_app_secret_name : var.webapp_auth_settings.client_app.app_secret_name
-        secret_value = var.webapp_auth_settings.client_app.app_secret_value == "" ? module.backend_webapp.client_app_password : var.webapp_auth_settings.client_app.app_secret_value
-    }]
+        secret_value = var.webapp_auth_settings.client_app.app_secret_name == "" ? module.backend_webapp.client_app_password : var.webapp_auth_settings.client_app.app_secret_value
+      }
+    ]
   )
 
   #   cmk_uai_id                    = module.user_assigned_identity.user_assigned_identity_id
@@ -79,7 +80,7 @@ module "skills" {
   function_key_vault_id                             = module.keyvault.key_vault_id
   function_code_path                                = var.skills_service_code_path
   function_storage_account_id                       = module.storage.storage_account_id
-  function_ad_app_client_id                         = var.function_ad_app_client_id
+  skills_function_appregistration_client_id         = var.skills_function_appregistration_client_id
   function_application_settings = {
     FUNCTIONS_WORKER_RUNTIME = "python"
     #WEBSITE_RUN_FROM_PACKAGE              = 1
@@ -181,7 +182,7 @@ module "aisearch" {
   pdf_merge_customskill_endpoint        = "https://${module.skills.linux_function_app_default_hostname}/api/pdf_text_image_merge_skill"
   knowledgestore_storage_account_id     = module.storage.storage_account_id
   storage_container_name_knowledgestore = var.storage_container_name_knowledgestore
-  function_app_id                       = module.skills.function_ad_app_client_id
+  function_app_id                       = module.skills.skills_function_appregistration_client_id
 
   depends_on = [module.aoai, module.cognitive_service, module.storage, module.skills]
 }
