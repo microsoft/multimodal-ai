@@ -8,16 +8,6 @@ Param(
     [string]$BackendUri
 )
 
-if (-not $ClientObjectId) {
-    Write-Host "Error: No ClientObjectId specified."
-    exit 1
-}
-
-if (-not $BackendUri) {
-    Write-Host "Error: No BackendUri specified."
-    exit 1
-}
-
 Write-Host "Setting up authentication"
 
 # Connect to Microsoft Graph

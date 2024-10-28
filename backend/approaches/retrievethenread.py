@@ -1,7 +1,7 @@
 from typing import Any, Optional
 
 from azure.search.documents.aio import SearchClient
-from azure.search.documents.models import VectorQuery
+from azure.search.documents.models import VectorizableTextQuery
 from openai import AsyncOpenAI
 from openai.types.chat import ChatCompletionMessageParam
 from openai_messages_token_helper import build_messages, get_token_limit
@@ -46,9 +46,6 @@ info4.pdf: In-network institutions include Overlake, Swedish and others in the r
         openai_client: AsyncOpenAI,
         chatgpt_model: str,
         chatgpt_deployment: Optional[str],  # Not needed for non-Azure OpenAI
-        embedding_model: str,
-        embedding_deployment: Optional[str],  # Not needed for non-Azure OpenAI or for retrieval_mode="text"
-        embedding_dimensions: int,
         sourcepage_field: str,
         content_field: str,
         query_language: str,
@@ -59,10 +56,7 @@ info4.pdf: In-network institutions include Overlake, Swedish and others in the r
         self.openai_client = openai_client
         self.auth_helper = auth_helper
         self.chatgpt_model = chatgpt_model
-        self.embedding_model = embedding_model
-        self.embedding_dimensions = embedding_dimensions
         self.chatgpt_deployment = chatgpt_deployment
-        self.embedding_deployment = embedding_deployment
         self.sourcepage_field = sourcepage_field
         self.content_field = content_field
         self.query_language = query_language
@@ -90,9 +84,9 @@ info4.pdf: In-network institutions include Overlake, Swedish and others in the r
         filter = self.build_filter(overrides, auth_claims)
 
         # If retrieval mode includes vectors, compute an embedding for the query
-        vectors: list[VectorQuery] = []
+        vectors: list[VectorizableTextQuery] = []
         if use_vector_search:
-            vectors.append(await self.compute_text_embedding(q))
+            vectors.append(await self.get_vectorizable_text_query(q))
 
         results = await self.search(
             top,

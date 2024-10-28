@@ -1,7 +1,7 @@
 from typing import Any, Coroutine, List, Literal, Optional, Union, overload
 
 from azure.search.documents.aio import SearchClient
-from azure.search.documents.models import VectorQuery
+from azure.search.documents.models import VectorizableTextQuery
 from openai import AsyncOpenAI, AsyncStream
 from openai.types.chat import (
     ChatCompletion,
@@ -31,9 +31,6 @@ class ChatReadRetrieveReadApproach(ChatApproach):
         openai_client: AsyncOpenAI,
         chatgpt_model: str,
         chatgpt_deployment: Optional[str],  # Not needed for non-Azure OpenAI
-        embedding_deployment: Optional[str],  # Not needed for non-Azure OpenAI or for retrieval_mode="text"
-        embedding_model: str,
-        embedding_dimensions: int,
         sourcepage_field: str,
         content_field: str,
         query_language: str,
@@ -44,9 +41,6 @@ class ChatReadRetrieveReadApproach(ChatApproach):
         self.auth_helper = auth_helper
         self.chatgpt_model = chatgpt_model
         self.chatgpt_deployment = chatgpt_deployment
-        self.embedding_deployment = embedding_deployment
-        self.embedding_model = embedding_model
-        self.embedding_dimensions = embedding_dimensions
         self.sourcepage_field = sourcepage_field
         self.content_field = content_field
         self.query_language = query_language
@@ -149,9 +143,9 @@ class ChatReadRetrieveReadApproach(ChatApproach):
         # STEP 2: Retrieve relevant documents from the search index with the GPT optimized query
 
         # If retrieval mode includes vectors, compute an embedding for the query
-        vectors: list[VectorQuery] = []
+        vectors: list[VectorizableTextQuery] = []
         if use_vector_search:
-            vectors.append(await self.compute_text_embedding(query_text))
+            vectors.append(await self.get_vectorizable_text_query(query_text))
 
         results = await self.search(
             top,
