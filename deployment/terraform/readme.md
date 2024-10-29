@@ -1,4 +1,4 @@
-# Deploying Multi-model AI Platform Using Terraform
+# Deploying Multimodal AI Platform Using Terraform
 
 ## Requirements
 
