@@ -62,7 +62,7 @@ resource "azuread_application" "server_app" {
 resource "azuread_application_identifier_uri" "server_app_identifier_uri" {
   count          = length(azuread_application.server_app) > 0 ? 1 : 0
   application_id = azuread_application.server_app[0].id
-  identifier_uri = "api://${local.server_app_id}"       #"api://${azuread_application.server_app[0].client_id}"
+  identifier_uri = "api://${local.server_app_id}" #"api://${azuread_application.server_app[0].client_id}"
 }
 
 resource "azuread_application_known_clients" "server_app_known_clients" {
