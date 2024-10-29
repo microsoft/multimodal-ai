@@ -7,7 +7,7 @@
   "disabled": false,
   "schedule": null,
   "parameters": {
-    "batchSize": null,
+    "batchSize": 1,
     "maxFailedItems": 0,
     "maxFailedItemsPerBatch": 0,
     "base64EncodeKeys": null,
