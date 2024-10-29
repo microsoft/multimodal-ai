@@ -1,5 +1,7 @@
 data "azurerm_client_config" "current" {}
 
+data "azuread_application_published_app_ids" "well_known" {}
+
 data "azurerm_monitor_diagnostic_categories" "diagnostic_categories_linux_webapp" {
   resource_id = azurerm_linux_web_app.linux_webapp.id
 }

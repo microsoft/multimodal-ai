@@ -25,10 +25,29 @@ module "keyvault" {
   log_analytics_workspace_id = module.loganalytics.log_analytics_id
   key_vault_name             = var.key_vault_name != "" ? var.key_vault_name : "${local.abbrs.keyVaultVaults}${local.resourceToken}"
   key_vault_sku_name         = var.key_vault_sku_name
+
+  key_vault_secrets = var.webapp_auth_settings.enable_auth == false ? [] : concat(
+    [
+      {
+        secret_name  = var.webapp_auth_settings.server_app.app_secret_name == "" ? module.backend_webapp.server_app_secret_name : var.webapp_auth_settings.server_app.app_secret_name
+        secret_value = var.webapp_auth_settings.server_app.app_secret_name == "" ? module.backend_webapp.server_app_password : var.webapp_auth_settings.server_app.app_secret_value
+      }
+    ]
+    ,
+    [
+      {
+        secret_name  = var.webapp_auth_settings.client_app.app_secret_name == "" ? module.backend_webapp.client_app_secret_name : var.webapp_auth_settings.client_app.app_secret_name
+        secret_value = var.webapp_auth_settings.client_app.app_secret_name == "" ? module.backend_webapp.client_app_password : var.webapp_auth_settings.client_app.app_secret_value
+      }
+    ]
+  )
+
   #   cmk_uai_id                    = module.user_assigned_identity.user_assigned_identity_id
   #   subnet_id                     = module.network.subnet_private_endpoints_id
   #   private_dns_zone_id_key_vault = module.network.private_dns_zone_key_vault_id
 }
+
+
 
 module "storage" {
   source                          = "./modules/storage"
@@ -61,7 +80,7 @@ module "skills" {
   function_key_vault_id                             = module.keyvault.key_vault_id
   function_code_path                                = var.skills_service_code_path
   function_storage_account_id                       = module.storage.storage_account_id
-  function_ad_app_client_id                         = var.function_ad_app_client_id
+  skills_function_appregistration_client_id         = var.skills_function_appregistration_client_id
   function_application_settings = {
     FUNCTIONS_WORKER_RUNTIME = "python"
     #WEBSITE_RUN_FROM_PACKAGE              = 1
@@ -87,6 +106,11 @@ module "backend_webapp" {
   webapp_application_insights_instrumentation_key = module.applicationinsights.application_insights_instrumentation_key
   webapp_key_vault_id                             = module.keyvault.key_vault_id
   webapp_code_path                                = var.backend_service_code_path
+  enable_auth                                     = var.webapp_auth_settings.enable_auth
+  client_app_id                                   = var.webapp_auth_settings.client_app.app_id
+  server_app_id                                   = var.webapp_auth_settings.server_app.app_id
+  resource_token                                  = local.resourceToken
+  client_secret_setting_name                      = "MICROSOFT_PROVIDER_AUTHENTICATION_SECRET"
   webapp_application_settings = {
     AZURE_STORAGE_ACCOUNT               = module.storage.storage_account_name
     AZURE_STORAGE_CONTAINER             = var.storage_container_name_content
@@ -111,8 +135,18 @@ module "backend_webapp" {
     SCM_DO_BUILD_DURING_DEPLOYMENT      = true
     ENABLE_ORYX_BUILD                   = true
     WEBSITE_ENABLE_SYNC_UPDATE_SITE     = false
-    WEBSITE_ENABLE_SYNC_UPDATE_SITE     = false
     PYTHONUNBUFFERED                    = "1"
+
+    AZURE_USE_AUTHENTICATION = var.webapp_auth_settings.enable_auth
+    # AZURE_SERVER_APP_ID= <this value is set within module.locals>
+    AZURE_SERVER_APP_SECRET                  = var.webapp_auth_settings.enable_auth ? "@Microsoft.KeyVault(VaultName=${module.keyvault.key_vault_name};SecretName=${var.webapp_auth_settings.server_app.app_id == "" && var.webapp_auth_settings.server_app.app_secret_name == "" ? "serverapp-secret-${local.resourceToken}" : var.webapp_auth_settings.server_app.app_secret_name})" : ""
+    MICROSOFT_PROVIDER_AUTHENTICATION_SECRET = var.webapp_auth_settings.enable_auth ? "@Microsoft.KeyVault(VaultName=${module.keyvault.key_vault_name};SecretName=${var.webapp_auth_settings.client_app.app_id == "" && var.webapp_auth_settings.client_app.app_secret_name == "" ? "clientapp-secret-${local.resourceToken}" : var.webapp_auth_settings.client_app.app_secret_name})" : ""
+    # AZURE_CLIENT_APP_ID= <this value is set within module.locals>
+    AZURE_AUTH_TENANT_ID                = data.azurerm_client_config.current.tenant_id
+    AZURE_ENFORCE_ACCESS_CONTROL        = var.webapp_auth_settings.enable_access_control
+    AZURE_ENABLE_GLOBAL_DOCUMENT_ACCESS = true
+    AZURE_ENABLE_UNAUTHENTICATED_ACCESS = !var.webapp_auth_settings.enable_auth
+    AZURE_AUTHENTICATION_ISSUER_URI     = "https://login.microsoftonline.com/${data.azurerm_client_config.current.tenant_id}/v2.0"
   }
 
   webapp_build_command = <<EOT
@@ -148,7 +182,7 @@ module "aisearch" {
   pdf_merge_customskill_endpoint        = "https://${module.skills.linux_function_app_default_hostname}/api/pdf_text_image_merge_skill"
   knowledgestore_storage_account_id     = module.storage.storage_account_id
   storage_container_name_knowledgestore = var.storage_container_name_knowledgestore
-  function_app_id                       = module.skills.function_ad_app_client_id
+  function_app_id                       = module.skills.skills_function_appregistration_client_id
 
   depends_on = [module.aoai, module.cognitive_service, module.storage, module.skills]
 }
@@ -167,9 +201,10 @@ resource "null_resource" "update_function_app_allowed_applications" {
 }
 
 resource "null_resource" "warmup_webapp" {
+  count = var.webapp_auth_settings.enable_auth ? 0 : 1 #when auth is enabled, consent dialog appears
   provisioner "local-exec" {
     command = <<EOT
-      curl --silent https://${module.backend_webapp.linux_webapp_default_hostname}
+      curl -u --silent https://${module.backend_webapp.linux_webapp_default_hostname}
     EOT
   }
   triggers = {
