@@ -143,7 +143,7 @@ By default web application is deployed with Azure Active Directory authenticatio
   - offline_access
   - openid
   - profile
-  - User.ReadWrite
+  - User.Read
 - Navigate to "Manage" > "App registrations" > mmai-serverapp > "Manage" > "Expose an API"
 - Click "Add a scope"
 - Click "Save and continue" to accept Application ID URI given (it should look like api://XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX)
@@ -160,6 +160,19 @@ By default web application is deployed with Azure Active Directory authenticatio
 - Click "New client secret" to create a new secret
 - Enter a description (e.g serverapp-secret) and click "Add"
 - Take note of the secret value before navigating away from the page, because it will not be shown again
+- After you complete next step [Client app registration for Web App](#client-app-registration-for-web-app), navigate back to "Server App Registration (mmai-serverapp)" > "Manage" > "Manifest"
+- Update **api.knownClientApplications** to include Web App Client App Registration Client ID
+```json
+	"api": {
+		.
+    .
+		"knownClientApplications": [
+			"<Client app registration application (client) ID for Web App>"
+		],
+    .
+    .
+  }
+  ```
 
 #### Client app registration for Web App
 
@@ -204,18 +217,18 @@ webapp_auth_settings = {
   enable_auth           = true
   enable_access_control = true
   server_app = {
-    app_id           = "<Server app registration for Web App>"
+    app_id           = "<Server app registration application (client) ID for Web App>"
     app_secret_name  = "<serverapp-secret-name>"
     app_secret_value = "<serverapp-secret-value>"
   }
   client_app = {
-    app_id           = "<Client app registration for Web App>"
+    app_id           = "<Client app registration application (client) ID for Web App>"
     app_secret_name  = "<clientapp-secret-name>"
     app_secret_value = "<clientapp-secret-value>"
   }
 }
 
-skills_function_appregistration_client_id = "<App registration for Skills Function App>"
+skills_function_appregistration_client_id = "<App registration application (client) ID for Skills Function App>"
 ```
 
 

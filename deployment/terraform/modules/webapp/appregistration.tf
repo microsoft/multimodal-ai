@@ -7,8 +7,6 @@ resource "azuread_application" "server_app" {
   api {
     requested_access_token_version = 2
 
-    known_client_applications = []
-
     oauth2_permission_scope {
       admin_consent_description  = "Allows the app to access Azure Search OpenAI Chat API as the signed-in user."
       admin_consent_display_name = "Access Azure Search OpenAI Chat API"
@@ -26,15 +24,6 @@ resource "azuread_application" "server_app" {
   required_resource_access {
     resource_app_id = data.azuread_application_published_app_ids.well_known.result.MicrosoftGraph
 
-    # resource_access {
-    #   id   = azuread_service_principal.msgraph.app_role_ids["User.Read.All"]
-    #   type = "Role"
-    # }
-
-    # resource_access {
-    #   id   = azuread_service_principal.msgraph.oauth2_permission_scope_ids["User.ReadWrite"]
-    #   type = "Scope"
-    # }
     resource_access {
       id   = azuread_service_principal.msgraph.oauth2_permission_scope_ids["User.Read"]
       type = "Scope"
@@ -72,8 +61,16 @@ resource "azuread_application" "server_app" {
 
 resource "azuread_application_identifier_uri" "server_app_identifier_uri" {
   count          = length(azuread_application.server_app) > 0 ? 1 : 0
-  application_id = azuread_application.server_app[0].id #"/applications/${local.server_app_id}"
+  application_id = azuread_application.server_app[0].id
   identifier_uri = "api://${local.server_app_id}"       #"api://${azuread_application.server_app[0].client_id}"
+}
+
+resource "azuread_application_known_clients" "server_app_known_clients" {
+  count          = length(azuread_application.server_app) > 0 ? 1 : 0
+  application_id = azuread_application.server_app[0].id
+  known_client_ids = [
+    local.client_app_id,
+  ]
 }
 
 resource "azuread_application" "client_app" {
@@ -92,10 +89,6 @@ resource "azuread_application" "client_app" {
   required_resource_access {
     resource_app_id = data.azuread_application_published_app_ids.well_known.result.MicrosoftGraph
 
-    # resource_access {
-    #   id   = azuread_service_principal.msgraph.app_role_ids["User.Read.All"]
-    #   type = "Role"
-    # }
     resource_access {
       id   = azuread_service_principal.msgraph.oauth2_permission_scope_ids["User.Read"]
       type = "Scope"
@@ -133,11 +126,9 @@ resource "azuread_application" "client_app" {
   }
 }
 
-
-
 resource "azuread_application_redirect_uris" "client_app_spa" {
   count          = length(azuread_application.client_app) > 0 ? 1 : 0
-  application_id = azuread_application.client_app[0].id #"/applications/${local.client_app_id}"
+  application_id = azuread_application.client_app[0].id
   type           = "SPA"
 
   redirect_uris = [
@@ -147,12 +138,11 @@ resource "azuread_application_redirect_uris" "client_app_spa" {
 
 resource "azuread_application_redirect_uris" "client_app_web" {
   count          = length(azuread_application.client_app) > 0 ? 1 : 0
-  application_id = azuread_application.client_app[0].id #"/applications/${local.client_app_id}"
+  application_id = azuread_application.client_app[0].id
   type           = "Web"
 
   redirect_uris = ["https://${azurerm_linux_web_app.linux_webapp.default_hostname}/.auth/login/aad/callback"]
 }
-
 
 resource "azuread_service_principal" "server_app" {
   count     = var.enable_auth && var.server_app_id == "" ? 1 : 0
@@ -165,7 +155,6 @@ resource "azuread_service_principal" "client_app" {
   client_id = azuread_application.client_app[0].client_id
   owners    = [data.azurerm_client_config.current.object_id]
 }
-
 
 resource "azuread_service_principal" "msgraph" {
   client_id    = data.azuread_application_published_app_ids.well_known.result.MicrosoftGraph
