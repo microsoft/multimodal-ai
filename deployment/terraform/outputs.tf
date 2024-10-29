@@ -6,7 +6,7 @@ output "resource_group_name" {
   value = azurerm_resource_group.resource_group.name
 }
 
-output "multimodel_ai_web_site" {
+output "multimodal_ai_web_site" {
   value = "https://${module.backend_webapp.linux_webapp_default_hostname}"
 }
 

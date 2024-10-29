@@ -84,7 +84,7 @@ terraform apply
 - When terraform configuration finishes, it will output the following information:
   - tenant_id : Tenant ID where deployment is done.
   - resource_group_name : The resource group created (default name similar to "rg-mmai-12345678").
-  - multimodel_ai_web_site: The web site URL for the Multimodel AI web application.
+  - multimodal_ai_web_site: The web site URL for the Multimodal AI web application.
   - documents_source_storage : Name of the storage account to store documents to be indexed.
   - documents_source_container : Name of the container to store documents to be indexed.
   - skills_function_appregistration_client_id : Application ID of the Azure Function App registration in Azure Active Directory.
@@ -121,7 +121,7 @@ az webapp deployment source config-zip --resource-group rg-mmai-00000000 --name 
 - Navigate to Azure AI Search resource created (default name similar to "srch-12345678")
 - Navigate to int indexer created (default name similar to "srch-inder-12345678")
 - Click on "Run" to start indexing the documents and wait for process to finish.
-- Access the web application using the URL provided in the terraform output variable **multimodel_ai_web_site**.
+- Access the web application using the URL provided in the terraform output variable **multimodal_ai_web_site**.
 
 ## Configuring authentication
 
