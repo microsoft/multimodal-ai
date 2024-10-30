@@ -6,34 +6,21 @@
   "login": "Iniciar sesi\u00f3n",
   "logout": "Cerrar sesi\u00f3n",
   "clearChat": "Borrar chat",
-  "upload": {
-    "fileLabel": "Subir archivo:",
-    "uploadedFilesLabel": "Archivos subidos previamente:",
-    "noFilesUploaded": "No se han subido archivos todav\u00eda",
-    "loading": "Cargando...",
-    "manageFileUploads": "Administrar subidas de archivos",
-    "uploadingFiles": "Subiendo archivos...",
-    "uploadedFileError": "Error al subir el archivo - por favor, int\u00e9ntalo de nuevo o contacta con el administrador.",
-    "deleteFile": "Eliminar archivo",
-    "deletingFile": "Eliminando archivo...",
-    "errorDeleting": "Error eliminando.",
-    "fileDeleted": "Archivo eliminado"
-  },
   "developerSettings": "Configuraci\u00f3n del desarrollador",
   "chatEmptyStateTitle": "Chatea con tus datos",
   "chatEmptyStateSubtitle": "Pregunta cualquier cosa o prueba un ejemplo",
   "defaultExamples": {
-    "1": "\u00bfQu\u00e9 est\u00e1 incluido en mi plan Northwind Health Plus que no est\u00e1 en el est\u00e1ndar?",
-    "2": "\u00bfQu\u00e9 sucede en una revisi\u00f3n de rendimiento?",
-    "3": "\u00bfQu\u00e9 hace un Gerente de producto?",
-    "placeholder": "Escribe una nueva pregunta (por ejemplo, \u00bfmi plan cubre ex\u00e1menes anuales de la vista?)"
+    "1": "TODO",
+    "2": "TODO",
+    "3": "TODO",
+    "placeholder": "Escribe una nueva pregunta aqu\u00ed"
   },
   "askTitle": "Pregunta a tus datos",
   "gpt4vExamples": {
-    "1": "Compara el impacto de las tasas de inter\u00e9s y el PIB en los mercados financieros.",
-    "2": "\u00bfCu\u00e1l es la tendencia esperada para el \u00edndice S&P 500 en los pr\u00f3ximos cinco a\u00f1os? Comp\u00e1ralo con el rendimiento pasado del S&P 500",
-    "3": "\u00bfPuedes identificar alguna correlaci\u00f3n entre los precios del petr\u00f3leo y las tendencias del mercado de valores?",
-    "placeholder": "Ejemplo: \u00bfMi plan cubre ex\u00e1menes anuales de la vista?"
+    "1": "TODO",
+    "2": "TODO",
+    "3": "TODO",
+    "placeholder": "Escribe una nueva pregunta aqu\u00ed"
   },
   "generatingAnswer": "Generando respuesta",
   "citationWithColon": "Cita:",

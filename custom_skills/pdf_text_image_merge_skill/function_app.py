@@ -1,14 +1,16 @@
 import os
 import logging
 import json
-import base64
 import azure.functions as func
 from azure.identity import DefaultAzureCredential
-from azure.storage.blob import BlobServiceClient
+from core.pdfparser import DocumentAnalysisParser
+from core.processor import Processor
+from core.textsplitter import SentenceTextSplitter
 
-app = func.FunctionApp(http_auth_level=func.AuthLevel.FUNCTION)
+# Will use Microsoft Entra ID to authenticate/authorize
+app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
 
-@app.route(route="image_store_skill", methods=[func.HttpMethod.POST])
+@app.route(route="pdf_text_image_merge_skill", methods=[func.HttpMethod.POST])
 async def pdf_text_image_merge_skill(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Python HTTP trigger function processed a request.')
 
@@ -55,8 +57,8 @@ async def transform_value(value):
     try:
         assert ('data' in value), "'data' field is required."
         data = value['data']
-        assert ('images' in data), "'images' field is required in 'data' object."
-        assert ('filename' in data), "'filename' field is required in 'data' object."
+        assert ('imageEmbedding' in data), "'imageEmbedding' field is required in 'data' object."
+        assert ('url' in data), "'url' field is required in 'data' object."
     except AssertionError as error:
         return (
             {
@@ -65,24 +67,34 @@ async def transform_value(value):
                 "errors": [{"message": "Error:" + error.args[0]}]
             })
     try:
-        account_url = os.getenv("STORAGE_ACCOUNT_URL")
-        container_name = os.getenv("BLOB_CONTAINER_NAME")
 
+        document_intelligence_service = os.getenv('DOCUMENT_INTELLIGENCE_SERVICE')
         credential = DefaultAzureCredential()
-        blob_service_client = BlobServiceClient(account_url, credential=credential)
-        original_file = data["filename"]
 
-        image_urls = []
-        for i, image in enumerate(data["images"]):
-            content_bytes = base64.b64decode(image["data"])
+        parser = DocumentAnalysisParser(
+            endpoint=f"https://{document_intelligence_service}.cognitiveservices.azure.com/",
+            credential=credential)
 
-            name_part, _ = os.path.splitext(original_file)
-            blob_name = f"{name_part}-{i}.jpeg"
+        splitter=SentenceTextSplitter()
 
-            blob_client = blob_service_client.get_blob_client(container=container_name, blob=blob_name)
-            blob_client.upload_blob(content_bytes, blob_type="BlockBlob")
+        processor = Processor(file_parser=parser, file_splitter=splitter)
+        split_pages = await processor.process(data["url"])
 
-            image_urls.append(f"{account_url}/{container_name}/{blob_name}")
+        filename = data["url"].split('/')[-1]
+
+        enriched_pages = []
+        for split_page in split_pages:
+            name_part, _ = os.path.splitext(filename)
+
+            enriched_page = {
+                "sourcepage": f"{name_part}-{split_page.page_num}.jpg",
+                "sourcefile": filename,
+                "storageUrl": data["url"],
+                "content": split_page.text,
+                "imageEmbedding": data["imageEmbedding"][split_page.page_num]
+            }
+
+            enriched_pages.append(enriched_page)
 
     except Exception as e:
         logging.error(e)
@@ -95,6 +107,6 @@ async def transform_value(value):
     return ({
             "recordId": recordId,
             "data": {
-                "urls": image_urls
+                "enrichedPages": enriched_pages
             }
             })

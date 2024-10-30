@@ -3,20 +3,14 @@ locals {
   index_config_file = "index_config.json"
 }
 
-data "template_file" "index_template" {
-  template = file("${path.module}/../../../library/index_template.json")
-
-  vars = {
+resource "local_file" "index_config" {
+  content = templatefile("${path.module}/../../../library/index_template.json", {
     index_name                     = var.search_service_index_name
     azureOpenAI_endpoint           = var.azure_openai_endpoint
     azureOpenAI_text_deployment_id = var.azure_openai_text_deployment_id
     azureOpenAI_text_model_name    = var.azure_openai_text_model_name
-    cognitive_services_endpoint    = var.cognitive_services_endpoint
-  }
-}
-
-resource "local_file" "index_config" {
-  content  = data.template_file.index_template.rendered
+    cognitive_services_endpoint    = var.computer_vision_endpoint
+  })
   filename = "${path.module}/${local.index_config_file}"
 }
 

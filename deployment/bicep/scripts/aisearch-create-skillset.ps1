@@ -30,6 +30,9 @@ param (
     #Name of the storage container used to store pdf page images
     [parameter(mandatory = $true)][string] $knowledgeStoreStorageContainer,
 
+    #App id of the Microsoft Entra ID app to be used for api auth
+    [parameter(mandatory = $true)][string] $aadAppId,
+
     #Json content of the payload template
     [parameter(mandatory = $true)][string] $jsonTemplate
 )
@@ -44,6 +47,7 @@ $replacements = @{
     "cognitiveServices_multiService_accountKey" = "$aiMultiServiceAccountKey"
     "storage_account_resource_uri"              = "$knowledgeStoreStorageResourceUri"
     "storage_account_image_container_name"      = "$knowledgeStoreStorageContainer"
+    "aad_app_id"                                = "$aadAppId"
 }
 
 $jsonTemplate = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($jsonTemplate))

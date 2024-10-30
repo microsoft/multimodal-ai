@@ -3,23 +3,24 @@ targetScope = 'resourceGroup'
 @sys.description('Azure Region where the App Service and Function will be created.')
 param location string
 
-// App Service Plan
-@sys.description('Tier of the App Service  to be created.')
-param appServiceTier string
-
 @sys.description('Name of the App Service to be created.')
-param appServiceName string
+param appServicePlanName string
+
+@sys.description('Tier of the App Service  to be created.')
+param appServicePlanTier string
 
 @sys.description('Size of the App Service  to be created.')
-param appServiceSize string
+param appServicePlanSkuName string
 
 @sys.description('Family of the App Service  to be created.')
-param appServiceFamily string
+param appServicePlanFamily string
 
 @sys.description('Capacity of the App Service  to be created.')
-param appServiceCapacity int
+param appServicePlanCapacity int
 
-//Azure Function
+@sys.description('Kind of the app.')
+param appKind string
+
 @sys.description('Name of the Azure Function to be created.')
 param azureFunctionName string
 
@@ -35,8 +36,24 @@ param applicationInsightsName string
 @sys.description('Name of the Application Insights resource group.')
 param applicationInsightsResourceGroup string
 
+@sys.description('Name of the document intelligence service instance to be used.')
+param documentIntelligenceServiceInstanceName string
+
 @sys.description('Tags you would like to be applied to the resource.')
 param tags object = {}
+
+@sys.description('Settings to configure function app authentication.')
+param authSettings object = {
+  clientAppId: ''
+  authenticationIssuerUri: ''
+  allowedApplications: []
+}
+
+// Reference to existing Application Insights resource
+resource applicationInsights 'Microsoft.Insights/components@2020-02-02' existing = {
+  name: applicationInsightsName
+  scope: resourceGroup(applicationInsightsResourceGroup)
+}
 
 //creating a storage account for the Azure Function
 resource storageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' = {
@@ -52,25 +69,22 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' = {
   }
 }
 
-// Reference to existing Application Insights resource
-resource applicationInsights 'Microsoft.Insights/components@2020-02-02' existing = {
-  name: applicationInsightsName
-  scope: resourceGroup(applicationInsightsResourceGroup)
-}
-
 // create hosting plan
 resource hostingPlan 'Microsoft.Web/serverfarms@2023-12-01' = {
-  name: appServiceName
+  name: appServicePlanName
   location: location
+  kind: appKind
   tags: tags
   sku: {
-    tier: appServiceTier
-    name: appServiceSize
-    size: appServiceSize
-    family: appServiceFamily
-    capacity: appServiceCapacity
+    tier: appServicePlanTier
+    name: appServicePlanSkuName
+    size: appServicePlanSkuName
+    family: appServicePlanFamily
+    capacity: appServicePlanCapacity
   }
-  properties: {}
+  properties: {
+    reserved: true
+  }
 }
 
 // create function app
@@ -78,7 +92,7 @@ resource functionApp 'Microsoft.Web/sites@2023-12-01' = {
   name: azureFunctionName
   location: location
   tags: tags
-  kind: 'functionapp'
+  kind: appKind
 
   identity: {
     type: 'SystemAssigned'
@@ -88,10 +102,11 @@ resource functionApp 'Microsoft.Web/sites@2023-12-01' = {
     serverFarmId: hostingPlan.id
     siteConfig: {
       alwaysOn: true
+      linuxFxVersion: 'Python|3.11'
       appSettings: [
         {
           name: 'FUNCTIONS_WORKER_RUNTIME'
-          value: 'dotnet'
+          value: 'python'
         }
         {
           name: 'AzureWebJobsStorage'
@@ -105,17 +120,37 @@ resource functionApp 'Microsoft.Web/sites@2023-12-01' = {
           name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
           value: applicationInsights.properties.ConnectionString
         }
+        {
+          name: 'DOCUMENT_INTELLIGENCE_SERVICE'
+          value: documentIntelligenceServiceInstanceName
+        }
       ]
     }
   }
-}
 
-// Grant Blob Data Contributor assignment to the Function managed identity
-module functionRoleAssignmentStorage '../rbac/roleAssignment-function-storage.bicep' = {
-  name: 'functionRoleAssignmentStorage'
-  params: {
-    storageAccountId: storageAccount.id
-    managedIdentityPrincipalId: functionApp.identity.principalId
+  resource configAuth 'config' = {
+    name: 'authsettingsV2'
+    properties: {
+      globalValidation: {
+        requireAuthentication: true
+        unauthenticatedClientAction: 'Return401'
+        redirectToProvider: 'azureactivedirectory'
+      }
+      identityProviders: {
+        azureActiveDirectory: {
+          enabled: true
+          registration: {
+            clientId: authSettings.clientAppId
+            openIdIssuer: authSettings.authenticationIssuerUri
+          }
+          validation: {
+            defaultAuthorizationPolicy: {
+              allowedApplications: authSettings.allowedApplications
+            }
+          }
+        }
+      }
+    }
   }
 }
 
@@ -138,45 +173,7 @@ resource diagnosticSetting 'Microsoft.Insights/diagnosticSettings@2021-05-01-pre
   }
 }
 
-//
-// zip up the Function source code
-/* var functionAppPath = '../../../../backend/skills/pdf_text_image_merge_skill'
-resource zipFile 'Microsoft.Resources/deploymentScripts@2023-08-01' = {
-  name: 'FunctionZipFile'
-  kind: 'AzurePowerShell'
-  location: location
-  properties: {
-    azPowerShellVersion: '8.3'
-    retentionInterval: 'PT1H'
-    timeout: 'PT1H'
-    arguments: '-arg1 ${functionAppPath} -arg2 ${azureFunctionName}.zip'
-    scriptContent: '''
-      $functionAppPath = "$arg1"
-      $zipFile = "$arg2"
-      Compress-Archive -Path $functionAppPath -DestinationPath $zipFile
-      $zipFile
-    '''
-  }
-}
-
-// deploy the zip file to the Function App
-resource deployApptoFunction 'Microsoft.Resources/deploymentScripts@2023-08-01' = {
-  name: 'deployApptoFunction'
-  kind: 'AzureCLI'
-  location: location
-  properties: {
-    azCliVersion: '2.0.80'
-    retentionInterval: 'PT1H'
-    timeout: 'PT1H'
-    arguments: '-arg1 ${azureResourceGroup} -arg2 ${azureFunctionName} -arg3 ${azureFunctionName}.zip'
-    scriptContent: '''
-      az functionapp deployment source config-zip -g $1 -n $2 --src $3 --build-remote true
-    '''
-  }
-} */
-
-/*
-Blocker issue: The deploymentScripts resource is not supported in the current environment.
-*/
-
+output functionAppId string = functionApp.id
+output functionAppName string = functionApp.name
+output functionAppPrincipalId string = functionApp.identity.principalId
 output pdfTextImageMergeSkillEndpoint string = 'https://${functionApp.properties.defaultHostName}/api/pdf_text_image_merge_skill'
