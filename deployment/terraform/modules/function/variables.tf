@@ -1,11 +1,18 @@
 # General variables
+variable "subscription_id" {
+  description = "subscription_id"
+  type        = string
+  sensitive   = false
+  default     = ""
+}
+
 variable "resource_group_name" {
   description = "Specifies the name of the resource group."
   type        = string
   sensitive   = false
   validation {
     condition     = length(var.resource_group_name) >= 2
-    error_message = "Please specify a valid name."
+    error_message = "Please specify a valid name longer than 2 characters."
   }
 }
 
@@ -28,7 +35,7 @@ variable "function_name" {
   sensitive   = false
   validation {
     condition     = length(var.function_name) >= 2
-    error_message = "Please specify a valid name."
+    error_message = "Please specify a valid name longer than 2 characters."
   }
 }
 
@@ -63,16 +70,6 @@ variable "function_storage_account_id" {
   }
 }
 
-# variable "function_share_name" {
-#   description = "Specifies the share name within the storage account."
-#   type        = string
-#   sensitive   = false
-#   validation {
-#     condition     = length(var.function_share_name) >= 2
-#     error_message = "Please specify a valid name."
-#   }
-# }
-
 variable "function_key_vault_id" {
   description = "Specifies the resource id of the key vault."
   type        = string
@@ -88,20 +85,12 @@ variable "function_user_assigned_identity_id" {
   type        = string
   sensitive   = false
   default     = null
-  # validation {
-  #   condition     = length(split("/", var.function_user_assigned_identity_id)) == 9
-  #   error_message = "Please specify a valid resource ID."
-  # }
 }
 
 variable "function_sku" {
   description = "Specifies the SKU for the function app."
   type        = string
   sensitive   = false
-  validation {
-    condition     = contains(["P1v2", "EP1", "EP2", "EP3"], var.function_sku)
-    error_message = "Please use an allowed value: \"P1v2\",\"EP1\", \"EP2\", \"EP3\"."
-  }
 }
 
 variable "function_application_insights_instrumentation_key" {
@@ -110,7 +99,7 @@ variable "function_application_insights_instrumentation_key" {
   sensitive   = false
   validation {
     condition     = length(var.function_application_insights_instrumentation_key) >= 2
-    error_message = "Please specify a valid name."
+    error_message = "Please specify a valid name longer than 2 characters."
   }
 }
 
@@ -120,7 +109,7 @@ variable "function_application_insights_connection_string" {
   sensitive   = false
   validation {
     condition     = length(var.function_application_insights_connection_string) >= 2
-    error_message = "Please specify a valid name."
+    error_message = "Please specify a valid name longer than 2 characters."
   }
 }
 
@@ -133,6 +122,12 @@ variable "log_analytics_workspace_id" {
     condition     = length(split("/", var.log_analytics_workspace_id)) == 9
     error_message = "Please specify a valid resource ID."
   }
+}
+
+variable "skills_function_appregistration_client_id" {
+  description = "Specifies the client id of the app registration created"
+  type        = string
+  sensitive   = false
 }
 
 # Network variables

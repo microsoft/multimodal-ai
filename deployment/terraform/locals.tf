@@ -5,8 +5,7 @@ locals {
 
 # Generate a unique resource token
 locals {
-  #resourceToken = lower(join("", [random_id.main.hex, var.environmentName, var.location]))
-  resourceToken = lower(join("", [random_id.main.hex]))
+  resourceToken = lower(join("", [random_id.random.hex]))
 }
 
 # Define tags for resources
@@ -17,7 +16,7 @@ locals {
 }
 
 # Random ID Generator
-resource "random_id" "main" {
+resource "random_id" "random" {
   keepers = {
     env_name = var.environment_name
   }

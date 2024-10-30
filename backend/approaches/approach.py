@@ -4,22 +4,18 @@ from dataclasses import dataclass
 from typing import (
     Any,
     AsyncGenerator,
-    Awaitable,
-    Callable,
     List,
     Optional,
-    TypedDict,
     cast,
 )
-from urllib.parse import urljoin
 
 import aiohttp
 from azure.search.documents.aio import SearchClient
 from azure.search.documents.models import (
     QueryCaptionResult,
     QueryType,
-    VectorizedQuery,
-    VectorQuery,
+    VectorizableTextQuery,
+    VectorQuery
 )
 from openai import AsyncOpenAI
 from openai.types.chat import ChatCompletionMessageParam
@@ -31,6 +27,7 @@ from text import nonewlines
 @dataclass
 class Document:
     id: Optional[str]
+    parent_id: Optional[str]
     content: Optional[str]
     embedding: Optional[List[float]]
     image_embedding: Optional[List[float]]
@@ -98,24 +95,14 @@ class Approach(ABC):
         auth_helper: AuthenticationHelper,
         query_language: Optional[str],
         query_speller: Optional[str],
-        embedding_deployment: Optional[str],  # Not needed for non-Azure OpenAI or for retrieval_mode="text"
-        embedding_model: str,
-        embedding_dimensions: int,
-        openai_host: str,
-        vision_endpoint: str,
-        vision_token_provider: Callable[[], Awaitable[str]],
+        openai_host: str
     ):
         self.search_client = search_client
         self.openai_client = openai_client
         self.auth_helper = auth_helper
         self.query_language = query_language
         self.query_speller = query_speller
-        self.embedding_deployment = embedding_deployment
-        self.embedding_model = embedding_model
-        self.embedding_dimensions = embedding_dimensions
         self.openai_host = openai_host
-        self.vision_endpoint = vision_endpoint
-        self.vision_token_provider = vision_token_provider
 
     def build_filter(self, overrides: dict[str, Any], auth_claims: dict[str, Any]) -> Optional[str]:
         exclude_category = overrides.get("exclude_category")
@@ -169,6 +156,7 @@ class Approach(ABC):
                 documents.append(
                     Document(
                         id=document.get("id"),
+                        parent_id=document.get("parent_id"),
                         content=document.get("content"),
                         embedding=document.get("embedding"),
                         image_embedding=document.get("imageEmbedding"),
@@ -215,50 +203,18 @@ class Approach(ABC):
             return sourcepage
         else:
             path, ext = os.path.splitext(sourcepage)
-            if ext.lower() == ".png":
+            if ext.lower() == ".jpg":
                 page_idx = path.rfind("-")
                 page_number = int(path[page_idx + 1 :])
                 return f"{path[:page_idx]}.pdf#page={page_number}"
 
             return sourcepage
 
-    async def compute_text_embedding(self, q: str):
-        SUPPORTED_DIMENSIONS_MODEL = {
-            "text-embedding-ada-002": False,
-            "text-embedding-3-small": True,
-            "text-embedding-3-large": True,
-        }
+    async def get_vectorizable_text_query(self, q: str):
+        return VectorizableTextQuery(kind="text", text=q, k_nearest_neighbors=50, fields="embedding")
 
-        class ExtraArgs(TypedDict, total=False):
-            dimensions: int
-
-        dimensions_args: ExtraArgs = (
-            {"dimensions": self.embedding_dimensions} if SUPPORTED_DIMENSIONS_MODEL[self.embedding_model] else {}
-        )
-        embedding = await self.openai_client.embeddings.create(
-            # Azure OpenAI takes the deployment name as the model name
-            model=self.embedding_deployment if self.embedding_deployment else self.embedding_model,
-            input=q,
-            **dimensions_args,
-        )
-        query_vector = embedding.data[0].embedding
-        return VectorizedQuery(vector=query_vector, k_nearest_neighbors=50, fields="embedding")
-
-    async def compute_image_embedding(self, q: str):
-        endpoint = urljoin(self.vision_endpoint, "computervision/retrieval:vectorizeText")
-        headers = {"Content-Type": "application/json"}
-        params = {"api-version": "2023-02-01-preview", "modelVersion": "latest"}
-        data = {"text": q}
-
-        headers["Authorization"] = "Bearer " + await self.vision_token_provider()
-
-        async with aiohttp.ClientSession() as session:
-            async with session.post(
-                url=endpoint, params=params, headers=headers, json=data, raise_for_status=True
-            ) as response:
-                json = await response.json()
-                image_query_vector = json["vector"]
-        return VectorizedQuery(vector=image_query_vector, k_nearest_neighbors=50, fields="imageEmbedding")
+    async def get_vectorizable_image_query(self, q: str):
+        return VectorizableTextQuery(kind="text", text=q, k_nearest_neighbors=50, fields="imageEmbedding")
 
     async def run(
         self,

@@ -1,14 +1,12 @@
 locals {
-  function_application_settings_default = {
+  function_application_settings_keyvault = {
     AzureWebJobsSecretStorageType        = "keyvault"
     AzureWebJobsSecretStorageKeyVaultUri = data.azurerm_key_vault.key_vault.vault_uri
-    # AZURE_FUNCTIONS_ENVIRONMENT              = "Production"
-    # WEBSITE_CONTENTSHARE                     = var.function_share_name
-    # WEBSITE_CONTENTAZUREFILECONNECTIONSTRING = data.azurerm_storage_account.storage_account.primary_blob_connection_string # "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.key_vault_secret_storage_connection_string.versionless_id})"
-    # WEBSITE_RUN_FROM_PACKAGE                 = "1"
-    # WEBSITE_SKIP_CONTENTSHARE_VALIDATION     = "1"
   }
-  function_application_settings = merge(local.function_application_settings_default, var.function_application_settings)
+
+  function_application_settings = merge(
+    var.function_application_settings,
+  var.function_key_vault_id != "" ? local.function_application_settings_keyvault : {})
 
   storage_account = {
     resource_group_name = split("/", var.function_storage_account_id)[4]
@@ -19,4 +17,6 @@ locals {
     resource_group_name = split("/", var.function_key_vault_id)[4]
     name                = split("/", var.function_key_vault_id)[8]
   }
+
+  skills_function_appregistration_client_id = var.skills_function_appregistration_client_id != "" ? var.skills_function_appregistration_client_id : azuread_application.function_ad_app[0].client_id
 }
