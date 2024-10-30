@@ -54,7 +54,7 @@ azure-monitor-opentelemetry==1.6.0
     # via -r requirements.in
 azure-monitor-opentelemetry-exporter==1.0.0b27
     # via azure-monitor-opentelemetry
-azure-search-documents==11.6.0b6
+azure-search-documents==11.6.0b1
     # via -r requirements.in
 azure-storage-blob==12.20.0
     # via
@@ -427,7 +427,7 @@ urllib3==2.2.2
     # via requests
 uvicorn==0.30.1
     # via -r requirements.in
-werkzeug==3.0.3
+werkzeug==3.0.6
     # via
     #   flask
     #   quart
