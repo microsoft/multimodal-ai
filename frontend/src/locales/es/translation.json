@@ -1,0 +1,106 @@
+{
+  "pageTitle": "Azure OpenAI + AI Search",
+  "headerTitle": "Azure OpenAI + AI Search",
+  "chat": "Chat",
+  "qa": "Haz una pregunta",
+  "login": "Iniciar sesi\u00f3n",
+  "logout": "Cerrar sesi\u00f3n",
+  "clearChat": "Borrar chat",
+  "developerSettings": "Configuraci\u00f3n del desarrollador",
+  "chatEmptyStateTitle": "Chatea con tus datos",
+  "chatEmptyStateSubtitle": "Pregunta cualquier cosa o prueba un ejemplo",
+  "defaultExamples": {
+    "1": "TODO",
+    "2": "TODO",
+    "3": "TODO",
+    "placeholder": "Escribe una nueva pregunta aqu\u00ed"
+  },
+  "askTitle": "Pregunta a tus datos",
+  "gpt4vExamples": {
+    "1": "TODO",
+    "2": "TODO",
+    "3": "TODO",
+    "placeholder": "Escribe una nueva pregunta aqu\u00ed"
+  },
+  "generatingAnswer": "Generando respuesta",
+  "citationWithColon": "Cita:",
+  "followupQuestions": "Preguntas de seguimiento:",
+  "tooltips": {
+    "submitQuestion": "Enviar pregunta",
+    "askWithVoice": "Realizar pregunta con voz",
+    "stopRecording": "Detener la grabaci\u00f3n de la pregunta",
+    "showThoughtProcess": "Mostrar proceso de pensamiento",
+    "showSupportingContent": "Mostrar contenido de soporte",
+    "speakAnswer": "Hablar respuesta",
+    "info": "Informaci\u00f3n",
+    "save": "Guardar"
+  },
+  "headerTexts": {
+    "thoughtProcess": "Proceso de Pensamiento",
+    "supportingContent": "Contenido de apoyo",
+    "citation": "Cita"
+  },
+  "labels": {
+    "toggleMenu": "Alternar men\u00fa",
+    "languagePicker": "Seleccione su idioma",
+    "headerText": "Configurar la generaci\u00f3n de respuestas",
+    "closeButton": "Cerrar",
+    "promptTemplate": "Sobrescribir plantilla de aviso",
+    "temperature": "Temperatura",
+    "seed": "Seed",
+    "minimumSearchScore": "Puntaje m\u00ednimo de b\u00fasqueda",
+    "minimumRerankerScore": "Puntaje m\u00ednimo de re-clasificaci\u00f3n",
+    "retrieveCount": "Obt\u00e9n \u00e9ste n\u00famero resultados de b\u00fasqueda:",
+    "excludeCategory": "Excluir categor\u00eda",
+    "useSemanticRanker": "Usar clasificador sem\u00e1ntico para la recuperaci\u00f3n",
+    "useSemanticCaptions": "Usar subt\u00edtulos sem\u00e1nticos",
+    "useSuggestFollowupQuestions": "Sugerir preguntas de seguimiento",
+    "useGPT4V": "Usar modelo de visi\u00f3n GPT",
+    "gpt4VInput": {
+      "label": "Entradas del modelo de visi\u00f3n GPT",
+      "options": {
+        "textAndImages": "Im\u00e1genes y texto",
+        "images": "Im\u00e1genes",
+        "texts": "Texto"
+      }
+    },
+    "retrievalMode": {
+      "label": "Modo de recuperaci\u00f3n",
+      "options": {
+        "hybrid": "Vectores + Texto (H\u00edbrido)",
+        "vectors": "Vectores",
+        "texts": "Texto"
+      }
+    },
+    "vector": {
+      "label": "Campos de vector (B\u00fasqueda de vector de m\u00faltiples consultas)",
+      "options": {
+        "embedding": "Incrustaciones de texto",
+        "imageEmbedding": "Incrustaciones de imagen",
+        "both": "Incrustaciones de texto e imagen"
+      }
+    },
+    "useOidSecurityFilter": "Usar filtro de seguridad oid",
+    "useGroupsSecurityFilter": "Usar filtro de seguridad degrupos",
+    "shouldStream": "Transmitir respuestas de finalizaci\u00f3n de chat en tiempo real"
+  },
+  "helpTexts": {
+    "promptTemplate": "Sobrescribe el aviso utilizado para generar la respuesta basada en la pregunta y los resultados de la b\u00fasqueda. Para agregar al aviso existente en lugar de reemplazar todo el aviso, comienza tu aviso con '>>>'.",
+    "temperature": "Establece la temperatura de la solicitud al LLM que genera la respuesta. Temperaturas m\u00e1s altas dan como resultado respuestas m\u00e1s creativas, pero pueden ser menos realistas.",
+    "seed": "Define un n\u00famero entero para mejorar la reproducibilidad de las respuestas del modelo. El n\u00famero de semilla se utiliza para generar respuestas m\u00e1s consistentes. El n\u00famero de semilla puede ser cualquier n\u00famero.",
+    "searchScore": "Establece una puntuaci\u00f3n m\u00ednima para los resultados de b\u00fasqueda que vuelven de Azure AI search. El rango de puntuaciones depende de si est\u00e1s utilizando h\u00edbrido (predeterminado), solo vectores o solo texto.",
+    "rerankerScore": "Establece una puntuaci\u00f3n m\u00ednima para los resultados de b\u00fasqueda que vuelven del re-clasificador sem\u00e1ntico. La puntuaci\u00f3n siempre var\u00eda entre 0-4. Cuanto mayor es la puntuaci\u00f3n, m\u00e1s relevante es sem\u00e1nticamente el resultado a la pregunta.",
+    "retrieveNumber": "Establece el n\u00famero de resultados de b\u00fasqueda para recuperar de Azure AI search. M\u00e1s resultados pueden aumentar la probabilidad de encontrar la respuesta correcta, pero pueden provocar que el modelo se 'pierda en el medio'.",
+    "excludeCategory": "Especifica una categor\u00eda para excluir de los resultados de b\u00fasqueda. No se utilizan categor\u00edas en el conjunto de datos predeterminado.",
+    "useSemanticReranker": "Habilita el re-clasificador sem\u00e1ntico de Azure AI Search, un modelo que re-clasifica los resultados de b\u00fasqueda bas\u00e1ndose en la similitud sem\u00e1ntica con la consulta del usuario.",
+    "useSemanticCaptions": "Env\u00eda subt\u00edtulos sem\u00e1nticos al LLM en lugar del resultado de b\u00fasqueda completo. Un subt\u00edtulo sem\u00e1ntico se extrae de un resultado de b\u00fasqueda durante el proceso de clasificaci\u00f3n sem\u00e1ntica.",
+    "suggestFollowupQuestions": "Pide al LLM que sugiera preguntas de seguimiento bas\u00e1ndose en la consulta del usuario.",
+    "useGPT4Vision": "Utiliza GPT-4-Turbo con Visi\u00f3n para generar respuestas bas\u00e1ndose en im\u00e1genes y texto del \u00edndice.",
+    "vectorFields": "Especifica qu\u00e9 campos de incrustaci\u00f3n en el \u00edndice de b\u00fasqueda de Azure AI se buscar\u00e1n, tanto las incrustaciones de 'Im\u00e1genes y texto', solo 'Imagenes', o solo 'Texto'.",
+    "gpt4VisionInputs": "Establece lo que se enviar\u00e1 al modelo de visi\u00f3n. 'Im\u00e1genes y texto' env\u00eda tanto im\u00e1genes como texto al modelo, 'Im\u00e1genes' solo env\u00eda im\u00e1genes y 'Texto' solo env\u00eda texto.",
+    "retrievalMode": "Establece el modo de recuperaci\u00f3n para la consulta de b\u00fasqueda de Azure AI. Vectores + Texto (H\u00edbrido) utiliza una combinaci\u00f3n de b\u00fasqueda vectorial y b\u00fasqueda de texto completo, Vectores utiliza solo la b\u00fasqueda vectorial y Texto utiliza solo la b\u00fasqueda de texto completo. Generalmente, el modo h\u00edbrido es \u00f3ptimo.",
+    "streamChat": "Transmite continuamente la respuesta a la interfaz de usuario del chat mientras se genera.",
+    "useOidSecurityFilter": "Filtra los resultados de b\u00fasqueda en funci\u00f3n del OID del usuario autenticado.",
+    "useGroupsSecurityFilter": "Filtra los resultados de b\u00fasqueda en funci\u00f3n de los grupos del usuario autenticado."
+  }
+}

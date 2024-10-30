@@ -1,0 +1,305 @@
+{
+  "name": "${index_name}",
+  "defaultScoringProfile": null,
+  "fields": [
+    {
+      "name": "id",
+      "type": "Edm.String",
+      "searchable": true,
+      "filterable": true,
+      "retrievable": true,
+      "stored": true,
+      "sortable": true,
+      "facetable": true,
+      "key": true,
+      "indexAnalyzer": null,
+      "searchAnalyzer": null,
+      "analyzer": "keyword",
+      "normalizer": null,
+      "dimensions": null,
+      "vectorSearchProfile": null,
+      "vectorEncoding": null,
+      "synonymMaps": []
+    },
+    {
+      "name": "content",
+      "type": "Edm.String",
+      "searchable": true,
+      "filterable": false,
+      "retrievable": true,
+      "stored": true,
+      "sortable": false,
+      "facetable": false,
+      "key": false,
+      "indexAnalyzer": null,
+      "searchAnalyzer": null,
+      "analyzer": "en.microsoft",
+      "normalizer": null,
+      "dimensions": null,
+      "vectorSearchProfile": null,
+      "vectorEncoding": null,
+      "synonymMaps": []
+    },
+    {
+      "name": "embedding",
+      "type": "Collection(Edm.Single)",
+      "searchable": true,
+      "filterable": false,
+      "retrievable": true,
+      "stored": true,
+      "sortable": false,
+      "facetable": false,
+      "key": false,
+      "indexAnalyzer": null,
+      "searchAnalyzer": null,
+      "analyzer": null,
+      "normalizer": null,
+      "dimensions": 1536,
+      "vectorSearchProfile": "embedding_config",
+      "vectorEncoding": null,
+      "synonymMaps": []
+    },
+    {
+      "name": "category",
+      "type": "Edm.String",
+      "searchable": false,
+      "filterable": true,
+      "retrievable": true,
+      "stored": true,
+      "sortable": false,
+      "facetable": true,
+      "key": false,
+      "indexAnalyzer": null,
+      "searchAnalyzer": null,
+      "analyzer": null,
+      "normalizer": null,
+      "dimensions": null,
+      "vectorSearchProfile": null,
+      "vectorEncoding": null,
+      "synonymMaps": []
+    },
+    {
+      "name": "sourcepage",
+      "type": "Edm.String",
+      "searchable": false,
+      "filterable": true,
+      "retrievable": true,
+      "stored": true,
+      "sortable": false,
+      "facetable": true,
+      "key": false,
+      "indexAnalyzer": null,
+      "searchAnalyzer": null,
+      "analyzer": null,
+      "normalizer": null,
+      "dimensions": null,
+      "vectorSearchProfile": null,
+      "vectorEncoding": null,
+      "synonymMaps": []
+    },
+    {
+      "name": "sourcefile",
+      "type": "Edm.String",
+      "searchable": false,
+      "filterable": true,
+      "retrievable": true,
+      "stored": true,
+      "sortable": false,
+      "facetable": true,
+      "key": false,
+      "indexAnalyzer": null,
+      "searchAnalyzer": null,
+      "analyzer": null,
+      "normalizer": null,
+      "dimensions": null,
+      "vectorSearchProfile": null,
+      "vectorEncoding": null,
+      "synonymMaps": []
+    },
+    {
+      "name": "storageUrl",
+      "type": "Edm.String",
+      "searchable": false,
+      "filterable": true,
+      "retrievable": true,
+      "stored": true,
+      "sortable": false,
+      "facetable": false,
+      "key": false,
+      "indexAnalyzer": null,
+      "searchAnalyzer": null,
+      "analyzer": null,
+      "normalizer": null,
+      "dimensions": null,
+      "vectorSearchProfile": null,
+      "vectorEncoding": null,
+      "synonymMaps": []
+    },
+    {
+      "name": "oids",
+      "type": "Collection(Edm.String)",
+      "searchable": false,
+      "filterable": true,
+      "retrievable": true,
+      "stored": true,
+      "sortable": false,
+      "facetable": false,
+      "key": false,
+      "indexAnalyzer": null,
+      "searchAnalyzer": null,
+      "analyzer": null,
+      "normalizer": null,
+      "dimensions": null,
+      "vectorSearchProfile": null,
+      "vectorEncoding": null,
+      "synonymMaps": []
+    },
+    {
+      "name": "groups",
+      "type": "Collection(Edm.String)",
+      "searchable": false,
+      "filterable": true,
+      "retrievable": true,
+      "stored": true,
+      "sortable": false,
+      "facetable": false,
+      "key": false,
+      "indexAnalyzer": null,
+      "searchAnalyzer": null,
+      "analyzer": null,
+      "normalizer": null,
+      "dimensions": null,
+      "vectorSearchProfile": null,
+      "vectorEncoding": null,
+      "synonymMaps": []
+    },
+    {
+      "name": "parent_id",
+      "type": "Edm.String",
+      "searchable": true,
+      "filterable": true,
+      "retrievable": true,
+      "stored": true,
+      "sortable": false,
+      "facetable": false,
+      "key": false,
+      "indexAnalyzer": null,
+      "searchAnalyzer": null,
+      "analyzer": null,
+      "normalizer": null,
+      "dimensions": null,
+      "vectorSearchProfile": null,
+      "vectorEncoding": null,
+      "synonymMaps": []
+    },
+    {
+      "name": "imageEmbedding",
+      "type": "Collection(Edm.Single)",
+      "searchable": true,
+      "filterable": false,
+      "retrievable": true,
+      "stored": true,
+      "sortable": false,
+      "facetable": false,
+      "key": false,
+      "indexAnalyzer": null,
+      "searchAnalyzer": null,
+      "analyzer": null,
+      "normalizer": null,
+      "dimensions": 1024,
+      "vectorSearchProfile": "image_embedding_config",
+      "vectorEncoding": null,
+      "synonymMaps": []
+    }
+  ],
+  "scoringProfiles": [],
+  "corsOptions": null,
+  "suggesters": [],
+  "analyzers": [],
+  "normalizers": [],
+  "tokenizers": [],
+  "tokenFilters": [],
+  "charFilters": [],
+  "encryptionKey": null,
+  "similarity": {
+    "@odata.type": "#Microsoft.Azure.Search.BM25Similarity",
+    "k1": null,
+    "b": null
+  },
+  "semantic": {
+    "defaultConfiguration": null,
+    "configurations": [
+      {
+        "name": "default",
+        "prioritizedFields": {
+          "titleField": null,
+          "prioritizedContentFields": [
+            {
+              "fieldName": "content"
+            }
+          ],
+          "prioritizedKeywordsFields": []
+        }
+      }
+    ]
+  },
+  "vectorSearch": {
+    "algorithms": [
+      {
+        "name": "hnsw_config",
+        "kind": "hnsw",
+        "hnswParameters": {
+          "metric": "cosine",
+          "m": 4,
+          "efConstruction": 400,
+          "efSearch": 500
+        },
+        "exhaustiveKnnParameters": null
+      }
+    ],
+    "profiles": [
+      {
+        "name": "embedding_config",
+        "algorithm": "hnsw_config",
+        "vectorizer": "${index_name}-vectorizer",
+        "compression": null
+      },
+      {
+        "name": "image_embedding_config",
+        "algorithm": "hnsw_config",
+        "vectorizer": "${index_name}-image-vectorizer",
+        "compression": null
+      }
+    ],
+    "vectorizers": [
+      {
+        "name": "${index_name}-vectorizer",
+        "kind": "azureOpenAI",
+        "azureOpenAIParameters": {
+          "resourceUri": "${azureOpenAI_endpoint}",
+          "deploymentId": "${azureOpenAI_text_deployment_id}",
+          "apiKey": null,
+          "modelName": "${azureOpenAI_text_model_name}",
+          "authIdentity": null
+        },
+        "customWebApiParameters": null,
+        "aiServicesVisionParameters": null,
+        "amlParameters": null
+      },
+      {
+        "name": "${index_name}-image-vectorizer",
+        "kind": "aiServicesVision",
+        "azureOpenAIParameters": null,
+        "customWebApiParameters": null,
+        "aiServicesVisionParameters": {
+          "modelVersion": "2023-04-15",
+          "apiKey": null,
+          "resourceUri": "${cognitive_services_endpoint}",
+          "authIdentity": null
+        },
+        "amlParameters": null
+      }
+    ],
+    "compressions": []
+  }
+}

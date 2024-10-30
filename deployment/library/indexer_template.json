@@ -1,0 +1,39 @@
+{
+  "name": "${indexer_name}",
+  "description": "${indexer_description}",
+  "dataSourceName": "${datasource_name}",
+  "skillsetName": "${skillset_name}",
+  "targetIndexName": "${index_name}",
+  "disabled": false,
+  "schedule": null,
+  "parameters": {
+    "batchSize": null,
+    "maxFailedItems": 0,
+    "maxFailedItemsPerBatch": 0,
+    "base64EncodeKeys": null,
+    "configuration": {
+      "parsingMode": "default",
+      "excludedFileNameExtensions": ".png, .jpeg, .jpg",
+      "indexedFileNameExtensions": ".pdf",
+      "failOnUnsupportedContentType": false,
+      "failOnUnprocessableDocument": false,
+      "indexStorageMetadataOnlyForOversizedDocuments": false,
+      "firstLineContainsHeaders": true,
+      "dataToExtract": "contentAndMetadata",
+      "imageAction": "generateNormalizedImagePerPage",
+      "allowSkillsetToReadFileData": false,
+      "pdfTextRotationAlgorithm": "none",
+      "executionEnvironment": "standard"
+    }
+  },
+  "fieldMappings": [
+    {
+      "sourceFieldName": "metadata_storage_name",
+      "targetFieldName": "title",
+      "mappingFunction": null
+    }
+  ],
+  "outputFieldMappings": [],
+  "cache": null,
+  "encryptionKey": null
+}

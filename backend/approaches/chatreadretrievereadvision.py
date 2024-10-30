@@ -1,4 +1,4 @@
-from typing import Any, Awaitable, Callable, Coroutine, Optional, Union
+from typing import Any, Coroutine, Optional, Union
 
 from azure.search.documents.aio import SearchClient
 from azure.storage.blob.aio import ContainerClient
@@ -16,7 +16,6 @@ from approaches.approach import ThoughtStep
 from approaches.chatapproach import ChatApproach
 from core.authentication import AuthenticationHelper
 from core.imageshelper import fetch_image
-
 
 class ChatReadRetrieveReadVisionApproach(ChatApproach):
     """
@@ -36,15 +35,10 @@ class ChatReadRetrieveReadVisionApproach(ChatApproach):
         chatgpt_deployment: Optional[str],  # Not needed for non-Azure OpenAI
         gpt4v_deployment: Optional[str],  # Not needed for non-Azure OpenAI
         gpt4v_model: str,
-        embedding_deployment: Optional[str],  # Not needed for non-Azure OpenAI or for retrieval_mode="text"
-        embedding_model: str,
-        embedding_dimensions: int,
         sourcepage_field: str,
         content_field: str,
         query_language: str,
-        query_speller: str,
-        vision_endpoint: str,
-        vision_token_provider: Callable[[], Awaitable[str]]
+        query_speller: str
     ):
         self.search_client = search_client
         self.blob_container_client = blob_container_client
@@ -54,15 +48,10 @@ class ChatReadRetrieveReadVisionApproach(ChatApproach):
         self.chatgpt_deployment = chatgpt_deployment
         self.gpt4v_deployment = gpt4v_deployment
         self.gpt4v_model = gpt4v_model
-        self.embedding_deployment = embedding_deployment
-        self.embedding_model = embedding_model
-        self.embedding_dimensions = embedding_dimensions
         self.sourcepage_field = sourcepage_field
         self.content_field = content_field
         self.query_language = query_language
         self.query_speller = query_speller
-        self.vision_endpoint = vision_endpoint
-        self.vision_token_provider = vision_token_provider
         self.chatgpt_token_limit = get_token_limit(gpt4v_model)
 
     @property
@@ -139,9 +128,9 @@ class ChatReadRetrieveReadVisionApproach(ChatApproach):
         if use_vector_search:
             for field in vector_fields:
                 vector = (
-                    await self.compute_text_embedding(query_text)
+                    await self.get_vectorizable_text_query(query_text)
                     if field == "embedding"
-                    else await self.compute_image_embedding(query_text)
+                    else await self.get_vectorizable_image_query(query_text)
                 )
                 vectors.append(vector)
 
@@ -192,6 +181,7 @@ class ChatReadRetrieveReadVisionApproach(ChatApproach):
         data_points = {
             "text": sources_content,
             "images": [d["image_url"] for d in image_list],
+            "parent_ids": {result.sourcepage: result.parent_id for result in results}
         }
 
         extra_info = {
