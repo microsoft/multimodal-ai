@@ -19,7 +19,7 @@
 
 Welcome to the Multimodal AI project!
 
-The goal of the Multimodal AI project is to provide enterprise-ready solutions for customers looking to infuse Generative AI (Gen AI) into their existing solutions, or create brand-new solutions, that go beyond processing text-based content. This project leverages the latests advancements in multimodal AI models, to implement generative AI solutions such as Retrieval Augmented Generation (RAG), image classification or video analysis, for content based on text, images, audio and video. For images, the goal is to go beyond traditional Object Character Recognition (OCR) and generate embeddings on the actual image contents.
+The goal of the Multimodal AI project is to provide enterprise-ready solutions for customers looking to infuse Generative AI (Gen AI) into their existing applications, or create brand-new applications, that go beyond processing text-based content only. This project leverages the latests advancements in multimodal AI models, to implement generative AI solutions such as Retrieval Augmented Generation (RAG), image classification or video analysis, for content based on text, images, audio and video. For images, the goal is to go beyond traditional Object Character Recognition (OCR) and generate embeddings on the actual image contents.
 
 ## About this project
 
