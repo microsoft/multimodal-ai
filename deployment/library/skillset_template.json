@@ -29,7 +29,7 @@
       "uri": "${pdf_text_image_merge_skill_url}",
       "authResourceId": "${aad_app_id}/.default",
       "httpMethod": "POST",
-      "timeout": "PT1M",
+      "timeout": "PT3M50S",
       "batchSize": 4,
       "degreeOfParallelism": 4,
       "inputs": [
