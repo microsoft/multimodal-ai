@@ -355,7 +355,7 @@ python-dateutil==2.9.0.post0
     #   time-machine
 python-jose[cryptography]==3.3.0
     # via -r requirements.in
-quart==0.19.6
+quart==0.19.7
     # via
     #   -r requirements.in
     #   quart-cors
