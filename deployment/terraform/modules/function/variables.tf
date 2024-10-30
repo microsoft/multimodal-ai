@@ -124,7 +124,7 @@ variable "log_analytics_workspace_id" {
   }
 }
 
-variable "function_ad_app_client_id" {
+variable "skills_function_appregistration_client_id" {
   description = "Specifies the client id of the app registration created"
   type        = string
   sensitive   = false
