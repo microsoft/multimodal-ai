@@ -29,8 +29,8 @@ output "linux_function_app_principal_id" {
   value       = azurerm_linux_function_app.linux_function_app.identity[0].principal_id
 }
 
-output "function_ad_app_client_id" {
+output "skills_function_appregistration_client_id" {
   description = ""
   sensitive   = false
-  value       = local.function_ad_app_client_id
+  value       = local.skills_function_appregistration_client_id
 }

@@ -397,9 +397,41 @@ variable "azure_openai_gpt4v_deployment_name" {
   default     = "gpt-4o"
 }
 
-variable "function_ad_app_client_id" {
+variable "skills_function_appregistration_client_id" {
   description = "Specifies the client id of the app registration created"
   type        = string
   sensitive   = false
   default     = ""
+}
+
+variable "webapp_auth_settings" {
+  type = object({
+    enable_auth           = bool
+    enable_access_control = bool
+    server_app = object({
+      app_id           = string
+      app_secret_name  = string
+      app_secret_value = string
+    })
+    client_app = object({
+      app_id           = string
+      app_secret_name  = string
+      app_secret_value = string
+    })
+  })
+  default = {
+    enable_auth           = true
+    enable_access_control = false
+    server_app = {
+      app_id           = ""
+      app_secret_name  = ""
+      app_secret_value = ""
+    }
+    client_app = {
+      app_id           = ""
+      app_secret_name  = ""
+      app_secret_value = ""
+    }
+  }
+  sensitive = true
 }

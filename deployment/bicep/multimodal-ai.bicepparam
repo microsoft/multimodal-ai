@@ -1,66 +1,119 @@
 using './multimodal-ai.bicep'
 
-param prefix = 'mmai80'
+param prefix = 'mmai75'
+
 param location = 'eastus2'
 
-param aiVisionlocation = 'eastus'
-param aiVisionKind = 'ComputerVision'
-param aiVisionSku = 'S1'
-
-param docIntelLocation = 'eastus'
-param docIntelKind = 'FormRecognizer'
-param docIntelSku = 'S0'
-
-param aiSearchLocation = 'eastus'
-param aiSearchSku = 'standard'
-param aiSearchCapacity = 1
-param aiSearchSemanticSearch = 'standard'
-
-param cogsvcSku = 'S0'
-param cogsvcKind = 'CognitiveServices'
+param tags = {}
 
 param storageAccountDocsContainerName = 'docs'
 
-param aoaiKind = 'OpenAI'
-param aoaiSku = 'S0'
-param aoaiTextEmbeddingModel = 'text-embedding-ada-002'
-param aoaiChatModel = 'gpt-4o'
-param aoaiVisionModel = 'gpt-4o'
-param tags = {}
+param functionAppEntraIdRegistration = {
+  appId: ''
+}
 
-param appServiceSkuName = 'B3'
+param aiVisionConfig = {
+  location: 'eastus'
+  sku: 'S1'
+  kind: 'ComputerVision'
+}
 
-param functionAppClientId = ''
+param docIntelConfig = {
+  location: 'eastus'
+  locationOfdocIntelligenceWithApi2024_07_31_preview: 'eastus'
+  sku: 'S0'
+  kind: 'FormRecognizer'
+}
 
-param aoaiDeployments = [
-  {
-    name: 'text-embedding-ada-002'
-    model: {
-      format: 'OpenAI'
-      version: '2'
-    }
-    sku: {
-      capacity: 30
-    }
+param cognitiveServicesConfig = {
+  location: aiSearchConfig.location
+  sku: 'S0'
+  kind: 'CognitiveServices'
+}
+
+param aiSearchConfig = {
+  location: 'eastus'
+  sku: 'standard'
+  capacity: 1
+  semanticSearchSku: 'standard'
+}
+
+param webAppServicePlanConfig = {
+  skuName: 'B3'
+  capacity: 1
+  kind: 'linux'
+  family: 'B'
+  tier: 'Basic'
+}
+
+param functionAppServicePlanConfig = {
+  tier: 'Standard'
+  skuName: 'S1'
+  family: 'S'
+  capacity: 1
+  kind: 'functionapp,linux'
+}
+
+param logAnalyticsConfig = {
+  sku: 'PerGB2018'
+  retentionInDays: 30
+}
+
+param azureOpenAiConfig = {
+  cognitiveServicesConfig: {
+    kind: 'OpenAI'
+    location: 'eastus'
+    sku: 'S0'
   }
-  {
-    name: 'gpt-4o'
-    model: {
-      format: 'OpenAI'
-      version: '2024-05-13'
+  textEmbeddingModel: 'text-embedding-ada-002'
+  visionModel: 'gpt-4o'
+  chatModel: 'gpt-4o'
+  deployments: [
+    {
+      name: 'text-embedding-ada-002'
+      model: {
+        format: 'OpenAI'
+        version: '2'
+      }
+      sku: {
+        capacity: 30
+      }
     }
-    sku: {
-      capacity: 20
+    {
+      name: 'gpt-4o'
+      model: {
+        format: 'OpenAI'
+        version: '2024-05-13'
+      }
+      sku: {
+        capacity: 20
+      }
     }
+    {
+      name: 'gpt-35-turbo'
+      model: {
+        format: 'OpenAI'
+        version: '0613'
+      }
+      sku: {
+        capacity: 60
+      }
+    }
+  ]
+}
+
+@secure()
+param webAppAuthSettings = {
+  enableAuth: false
+  enableAccessControl: false
+  serverApp: {
+    appId: ''
+    appSecretName: ''
+    appSecret: ''
   }
-  {
-    name: 'gpt-35-turbo'
-    model: {
-      format: 'OpenAI'
-      version: '0613'
-    }
-    sku: {
-      capacity: 60
-    }
+  clientApp: {
+    appId: ''
+    appSecretName: ''
+    appSecret: ''
   }
-]
+}

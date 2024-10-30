@@ -11,7 +11,9 @@ param (
 
     [Parameter(Mandatory = $true)]
     [ValidateScript({ Test-Path $_ -PathType Leaf })] # Ensures file exists
-    [string]$TemplateParameterFile
+    [string]$TemplateParameterFile,
+
+    [switch]$EnableAuth = $false
 )
 
 # Function to deploy the web app
@@ -110,17 +112,67 @@ function Deploy-CustomSkills {
 $VerbosePreference = 'Continue'
 
 try {
-    Write-Verbose "Deploying infrastructure..."
 
-    # Execute the deployment command with error handling
-    $deployment = New-AzSubscriptionDeployment `
-        -Name $DeploymentName `
-        -Location $Location `
-        -TemplateFile $TemplateFile `
-        -TemplateParameterFile $TemplateParameterFile `
-        -Verbose `
-        -ErrorAction Stop `
-        -ErrorVariable deploymentError
+    $deployment = $null
+
+    if ($EnableAuth) {
+        Write-Verbose "Setting up authentication..."
+
+        $prefix = (Select-String -Path $TemplateParameterFile -Pattern "^param\s+prefix\s*=\s*'([^']*)'").Matches.Groups[1].Value.ToLower()
+
+        $authDetails = . "$PSScriptRoot/scripts/webapp-auth-init.ps1" `
+            -ServerAppDisplayName "$prefix-server-app" `
+            -ClientAppDisplayName "$prefix-client-app" `
+            -ServerAppSecretDisplayName "$prefix-server-app-secret" `
+            -ClientAppSecretDisplayName "$prefix-client-app-secret" `
+            -ErrorAction Stop `
+            -ErrorVariable deploymentError
+
+        $params = @{
+            enableAuth          = $true
+            enableAccessControl = $false
+            serverApp           = @{
+                appId         = $authDetails.ServerApp.ApplicationId
+                appSecretName = $authDetails.ServerApp.ServerAppSecretDisplayName
+                appSecret     = ConvertFrom-SecureString $authDetails.ServerApp.AppSecret -AsPlainText
+            }
+            clientApp           = @{
+                appId         = $authDetails.ClientApp.ApplicationId
+                appSecretName = $authDetails.ClientApp.ClientAppSecretDisplayName
+                appSecret     = ConvertFrom-SecureString $authDetails.ClientApp.AppSecret -AsPlainText
+            }
+        }
+
+        Write-Verbose "Deploying infrastructure..."
+
+        # Execute the deployment command with error handling
+        $deployment = New-AzSubscriptionDeployment `
+            -Name $DeploymentName `
+            -Location $Location `
+            -TemplateFile $TemplateFile `
+            -TemplateParameterFile $TemplateParameterFile `
+            -webAppAuthSettings $params `
+            -Verbose `
+            -ErrorAction Stop `
+            -ErrorVariable deploymentError
+
+        . "$PSScriptRoot/scripts/webapp-auth-update.ps1" `
+            -ClientObjectId $authDetails.ClientApp.ObjectId `
+            -BackendUri $deployment.Outputs.webAppUri.value
+    }
+    else {
+        Write-Verbose "Deploying infrastructure..."
+
+        # Execute the deployment command with error handling
+        $deployment = New-AzSubscriptionDeployment `
+            -Name $DeploymentName `
+            -Location $Location `
+            -TemplateFile $TemplateFile `
+            -TemplateParameterFile $TemplateParameterFile `
+            -Verbose `
+            -ErrorAction Stop `
+            -ErrorVariable deploymentError
+    }
 
     # Validate deployment outputs
     if ($deployment.Outputs.appsResourceGroup -and $deployment.Outputs.webAppName -and $deployment.Outputs.functionAppName) {

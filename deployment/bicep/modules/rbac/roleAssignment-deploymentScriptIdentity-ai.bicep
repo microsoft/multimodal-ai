@@ -1,12 +1,9 @@
 // Parameters
-@sys.description('Specifies the Id of the Azure AI Search instance.')
-param aiSearchId string
+@sys.description('Specifies the name of the Azure AI Search instance.')
+param aiSearchName string
 
 @sys.description('Managed Identity Principla Id to be assigned access to the search service.')
 param managedIdentityPrincipalId string
-
-// Variables
-var aiSearchName = last(split(aiSearchId, '/'))
 
 // Resources
 resource searchResource 'Microsoft.Search/searchServices@2024-06-01-preview' existing = {

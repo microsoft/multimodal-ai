@@ -43,8 +43,8 @@ export function Component(): JSX.Element {
     const [useOidSecurityFilter, setUseOidSecurityFilter] = useState<boolean>(false);
     const [useGroupsSecurityFilter, setUseGroupsSecurityFilter] = useState<boolean>(false);
     const [showGPT4VOptions, setShowGPT4VOptions] = useState<boolean>(true);
-    const [showSemanticRankerOption, setShowSemanticRankerOption] = useState<boolean>(false);
-    const [showVectorOption, setShowVectorOption] = useState<boolean>(false);
+    const [showSemanticRankerOption, setShowSemanticRankerOption] = useState<boolean>(true);
+    const [showVectorOption, setShowVectorOption] = useState<boolean>(true);
     const [showLanguagePicker, setshowLanguagePicker] = useState<boolean>(false);
     const [showSpeechInput, setShowSpeechInput] = useState<boolean>(false);
     const [showSpeechOutputBrowser, setShowSpeechOutputBrowser] = useState<boolean>(false);
@@ -260,12 +260,12 @@ export function Component(): JSX.Element {
             </div>
             <div className={styles.askBottomSection}>
                 {isLoading && <Spinner label={t("generatingAnswer")} />}
-                {!lastQuestionRef.current && (
+                {/* {!lastQuestionRef.current && (
                     <div className={styles.askTopSection}>
                         {showLanguagePicker && <LanguagePicker onLanguageChange={newLang => i18n.changeLanguage(newLang)} />}
                         <ExampleList onExampleClicked={onExampleClicked} useGPT4V={useGPT4V} />
                     </div>
-                )}
+                )} */}
                 {!isLoading && answer && !error && (
                     <div className={styles.askAnswerContainer}>
                         <Answer
