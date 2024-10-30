@@ -6,34 +6,21 @@
   "login": "Connexion",
   "logout": "D\u00e9connexion",
   "clearChat": "Effacer le chat",
-  "upload": {
-    "fileLabel": "T\u00e9l\u00e9charger le fichier:",
-    "uploadedFilesLabel": "Fichiers pr\u00e9c\u00e9demment t\u00e9l\u00e9charg\u00e9s:",
-    "noFilesUploaded": "Aucun fichier t\u00e9l\u00e9charg\u00e9 pour le moment",
-    "loading": "Chargement...",
-    "manageFileUploads": "G\u00e9rer les t\u00e9l\u00e9chargements de fichiers",
-    "uploadingFiles": "T\u00e9l\u00e9chargement de fichiers...",
-    "uploadedFileError": "Erreur lors du t\u00e9l\u00e9chargement du fichier - veuillez r\u00e9essayer ou contacter l'administrateur.",
-    "deleteFile": "Supprimer le fichier",
-    "deletingFile": "Suppression du fichier...",
-    "errorDeleting": "Erreur lors de la suppression.",
-    "fileDeleted": "Fichier supprim\u00e9"
-  },
   "developerSettings": "Param\u00e8tres d\u00e9veloppeur",
   "chatEmptyStateTitle": "Discutez avec vos donn\u00e9es",
   "chatEmptyStateSubtitle": "Demandez n'importe quoi ou essayez un exemple",
   "defaultExamples": {
-    "1": "Qu'est-ce qui est inclus dans mon plan Northwind Health Plus qui n'est pas dans le standard?",
-    "2": "Qu'arrive-t-il lors d'un examen de performance?",
-    "3": "Qu'est-ce qu'un Product Manager fait?",
-    "placeholder": "Tapez une nouvelle question (par exemple, mon plan couvre-t-il les examens oculaires annuels?)"
+    "1": "TODO",
+    "2": "TODO",
+    "3": "TODO",
+    "placeholder": "Tapez une nouvelle question \u00e9ci"
   },
   "askTitle": "Demandez \u00e0 vos donn\u00e9es",
   "gpt4vExamples": {
-    "1": "Comparez l'impact des taux d'int\u00e9r\u00eat et du PIB sur les march\u00e9s financiers.",
-    "2": "Quelle est la tendance pr\u00e9vue pour l'indice S&P 500 au cours des cinq prochaines ann\u00e9es? Comparez-le aux performances pass\u00e9es de l'S&P 500",
-    "3": "Pouvez-vous identifier une corr\u00e9lation entre les prix du p\u00e9trole et les tendances du march\u00e9 boursier?",
-    "placeholder": "Exemple: Mon plan couvre-t-il les examens oculaires annuels?"
+    "1": "TODO",
+    "2": "TODO",
+    "3": "TODO",
+    "placeholder": "Tapez une nouvelle question \u00e9ci"
   },
   "generatingAnswer": "G\u00e9n\u00e9ration de la r\u00e9ponse",
   "citationWithColon": "Citation:",

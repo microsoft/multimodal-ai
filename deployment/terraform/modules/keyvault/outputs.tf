@@ -4,6 +4,12 @@ output "key_vault_id" {
   sensitive   = false
 }
 
+output "key_vault_name" {
+  value       = azurerm_key_vault.key_vault.name
+  description = "Specifies the name of the Key Vault."
+  sensitive   = false
+}
+
 output "key_vault_uri" {
   value       = azurerm_key_vault.key_vault.vault_uri
   description = "Specifies the resource ID of the Key Vault."

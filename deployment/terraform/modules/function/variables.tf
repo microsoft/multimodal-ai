@@ -12,7 +12,7 @@ variable "resource_group_name" {
   sensitive   = false
   validation {
     condition     = length(var.resource_group_name) >= 2
-    error_message = "Please specify a valid name."
+    error_message = "Please specify a valid name longer than 2 characters."
   }
 }
 
@@ -35,7 +35,7 @@ variable "function_name" {
   sensitive   = false
   validation {
     condition     = length(var.function_name) >= 2
-    error_message = "Please specify a valid name."
+    error_message = "Please specify a valid name longer than 2 characters."
   }
 }
 
@@ -91,10 +91,6 @@ variable "function_sku" {
   description = "Specifies the SKU for the function app."
   type        = string
   sensitive   = false
-  validation {
-    condition     = contains(["S1", "S2", "S3", "EP1", "EP2", "EP3"], var.function_sku)
-    error_message = "Please use an allowed value: \"S1\",\"S2\",\"S3\",\"EP1\", \"EP2\", \"EP3\"."
-  }
 }
 
 variable "function_application_insights_instrumentation_key" {
@@ -103,7 +99,7 @@ variable "function_application_insights_instrumentation_key" {
   sensitive   = false
   validation {
     condition     = length(var.function_application_insights_instrumentation_key) >= 2
-    error_message = "Please specify a valid name."
+    error_message = "Please specify a valid name longer than 2 characters."
   }
 }
 
@@ -113,7 +109,7 @@ variable "function_application_insights_connection_string" {
   sensitive   = false
   validation {
     condition     = length(var.function_application_insights_connection_string) >= 2
-    error_message = "Please specify a valid name."
+    error_message = "Please specify a valid name longer than 2 characters."
   }
 }
 
@@ -126,6 +122,12 @@ variable "log_analytics_workspace_id" {
     condition     = length(split("/", var.log_analytics_workspace_id)) == 9
     error_message = "Please specify a valid resource ID."
   }
+}
+
+variable "skills_function_appregistration_client_id" {
+  description = "Specifies the client id of the app registration created"
+  type        = string
+  sensitive   = false
 }
 
 # Network variables

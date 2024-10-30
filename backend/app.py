@@ -1,4 +1,3 @@
-import sys
 import dataclasses
 import io
 import json
@@ -17,13 +16,12 @@ from azure.cognitiveservices.speech import (
     SpeechSynthesizer,
 )
 from azure.core.exceptions import ResourceNotFoundError
-from azure.identity.aio import DefaultAzureCredential, get_bearer_token_provider, ManagedIdentityCredential
+from azure.identity.aio import DefaultAzureCredential, get_bearer_token_provider
 from azure.monitor.opentelemetry import configure_azure_monitor
 from azure.search.documents.aio import SearchClient
 from azure.search.documents.indexes.aio import SearchIndexClient
 from azure.storage.blob.aio import ContainerClient
 from azure.storage.blob.aio import StorageStreamDownloader as BlobDownloader
-from azure.storage.filedatalake.aio import FileSystemClient
 from azure.storage.filedatalake.aio import StorageStreamDownloader as DatalakeDownloader
 from openai import AsyncAzureOpenAI, AsyncOpenAI
 from opentelemetry.instrumentation.aiohttp_client import AioHttpClientInstrumentor
@@ -58,7 +56,6 @@ from config import (
     CONFIG_CHAT_VISION_APPROACH,
     CONFIG_CREDENTIAL,
     CONFIG_GPT4V_DEPLOYED,
-    CONFIG_INGESTER,
     CONFIG_OPENAI_CLIENT,
     CONFIG_SEARCH_CLIENT,
     CONFIG_SEMANTIC_RANKER_DEPLOYED,
@@ -70,7 +67,6 @@ from config import (
     CONFIG_SPEECH_SERVICE_TOKEN,
     CONFIG_SPEECH_SERVICE_VOICE,
     CONFIG_USER_BLOB_CONTAINER_CLIENT,
-    CONFIG_USER_UPLOAD_ENABLED,
     CONFIG_VECTOR_SEARCH_ENABLED,
 )
 from core.authentication import AuthenticationHelper
@@ -106,7 +102,7 @@ async def assets(path):
     return await send_from_directory(Path(__file__).resolve().parent / "static" / "assets", path)
 
 
-@bp.route("/content/<path>")
+@bp.route("/content/<path:path>")
 @authenticated_path
 async def content_file(path: str, auth_claims: Dict[str, Any]):
     """
@@ -128,18 +124,6 @@ async def content_file(path: str, auth_claims: Dict[str, Any]):
         blob = await blob_container_client.get_blob_client(path).download_blob()
     except ResourceNotFoundError:
         logging.info("Path not found in general Blob container: %s", path)
-        if quart_app.config[CONFIG_USER_UPLOAD_ENABLED]:
-            try:
-                user_oid = auth_claims["oid"]
-                user_blob_container_client = quart_app.config[CONFIG_USER_BLOB_CONTAINER_CLIENT]
-                user_directory_client: FileSystemClient = user_blob_container_client.get_directory_client(user_oid)
-                file_client = user_directory_client.get_file_client(path)
-                blob = await file_client.download_file()
-            except ResourceNotFoundError:
-                logging.exception("Path not found in DataLake: %s", path)
-                abort(404)
-        else:
-            abort(404)
     if not blob.properties or not blob.properties.has_key("content_settings"):
         abort(404)
     mime_type = blob.properties["content_settings"]["content_type"]
@@ -262,7 +246,6 @@ def config():
             "showGPT4VOptions": quart_app.config[CONFIG_GPT4V_DEPLOYED],
             "showSemanticRankerOption": quart_app.config[CONFIG_SEMANTIC_RANKER_DEPLOYED],
             "showVectorOption": quart_app.config[CONFIG_VECTOR_SEARCH_ENABLED],
-            "showUserUpload": quart_app.config[CONFIG_USER_UPLOAD_ENABLED],
             "showSpeechInput": quart_app.config[CONFIG_SPEECH_INPUT_ENABLED],
             "showSpeechOutputBrowser": quart_app.config[CONFIG_SPEECH_OUTPUT_BROWSER_ENABLED],
             "showSpeechOutputAzure": quart_app.config[CONFIG_SPEECH_OUTPUT_AZURE_ENABLED],
@@ -326,8 +309,6 @@ async def setup_clients():
     # Shared by all OpenAI deployments
     OPENAI_HOST = os.getenv("OPENAI_HOST", "azure")
     OPENAI_CHATGPT_MODEL = os.environ["AZURE_OPENAI_CHATGPT_MODEL"]
-    OPENAI_EMB_MODEL = os.getenv("AZURE_OPENAI_EMB_MODEL_NAME", "text-embedding-ada-002")
-    OPENAI_EMB_DIMENSIONS = int(os.getenv("AZURE_OPENAI_EMB_DIMENSIONS", 1536))
     # Used with Azure OpenAI deployments
     AZURE_OPENAI_SERVICE = os.getenv("AZURE_OPENAI_SERVICE")
     AZURE_OPENAI_GPT4V_DEPLOYMENT = os.environ.get("AZURE_OPENAI_GPT4V_DEPLOYMENT")
@@ -335,9 +316,7 @@ async def setup_clients():
     AZURE_OPENAI_CHATGPT_DEPLOYMENT = (
         os.getenv("AZURE_OPENAI_CHATGPT_DEPLOYMENT") if OPENAI_HOST.startswith("azure") else None
     )
-    AZURE_OPENAI_EMB_DEPLOYMENT = os.getenv("AZURE_OPENAI_EMB_DEPLOYMENT") if OPENAI_HOST.startswith("azure") else None
     AZURE_OPENAI_CUSTOM_URL = os.getenv("AZURE_OPENAI_CUSTOM_URL")
-    AZURE_VISION_ENDPOINT = os.getenv("AZURE_VISION_ENDPOINT", "")
     # Used only with non-Azure OpenAI deployments
     OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
     OPENAI_ORGANIZATION = os.getenv("OPENAI_ORGANIZATION")
@@ -364,7 +343,6 @@ async def setup_clients():
     AZURE_SPEECH_VOICE = os.getenv("AZURE_SPEECH_VOICE", "en-US-AndrewMultilingualNeural")
 
     USE_GPT4V = os.getenv("USE_GPT4V", "").lower() == "true"
-    USE_USER_UPLOAD = os.getenv("USE_USER_UPLOAD", "").lower() == "true"
     USE_SPEECH_INPUT_BROWSER = os.getenv("USE_SPEECH_INPUT_BROWSER", "").lower() == "true"
     USE_SPEECH_OUTPUT_BROWSER = os.getenv("USE_SPEECH_OUTPUT_BROWSER", "").lower() == "true"
     USE_SPEECH_OUTPUT_AZURE = os.getenv("USE_SPEECH_OUTPUT_AZURE", "").lower() == "true"
@@ -407,47 +385,6 @@ async def setup_clients():
         enable_global_documents=AZURE_ENABLE_GLOBAL_DOCUMENT_ACCESS,
         enable_unauthenticated_access=AZURE_ENABLE_UNAUTHENTICATED_ACCESS,
     )
-
-    if USE_USER_UPLOAD:
-        quart_app.logger.info("USE_USER_UPLOAD is true, setting up user upload feature")
-        if not AZURE_USERSTORAGE_ACCOUNT or not AZURE_USERSTORAGE_CONTAINER:
-            raise ValueError(
-                "AZURE_USERSTORAGE_ACCOUNT and AZURE_USERSTORAGE_CONTAINER must be set when USE_USER_UPLOAD is true"
-            )
-        user_blob_container_client = FileSystemClient(
-            f"https://{AZURE_USERSTORAGE_ACCOUNT}.dfs.core.windows.net",
-            AZURE_USERSTORAGE_CONTAINER,
-            credential=azure_credential,
-        )
-        quart_app.config[CONFIG_USER_BLOB_CONTAINER_CLIENT] = user_blob_container_client
-
-        # Set up ingester
-        file_processors = setup_file_processors(
-            azure_credential=azure_credential,
-            document_intelligence_service=os.getenv("AZURE_DOCUMENTINTELLIGENCE_SERVICE"),
-            local_pdf_parser=os.getenv("USE_LOCAL_PDF_PARSER", "").lower() == "true",
-            local_html_parser=os.getenv("USE_LOCAL_HTML_PARSER", "").lower() == "true",
-            search_images=USE_GPT4V,
-        )
-        search_info = await setup_search_info(
-            search_service=AZURE_SEARCH_SERVICE, index_name=AZURE_SEARCH_INDEX, azure_credential=azure_credential
-        )
-        text_embeddings_service = setup_embeddings_service(
-            azure_credential=azure_credential,
-            openai_host=OPENAI_HOST,
-            openai_model_name=OPENAI_EMB_MODEL,
-            openai_service=AZURE_OPENAI_SERVICE,
-            openai_custom_url=AZURE_OPENAI_CUSTOM_URL,
-            openai_deployment=AZURE_OPENAI_EMB_DEPLOYMENT,
-            openai_dimensions=OPENAI_EMB_DIMENSIONS,
-            openai_key=clean_key_if_exists(OPENAI_API_KEY),
-            openai_org=OPENAI_ORGANIZATION,
-            disable_vectors=os.getenv("USE_VECTORS", "").lower() == "false",
-        )
-        ingester = UploadUserFileStrategy(
-            search_info=search_info, embeddings=text_embeddings_service, file_processors=file_processors
-        )
-        quart_app.config[CONFIG_INGESTER] = ingester
 
     # Used by the OpenAI SDK
     openai_client: AsyncOpenAI
@@ -502,7 +439,6 @@ async def setup_clients():
     quart_app.config[CONFIG_GPT4V_DEPLOYED] = bool(USE_GPT4V)
     quart_app.config[CONFIG_SEMANTIC_RANKER_DEPLOYED] = AZURE_SEARCH_SEMANTIC_RANKER != "disabled"
     quart_app.config[CONFIG_VECTOR_SEARCH_ENABLED] = os.getenv("USE_VECTORS", "").lower() != "false"
-    quart_app.config[CONFIG_USER_UPLOAD_ENABLED] = bool(USE_USER_UPLOAD)
     quart_app.config[CONFIG_SPEECH_INPUT_ENABLED] = USE_SPEECH_INPUT_BROWSER
     quart_app.config[CONFIG_SPEECH_OUTPUT_BROWSER_ENABLED] = USE_SPEECH_OUTPUT_BROWSER
     quart_app.config[CONFIG_SPEECH_OUTPUT_AZURE_ENABLED] = USE_SPEECH_OUTPUT_AZURE
@@ -515,9 +451,6 @@ async def setup_clients():
         auth_helper=auth_helper,
         chatgpt_model=OPENAI_CHATGPT_MODEL,
         chatgpt_deployment=AZURE_OPENAI_CHATGPT_DEPLOYMENT,
-        embedding_model=OPENAI_EMB_MODEL,
-        embedding_deployment=AZURE_OPENAI_EMB_DEPLOYMENT,
-        embedding_dimensions=OPENAI_EMB_DIMENSIONS,
         sourcepage_field=KB_FIELDS_SOURCEPAGE,
         content_field=KB_FIELDS_CONTENT,
         query_language=AZURE_SEARCH_QUERY_LANGUAGE,
@@ -530,9 +463,6 @@ async def setup_clients():
         auth_helper=auth_helper,
         chatgpt_model=OPENAI_CHATGPT_MODEL,
         chatgpt_deployment=AZURE_OPENAI_CHATGPT_DEPLOYMENT,
-        embedding_model=OPENAI_EMB_MODEL,
-        embedding_deployment=AZURE_OPENAI_EMB_DEPLOYMENT,
-        embedding_dimensions=OPENAI_EMB_DIMENSIONS,
         sourcepage_field=KB_FIELDS_SOURCEPAGE,
         content_field=KB_FIELDS_CONTENT,
         query_language=AZURE_SEARCH_QUERY_LANGUAGE,
@@ -550,13 +480,8 @@ async def setup_clients():
             openai_client=openai_client,
             blob_container_client=blob_container_client,
             auth_helper=auth_helper,
-            vision_endpoint=AZURE_VISION_ENDPOINT,
-            vision_token_provider=token_provider,
             gpt4v_deployment=AZURE_OPENAI_GPT4V_DEPLOYMENT,
             gpt4v_model=AZURE_OPENAI_GPT4V_MODEL,
-            embedding_model=OPENAI_EMB_MODEL,
-            embedding_deployment=AZURE_OPENAI_EMB_DEPLOYMENT,
-            embedding_dimensions=OPENAI_EMB_DIMENSIONS,
             sourcepage_field=KB_FIELDS_SOURCEPAGE,
             content_field=KB_FIELDS_CONTENT,
             query_language=AZURE_SEARCH_QUERY_LANGUAGE,
@@ -568,15 +493,10 @@ async def setup_clients():
             openai_client=openai_client,
             blob_container_client=blob_container_client,
             auth_helper=auth_helper,
-            vision_endpoint=AZURE_VISION_ENDPOINT,
-            vision_token_provider=token_provider,
             chatgpt_model=OPENAI_CHATGPT_MODEL,
             chatgpt_deployment=AZURE_OPENAI_CHATGPT_DEPLOYMENT,
             gpt4v_deployment=AZURE_OPENAI_GPT4V_DEPLOYMENT,
             gpt4v_model=AZURE_OPENAI_GPT4V_MODEL,
-            embedding_model=OPENAI_EMB_MODEL,
-            embedding_deployment=AZURE_OPENAI_EMB_DEPLOYMENT,
-            embedding_dimensions=OPENAI_EMB_DIMENSIONS,
             sourcepage_field=KB_FIELDS_SOURCEPAGE,
             content_field=KB_FIELDS_CONTENT,
             query_language=AZURE_SEARCH_QUERY_LANGUAGE,
