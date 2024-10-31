@@ -34,7 +34,7 @@ In this initial release, the Multimodal AI project includes:
 
 - A RAG solution using Azure AI Services that allow users to interact with data contained in text and images (for example, charts or diagrams).
 - A web client (see [references](#references)) that users can interact with to submit prompts, get results and visualize the citations.
-   - Optional authentication via Entra Id.
+   - Authentication via Entra Id can be configured during the initial deployment or afterwards.
 - Reference implementations in Terraform and Bicep.
 - A simple deployment experience, with a minimal set of prerequistes, that can easily be incorporated into CI/CD deployment pipelines.
 - Data processing activities (like chunking, generating embeddings, converting documents to images, etc.) are executed server-side on Azure via Azure AI Search (using built-in capabilities as well as using custom skills).
@@ -47,7 +47,7 @@ In this initial release, the Multimodal AI project includes:
 - Usage of Azure AI Search [custom skills](https://learn.microsoft.com/en-us/azure/search/cognitive-search-custom-skill-interface) (for activities like interacting with Azure Document Intelligence).
 - Leverage AI Search [knowledge storage](https://learn.microsoft.com/en-us/azure/search/knowledge-store-concept-intro) to persist images generated as part of the indexing process.
 
-Please note that additional capabilities, including support for audio and video content, compatibility with other file types, and the enablement of network security features like virtual networks and private endpoints, are on the roadmap and will be incorporated in future releases.
+Please note that additional capabilities, including support for audio and video content, compatibility with other file types, the enablement of network security features like virtual networks and private endpoints, and deployment options via CI/CD pipelines are on the roadmap and will be incorporated in future releases.
 
 ## High-level architecture
 
