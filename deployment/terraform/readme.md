@@ -3,11 +3,29 @@
 ## Requirements
 
 - Terraform v1.6 or later
+  - Check version
+  ```bash
+  terraform --version
+  ```
+  - Update version
+    - Download and update from [Terraform website](https://www.terraform.io/downloads.html)
 - [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)  v2.5 or later
-- Azure CLI Extension authV2. Install it by running the following command:
-```bash
-az extension add --name authV2
-```
+  - Check version
+  ```bash
+  az --version
+  ```
+  - Update version
+    - Download and update from [Azure CLI website](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
+- [Azure CLI Extension authV2](https://docs.microsoft.com/en-us/cli/azure/azure-cli-extensions-overview?view=azure-cli-latest).
+  - Check version
+    ```bash
+    az extension list --output table
+    ```
+  - Update/Install version
+  ```bash
+  az extension add --name authV2
+  ```
+
 - Contributor role in the subscription specified in the **terraform.tfvars** file
 - When authenticated with a user principal, you need one of the following directory roles to be able to create application registration : Application Administrator or Global Administrator
 - When authenticated with a service principal, it needs  one of the following application roles: Application.ReadWrite.OwnedBy or Application.ReadWrite.All. Additionally, you may need the User.Read.All application role when including user principals in the owners property.
@@ -114,13 +132,9 @@ If you receive an error that is similar to output below, this is because authV2 
 
 ```bash
 Error: local-exec provisioner error
-
   with null_resource.update_function_app_allowed_applications,
   on service.tf line 192, in resource "null_resource" "update_function_app_allowed_applications":
  192:   provisioner "local-exec" {
-
-Error running command '      az account set -s 9efe1d6c-8fb1-46aa-979b-9ee6806b2765
-      az webapp auth update --resource-group rg-mmai-2a7fbc48 --name skills-2a7fbc48 --set identityProviders.azureActiveDirectory.validation.defaultAuthorizationPolicy.allowedApplications=[XXXXXXXXXXXXXXXXXXXXXXX]
 .
 .
 ERROR: unrecognized arguments: --set identityProviders.azureActiveDirectory.validation.defaultAuthorizationPolicy.allowedApplications=[XXXXXXXXXXXXXXXXXXXXXXX]
