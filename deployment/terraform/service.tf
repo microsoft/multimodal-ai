@@ -191,6 +191,7 @@ module "aisearch" {
 resource "null_resource" "update_function_app_allowed_applications" {
   provisioner "local-exec" {
     command = <<EOT
+      ${var.subscription_id != "" ? "az account set -s ${var.subscription_id}" : ""}
       az webapp auth update --resource-group ${azurerm_resource_group.resource_group.name} --name ${module.skills.linux_function_app_name} --set identityProviders.azureActiveDirectory.validation.defaultAuthorizationPolicy.allowedApplications=[${module.aisearch.managed_identity_application_id}]
     EOT
   }
@@ -198,19 +199,6 @@ resource "null_resource" "update_function_app_allowed_applications" {
     always_run = "${timestamp()}"
   }
   depends_on = [module.aisearch]
-}
-
-resource "null_resource" "warmup_webapp" {
-  count = var.webapp_auth_settings.enable_auth ? 0 : 1 #when auth is enabled, consent dialog appears
-  provisioner "local-exec" {
-    command = <<EOT
-      curl -u --silent https://${module.backend_webapp.linux_webapp_default_hostname}
-    EOT
-  }
-  triggers = {
-    always_run = "${timestamp()}"
-  }
-  depends_on = [module.backend_webapp]
 }
 
 module "aoai" {
