@@ -106,7 +106,25 @@ terraform apply
 
 - In order to index and use your own documents for the solution follow instructions provided in section [Indexing Documents](#indexing-documents).
 
-## Handling Transient Errors During Deployment
+## Handling Errors During Deployment
+
+### "unrecognized arguments" error
+
+If you receive an error that is similar to output below, this is because authV2 extension is not installed. Install the extension using the command provided in the [Requirements](#requirements) section and try again.
+
+```bash
+Error: local-exec provisioner error
+
+  with null_resource.update_function_app_allowed_applications,
+  on service.tf line 192, in resource "null_resource" "update_function_app_allowed_applications":
+ 192:   provisioner "local-exec" {
+
+Error running command '      az account set -s 9efe1d6c-8fb1-46aa-979b-9ee6806b2765
+      az webapp auth update --resource-group rg-mmai-2a7fbc48 --name skills-2a7fbc48 --set identityProviders.azureActiveDirectory.validation.defaultAuthorizationPolicy.allowedApplications=[XXXXXXXXXXXXXXXXXXXXXXX]
+.
+.
+ERROR: unrecognized arguments: --set identityProviders.azureActiveDirectory.validation.defaultAuthorizationPolicy.allowedApplications=[XXXXXXXXXXXXXXXXXXXXXXX]
+```
 
 ### 504 Gateway Timeout Error
 
@@ -115,7 +133,6 @@ When you deploy compute resources (such as webapp) with minimum capacity, someti
 ```bash
 module.backend_webapp.null_resource.linux_webapp_deployment[0] (local-exec): WARNING: Deployment endpoint responded with status code 504
 module.backend_webapp.null_resource.linux_webapp_deployment[0] (local-exec): ERROR: An error occured during deployment. Status Code: 504, Details: 504.0 GatewayTimeout
-```
 
 In such cases, instead of deleting and repeating entire deployment you can simply redeploy the webapp using following commands.
 
