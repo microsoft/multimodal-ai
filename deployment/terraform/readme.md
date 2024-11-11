@@ -126,6 +126,33 @@ terraform apply
 
 ## Handling Errors During Deployment
 
+### "Failed to connect to MSI" error
+
+You may get following error during deployment because you have not logged in or your token has expired. 
+
+```bash
+│ Error: retrieving static website properties for Storage Account (Subscription: "00000000-0000-0000-0000-000000000000"
+│ Resource Group Name: "rg-mmai-XXXXXXXX"
+│ Storage Account Name: "stXXXXXXXX"): executing request: authorizing request: running Azure CLI: exit status 1: ERROR: Failed to connect to MSI. Please make sure MSI is configured correctly.
+│ Get Token request returned: <Response [400]>
+│ 
+│   with module.storage.azurerm_storage_account.storage,
+│   on modules/storage/storage.tf line 1, in resource "azurerm_storage_account" "storage":
+│    1: resource "azurerm_storage_account" "storage" {
+```
+
+Run "az login" command and try again. Note that you have toi run az login if you are running deployment from Azure Cloud Shell
+
+```bash
+az login
+```
+
+You may use following command to display signed in user
+
+```bash
+az ad signed-in-user show
+```
+
 ### "unrecognized arguments" error
 
 If you receive an error that is similar to output below, this is because authV2 extension is not installed. Install the extension using the command provided in the [Requirements](#requirements) section and try again.
