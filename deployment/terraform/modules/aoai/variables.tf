@@ -78,6 +78,14 @@ variable "aoai_deployments" {
   }))
 }
 
+variable "local_auth_enabled" {
+  description = "Specifies if the key based auth enabled."
+  type        = bool
+  sensitive   = false
+  default     = false
+}
+
+
 # Network variables
 variable "subnet_id" {
   description = "Specifies the subnet ID."

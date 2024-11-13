@@ -211,6 +211,7 @@ module "aoai" {
   cognitive_service_kind     = "OpenAI"
   cognitive_service_sku      = var.openai_service_sku
   aoai_deployments           = var.aoai_deployments
+  local_auth_enabled         = false
 }
 
 module "cognitive_service" {
@@ -234,6 +235,7 @@ module "form_recognizer" {
   cognitive_service_name     = var.form_recognizer_name != "" ? var.form_recognizer_name : "${local.abbrs.cognitiveServicesFormRecognizer}${local.resourceToken}"
   cognitive_service_kind     = "FormRecognizer"
   cognitive_service_sku      = var.form_recognizer_sku
+  local_auth_enabled         = true
 }
 
 module "computer_vision" {
@@ -245,4 +247,5 @@ module "computer_vision" {
   cognitive_service_name     = var.computer_vision_name != "" ? var.computer_vision_name : "${local.abbrs.cognitiveServicesComputerVision}${local.resourceToken}"
   cognitive_service_kind     = "ComputerVision"
   cognitive_service_sku      = var.computer_vision_sku
+  local_auth_enabled         = false
 }
