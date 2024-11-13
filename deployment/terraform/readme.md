@@ -9,22 +9,30 @@
   ```
   - Update version
     - Download and update from [Terraform website](https://www.terraform.io/downloads.html)
-- [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)  v2.5 or later
+- Node.js v18.17  or later and Npm v9.6 or later
+  - Check version
+  ```bash
+  node -v
+  npm -v
+  ```
+  - Update version
+    - Download and update from [Node.JS website](https://nodejs.org/en/download/package-manager)
+- [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli) v2.5 or later
   - Check version
   ```bash
   az --version
   ```
   - Update version
     - Download and update from [Azure CLI website](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
-- [Azure CLI Extension authV2](https://docs.microsoft.com/en-us/cli/azure/azure-cli-extensions-overview?view=azure-cli-latest).
+- [Azure CLI Extension authV2](https://docs.microsoft.com/en-us/cli/azure/azure-cli-extensions-overview?view=azure-cli-latest)
   - Check version
     ```bash
     az extension list --output table
     ```
   - Update/Install version
-  ```bash
-  az extension add --name authV2
-  ```
+    ```bash
+    az extension add --name authV2
+    ```
 
 - Contributor role in the subscription specified in the **terraform.tfvars** file
 - When authenticated with a user principal, you need one of the following directory roles to be able to create application registration : Application Administrator or Global Administrator
