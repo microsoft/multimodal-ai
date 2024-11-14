@@ -25,27 +25,26 @@ resource "azuread_application" "server_app" {
     resource_app_id = data.azuread_application_published_app_ids.well_known.result.MicrosoftGraph
 
     resource_access {
-      id   = data.azuread_service_principal.msgraph.oauth2_permission_scope_ids["User.Read"]
+      id   = azuread_service_principal.msgraph.oauth2_permission_scope_ids["User.Read"]
       type = "Scope"
     }
     resource_access {
-      id   = data.azuread_service_principal.msgraph.oauth2_permission_scope_ids["email"]
+      id   = azuread_service_principal.msgraph.oauth2_permission_scope_ids["email"]
       type = "Scope"
     }
     resource_access {
-      id   = data.azuread_service_principal.msgraph.oauth2_permission_scope_ids["offline_access"]
+      id   = azuread_service_principal.msgraph.oauth2_permission_scope_ids["offline_access"]
       type = "Scope"
     }
     resource_access {
-      id   = data.azuread_service_principal.msgraph.oauth2_permission_scope_ids["openid"]
+      id   = azuread_service_principal.msgraph.oauth2_permission_scope_ids["openid"]
       type = "Scope"
     }
     resource_access {
-      id   = data.azuread_service_principal.msgraph.oauth2_permission_scope_ids["profile"]
+      id   = azuread_service_principal.msgraph.oauth2_permission_scope_ids["profile"]
       type = "Scope"
     }
   }
-
 
   password {
     display_name = local.server_app_secret_name
@@ -96,7 +95,7 @@ resource "azuread_application" "client_app" {
     resource_app_id = data.azuread_application_published_app_ids.well_known.result.MicrosoftGraph
 
     resource_access {
-      id   = data.azuread_service_principal.msgraph.oauth2_permission_scope_ids["User.Read"]
+      id   = azuread_service_principal.msgraph.oauth2_permission_scope_ids["User.Read"]
       type = "Scope"
     }
 
@@ -166,6 +165,7 @@ resource "azuread_service_principal" "client_app" {
   owners    = [data.azurerm_client_config.current.object_id]
 }
 
-data "azuread_service_principal" "msgraph" {
+resource "azuread_service_principal" "msgraph" {
   client_id = data.azuread_application_published_app_ids.well_known.result.MicrosoftGraph
+  use_existing = true
 }
