@@ -48,6 +48,7 @@ resource "null_resource" "linux_webapp_build" {
   count = var.webapp_code_path != "" ? 1 : 0
 
   provisioner "local-exec" {
+    interpreter = local.is_windows ? ["PowerShell", "-Command"] : []
     command = var.webapp_build_command
   }
   depends_on = [azurerm_linux_web_app.linux_webapp]
@@ -56,7 +57,7 @@ resource "null_resource" "linux_webapp_build" {
 # wait for 5m between creation and deployment
 resource "time_sleep" "wait_after_webapp_creation" {
   depends_on      = [azurerm_linux_web_app.linux_webapp]
-  create_duration = "5m"
+  create_duration = "2m"
 }
 
 

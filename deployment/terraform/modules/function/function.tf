@@ -64,7 +64,7 @@ resource "azurerm_linux_function_app" "linux_function_app" {
       tenant_auth_endpoint = "https://login.microsoftonline.com/${data.azurerm_client_config.current.tenant_id}/v2.0"
     }
     login {
-      token_store_enabled = true
+      token_store_enabled = false
     }
   }
 }
