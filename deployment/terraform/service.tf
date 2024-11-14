@@ -191,7 +191,7 @@ module "aisearch" {
 resource "null_resource" "update_function_app_allowed_applications" {
   provisioner "local-exec" {
     interpreter = local.is_windows ? ["PowerShell", "-Command"] : []
-    command = <<EOT
+    command     = <<EOT
       ${var.subscription_id != "" ? "az account set -s ${var.subscription_id}" : ""}
       az webapp auth update --resource-group ${azurerm_resource_group.resource_group.name} --name ${module.skills.linux_function_app_name} --set identityProviders.azureActiveDirectory.validation.defaultAuthorizationPolicy.allowedApplications=[${module.aisearch.managed_identity_application_id}]
     EOT

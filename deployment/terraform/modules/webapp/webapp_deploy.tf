@@ -49,7 +49,7 @@ resource "null_resource" "linux_webapp_build" {
 
   provisioner "local-exec" {
     interpreter = local.is_windows ? ["PowerShell", "-Command"] : []
-    command = var.webapp_build_command
+    command     = var.webapp_build_command
   }
   depends_on = [azurerm_linux_web_app.linux_webapp]
 }
