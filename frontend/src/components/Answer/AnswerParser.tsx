@@ -47,7 +47,7 @@ export function parseAnswerToHtml(answer: string, data_points: any, isStreaming:
                 const parentIds: Record<string, string> = !Array.isArray(data_points) && data_points?.parent_ids ? data_points.parent_ids : {};
 
                 if(parentIds && part.endsWith(".jpg")){
-                    const match = part.match(/-([0-9]+)\./);
+                    const match = part.match(/-([0-9]+)\.jpg/);
                     if (match) {
                         const page_idx = match[1];
                         const parent_id = parentIds[part];
