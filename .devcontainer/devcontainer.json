@@ -1,0 +1,31 @@
+{
+  "name": "Multimodal AI Devcontainer",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+  "features": {
+    "ghcr.io/devcontainers/features/azure-cli:1": {},
+    "ghcr.io/devcontainers/features/terraform:1": {},
+    "ghcr.io/devcontainers/features/powershell:1": {},
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "lts"
+    },
+    "ghcr.io/devcontainers/features/python:1": {
+      "version": "latest"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash",
+        "python.defaultInterpreterPath": "/usr/local/python/current/bin/python3"
+      },
+  "extensions": [
+        "ms-azuretools.vscode-bicep",
+        "hashicorp.terraform",
+        "ms-vscode.powershell",
+        "ms-azuretools.vscode-azurefunctions",
+        "ms-python.python"
+      ]
+    }
+  },
+  "postCreateCommand": "pip3 install pre-commit && az bicep install && pwsh -Command 'Install-Module -Name Az.Accounts,Az.Resources -AllowClobber -Force' && echo 'Dev container setup complete!'"
+}
