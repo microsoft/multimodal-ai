@@ -3,11 +3,37 @@
 ## Requirements
 
 - Terraform v1.6 or later
-- [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)  v2.5 or later
-- Azure CLI Extension authV2. Install it by running the following command:
-```bash
-az extension add --name authV2
-```
+  - Check version
+  ```bash
+  terraform --version
+  ```
+  - Update version
+    - Download and update from [Terraform website](https://www.terraform.io/downloads.html)
+- Node.js v18.17  or later and Npm v9.6 or later
+  - Check version
+  ```bash
+  node -v
+  npm -v
+  ```
+  - Update version
+    - Download and update from [Node.JS website](https://nodejs.org/en/download/package-manager)
+- [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli) v2.5 or later
+  - Check version
+  ```bash
+  az --version
+  ```
+  - Update version
+    - Download and update from [Azure CLI website](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
+- [Azure CLI Extension authV2](https://docs.microsoft.com/en-us/cli/azure/azure-cli-extensions-overview?view=azure-cli-latest)
+  - Check version
+    ```bash
+    az extension list --output table
+    ```
+  - Update/Install version
+    ```bash
+    az extension add --name authV2
+    ```
+
 - Contributor role in the subscription specified in the **terraform.tfvars** file
 - When authenticated with a user principal, you need one of the following directory roles to be able to create application registration : Application Administrator or Global Administrator
 - When authenticated with a service principal, it needs  one of the following application roles: Application.ReadWrite.OwnedBy or Application.ReadWrite.All. Additionally, you may need the User.Read.All application role when including user principals in the owners property.
@@ -68,9 +94,16 @@ Before determining your deployment topology (e.g. where to deploy services), be 
   - location
   - environment_name
 
+- You can also change any of the default values provided in **terraform.tfvars** file. If a value is not provided for resource names, a value will be created automatically. One special note about **appservice_plan_sku** variable is that if you set this to "B1" or "B2", terraform code will automatically upgrade the SKU to B3 for the duration of code deployment and revert it back when deployment is complete. This is in order to avoid possible 504 Gateway Timeout errors during deployment.
+
 - Login to CLI, note that this step is required if you are using Azure Cloud Shell
 ```bash
 az login
+```
+
+- Ensure that you are logged on to the correct tenant. Following command should succeed without any errors.
+```bash
+az account set --subscription <subscription_name_or_id>
 ```
 
 - Run Terraform command line
@@ -83,6 +116,7 @@ terraform apply
 
 - When terraform configuration finishes, it will output the following information:
   - tenant_id : Tenant ID where deployment is done.
+  - subscription_id : Subscription ID where deployment is done.
   - resource_group_name : The resource group created (default name similar to "rg-mmai-12345678").
   - multimodal_ai_web_site: The web site URL for the Multimodal AI web application.
   - documents_source_storage : Name of the storage account to store documents to be indexed.
@@ -92,7 +126,54 @@ terraform apply
   - webapp_server_appregistration_client_id   : Application ID of the backend web app's server app registration in Azure Active Directory, used to support Azure Entra ID authentication for web app.
   - cleanup_command : Command to delete the resources group and app registration created by the deployment.
 
-## Handling Transient Errors During Deployment
+## Using the solution
+
+- Navigate to the web site URL provided in the terraform output variable **multimodal_ai_web_site**. Note that if you used a smaller SKU for web app (e.g. B1 (default) or B2), it may take a few minutes for the web app to start. If you see a 504.0 GatewayTimeout error please refresh the web site .
+
+- In order to index and use your own documents for the solution follow instructions provided in section [Indexing Documents](#indexing-documents).
+
+## Handling Errors During Deployment
+
+### "Failed to connect to MSI" error
+
+You may get following error during deployment because you have not logged in or your token has expired.
+
+```bash
+│ Error: retrieving static website properties for Storage Account (Subscription: "00000000-0000-0000-0000-000000000000"
+│ Resource Group Name: "rg-mmai-XXXXXXXX"
+│ Storage Account Name: "stXXXXXXXX"): executing request: authorizing request: running Azure CLI: exit status 1: ERROR: Failed to connect to MSI. Please make sure MSI is configured correctly.
+│ Get Token request returned: <Response [400]>
+│
+│   with module.storage.azurerm_storage_account.storage,
+│   on modules/storage/storage.tf line 1, in resource "azurerm_storage_account" "storage":
+│    1: resource "azurerm_storage_account" "storage" {
+```
+
+Run "az login" command and try again. Note that you have toi run az login if you are running deployment from Azure Cloud Shell
+
+```bash
+az login
+```
+
+You may use following command to display signed in user
+
+```bash
+az ad signed-in-user show
+```
+
+### "unrecognized arguments" error
+
+If you receive an error that is similar to output below, this is because authV2 extension is not installed. Install the extension using the command provided in the [Requirements](#requirements) section and try again.
+
+```bash
+Error: local-exec provisioner error
+  with null_resource.update_function_app_allowed_applications,
+  on service.tf line 192, in resource "null_resource" "update_function_app_allowed_applications":
+ 192:   provisioner "local-exec" {
+.
+.
+ERROR: unrecognized arguments: --set identityProviders.azureActiveDirectory.validation.defaultAuthorizationPolicy.allowedApplications=[XXXXXXXXXXXXXXXXXXXXXXX]
+```
 
 ### 504 Gateway Timeout Error
 
@@ -101,7 +182,6 @@ When you deploy compute resources (such as webapp) with minimum capacity, someti
 ```bash
 module.backend_webapp.null_resource.linux_webapp_deployment[0] (local-exec): WARNING: Deployment endpoint responded with status code 504
 module.backend_webapp.null_resource.linux_webapp_deployment[0] (local-exec): ERROR: An error occured during deployment. Status Code: 504, Details: 504.0 GatewayTimeout
-```
 
 In such cases, instead of deleting and repeating entire deployment you can simply redeploy the webapp using following commands.
 

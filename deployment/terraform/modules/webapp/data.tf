@@ -17,7 +17,7 @@ data "archive_file" "file_function" {
 
   type        = "zip"
   source_dir  = var.webapp_code_path
-  output_path = "${path.module}/${format("function-${var.webapp_name}-%s.zip", formatdate("YYYY-MM-DD'-'hh_mm_ss", timestamp()))}"
+  output_path = "${path.module}/${format("webapp-${var.webapp_name}-%s.zip", formatdate("YYYY-MM-DD'-'hh_mm_ss", timestamp()))}"
 
   depends_on = [null_resource.linux_webapp_build]
 }

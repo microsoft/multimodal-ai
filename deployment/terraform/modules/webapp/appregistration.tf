@@ -46,17 +46,22 @@ resource "azuread_application" "server_app" {
     }
   }
 
-
   password {
     display_name = local.server_app_secret_name
   }
-  owners = [data.azurerm_client_config.current.object_id]
 
   lifecycle {
     ignore_changes = [
       identifier_uris,
     ]
   }
+}
+
+resource "azuread_application_owner" "server_app_owner" {
+  count = length(azuread_application.server_app) > 0 ? 1 : 0
+
+  application_id  = azuread_application.server_app[0].id
+  owner_object_id = data.azurerm_client_config.current.object_id
 }
 
 resource "azuread_application_identifier_uri" "server_app_identifier_uri" {
@@ -110,20 +115,24 @@ resource "azuread_application" "client_app" {
   # single_page_application {
   #   redirect_uris = [
   #       "https://${azurerm_linux_web_app.linux_webapp.default_hostname}/redirect",
-  #       # "http://localhost:50505/redirect",
-  #       # "http://localhost:5173/redirect"
   #   ]
   # }
   password {
     display_name = local.client_app_secret_name
   }
-  owners = [data.azurerm_client_config.current.object_id]
 
   lifecycle {
     ignore_changes = [
       web, single_page_application,
     ]
   }
+}
+
+resource "azuread_application_owner" "client_app_owner" {
+  count = length(azuread_application.client_app) > 0 ? 1 : 0
+
+  application_id  = azuread_application.client_app[0].id
+  owner_object_id = data.azurerm_client_config.current.object_id
 }
 
 resource "azuread_application_redirect_uris" "client_app_spa" {

@@ -7,6 +7,40 @@ locals {
   delete_file_command_for_windows = "del %s"
   delete_file_command_for_linux   = "rm %s"
   delete_file_command             = local.is_windows ? local.delete_file_command_for_windows : local.delete_file_command_for_linux
+
+  update_sku_command_for_windows = <<EOT
+  $sku_name = az appservice plan show --resource-group ${var.resource_group_name} --name ${azurerm_service_plan.service_plan.name} --query "sku.name" --output tsv
+  if ($sku_name -ieq "B1" -or $sku_name -ieq "B2") {
+      az appservice plan update --resource-group ${var.resource_group_name} --name ${azurerm_service_plan.service_plan.name} --sku B3
+      Start-Sleep -Seconds 60
+  }
+  EOT
+
+  revert_sku_command_for_windows = <<EOT
+  $sku_name = az appservice plan show --resource-group ${var.resource_group_name} --name ${azurerm_service_plan.service_plan.name} --query "sku.name" --output tsv
+  if ($sku_name -ine "${var.webapp_sku}") {
+      az appservice plan update --resource-group ${var.resource_group_name} --name ${azurerm_service_plan.service_plan.name} --sku ${var.webapp_sku}
+  }
+  EOT
+
+  update_sku_command_for_linux = <<EOT
+  sku_name=$(az appservice plan show --resource-group ${var.resource_group_name} --name ${azurerm_service_plan.service_plan.name} --query "sku.name" --output tsv)
+  if [[ "$${sku_name,,}" == "b1" || "$${sku_name,,}" == "b2" ]]; then
+    az appservice plan update --resource-group ${var.resource_group_name} --name ${azurerm_service_plan.service_plan.name} --sku B3
+    sleep 1m
+  fi
+  EOT
+
+  revert_sku_command_for_linux = <<EOT
+  sku_name=$(az appservice plan show --resource-group ${var.resource_group_name} --name ${azurerm_service_plan.service_plan.name} --query "sku.name" --output tsv)
+  if [[ "$${sku_name,,}" != ${var.webapp_sku} ]]; then
+    az appservice plan update --resource-group ${var.resource_group_name} --name ${azurerm_service_plan.service_plan.name} --sku ${var.webapp_sku}
+  fi
+  EOT
+
+  update_sku_command = local.is_windows ? local.update_sku_command_for_windows : local.update_sku_command_for_linux
+  revert_sku_command = local.is_windows ? local.revert_sku_command_for_windows : local.revert_sku_command_for_linux
+
 }
 
 
@@ -14,7 +48,8 @@ resource "null_resource" "linux_webapp_build" {
   count = var.webapp_code_path != "" ? 1 : 0
 
   provisioner "local-exec" {
-    command = var.webapp_build_command
+    interpreter = local.is_windows ? ["PowerShell", "-Command"] : []
+    command     = var.webapp_build_command
   }
   depends_on = [azurerm_linux_web_app.linux_webapp]
 }
@@ -22,13 +57,9 @@ resource "null_resource" "linux_webapp_build" {
 # wait for 5m between creation and deployment
 resource "time_sleep" "wait_after_webapp_creation" {
   depends_on      = [azurerm_linux_web_app.linux_webapp]
-  create_duration = "5m"
+  create_duration = "2m"
 }
 
-#use following to update any appsettings that are not set during webapp creation
-#   az webapp config appsettings set --resource-group <group-name> --name <app-name> --settings SCM_DO_BUILD_DURING_DEPLOYMENT=true
-#Following is th enew command to deploy zip file. However there is currently a bug that causes 504 timeout errors so reverted to the old command "az webapp deployment source config-zip"
-#      az webapp deploy --resource-group ${var.resource_group_name} --name ${var.webapp_name} --src-path ${one(data.archive_file.file_function[*].output_path)} --type zip --timeout 600000
 
 resource "null_resource" "linux_webapp_deployment" {
   count = var.webapp_code_path != "" ? 1 : 0
@@ -41,9 +72,23 @@ resource "null_resource" "linux_webapp_deployment" {
     interpreter = local.is_windows ? ["PowerShell", "-Command"] : []
     command     = <<EOT
       ${var.subscription_id != "" ? "az account set -s ${var.subscription_id}" : ""}
-      az webapp deployment source config-zip --resource-group ${var.resource_group_name} --name ${var.webapp_name} --src ${one(data.archive_file.file_function[*].output_path)} --timeout 900
+      ${local.update_sku_command}
+      az webapp deploy --resource-group ${var.resource_group_name} --name ${var.webapp_name} --src-path ${one(data.archive_file.file_function[*].output_path)} --type zip --async true --track-status
       ${format(local.delete_file_command, one(data.archive_file.file_function[*].output_path))}
     EOT
   }
   depends_on = [time_sleep.wait_after_webapp_creation, null_resource.linux_webapp_build]
+}
+
+resource "null_resource" "linux_webapp_deployment_cleanup" {
+  count = var.webapp_code_path != "" ? 1 : 0
+
+  provisioner "local-exec" {
+    interpreter = local.is_windows ? ["PowerShell", "-Command"] : []
+    command     = <<EOT
+      ${var.subscription_id != "" ? "az account set -s ${var.subscription_id}" : ""}
+      ${local.revert_sku_command}
+    EOT
+  }
+  depends_on = [null_resource.linux_webapp_deployment]
 }
