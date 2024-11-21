@@ -11,7 +11,7 @@ openai_service_sku    = "S0"
 computer_vision_sku   = "S1"
 form_recognizer_sku   = "S0"
 cognitive_service_sku = "S0"
-appservice_plan_sku   = "B1"
+appservice_plan_sku   = "B3"
 search_service_sku    = "standard"
 semantic_search_sku   = "standard"
 
