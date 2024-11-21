@@ -17,7 +17,7 @@ resource "azurerm_cognitive_account" "aoai" {
     # "${reverse(split(var.customer_managed_key.key_vault_id, "/"))[0]}.vault.azure.net",
   ]
   kind               = var.cognitive_service_kind
-  local_auth_enabled = false
+  local_auth_enabled = var.local_auth_enabled
   network_acls {
     default_action = "Allow"
     ip_rules       = []

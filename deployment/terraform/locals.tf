@@ -6,6 +6,7 @@ locals {
 # Generate a unique resource token
 locals {
   resourceToken = lower(join("", [random_id.random.hex]))
+  is_windows    = length(regexall("^[a-z]:", lower(abspath(path.root)))) > 0
 }
 
 # Define tags for resources

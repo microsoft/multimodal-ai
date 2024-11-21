@@ -190,7 +190,9 @@ module "aisearch" {
 
 resource "null_resource" "update_function_app_allowed_applications" {
   provisioner "local-exec" {
-    command = <<EOT
+    interpreter = local.is_windows ? ["PowerShell", "-Command"] : []
+    command     = <<EOT
+      ${var.subscription_id != "" ? "az account set -s ${var.subscription_id}" : ""}
       az webapp auth update --resource-group ${azurerm_resource_group.resource_group.name} --name ${module.skills.linux_function_app_name} --set identityProviders.azureActiveDirectory.validation.defaultAuthorizationPolicy.allowedApplications=[${module.aisearch.managed_identity_application_id}]
     EOT
   }
@@ -198,19 +200,6 @@ resource "null_resource" "update_function_app_allowed_applications" {
     always_run = "${timestamp()}"
   }
   depends_on = [module.aisearch]
-}
-
-resource "null_resource" "warmup_webapp" {
-  count = var.webapp_auth_settings.enable_auth ? 0 : 1 #when auth is enabled, consent dialog appears
-  provisioner "local-exec" {
-    command = <<EOT
-      curl -u --silent https://${module.backend_webapp.linux_webapp_default_hostname}
-    EOT
-  }
-  triggers = {
-    always_run = "${timestamp()}"
-  }
-  depends_on = [module.backend_webapp]
 }
 
 module "aoai" {
@@ -223,6 +212,7 @@ module "aoai" {
   cognitive_service_kind     = "OpenAI"
   cognitive_service_sku      = var.openai_service_sku
   aoai_deployments           = var.aoai_deployments
+  local_auth_enabled         = false
 }
 
 module "cognitive_service" {
@@ -246,6 +236,7 @@ module "form_recognizer" {
   cognitive_service_name     = var.form_recognizer_name != "" ? var.form_recognizer_name : "${local.abbrs.cognitiveServicesFormRecognizer}${local.resourceToken}"
   cognitive_service_kind     = "FormRecognizer"
   cognitive_service_sku      = var.form_recognizer_sku
+  local_auth_enabled         = true
 }
 
 module "computer_vision" {
@@ -257,4 +248,5 @@ module "computer_vision" {
   cognitive_service_name     = var.computer_vision_name != "" ? var.computer_vision_name : "${local.abbrs.cognitiveServicesComputerVision}${local.resourceToken}"
   cognitive_service_kind     = "ComputerVision"
   cognitive_service_sku      = var.computer_vision_sku
+  local_auth_enabled         = false
 }
