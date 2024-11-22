@@ -1,10 +1,10 @@
 ## Deployment instructions using Bicep
 
 ### Requirements
-- PowerShell >= 7.4.5
-- Bicep CLI > 0.16.1
-- Az.* PowerShell modules installed
-- Microsoft-Graph PowerShell module installed
+- [PowerShell >= 7.4.5](https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell?view=powershell-7.4)
+- [Bicep CLI > 0.16.1](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/install)
+- [Az.* PowerShell modules installed](https://learn.microsoft.com/en-us/powershell/azure/install-azure-powershell?view=azps-13.0.0)
+- [Microsoft-Graph PowerShell module installed](https://learn.microsoft.com/en-us/powershell/microsoftgraph/installation?view=graph-powershell-1.0)
 
 ### Simple Deployment
 
