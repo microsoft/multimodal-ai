@@ -6,6 +6,7 @@
 - [Az.* PowerShell modules installed](https://learn.microsoft.com/en-us/powershell/azure/install-azure-powershell?view=azps-13.0.0)
 - [Microsoft-Graph PowerShell module installed](https://learn.microsoft.com/en-us/powershell/microsoftgraph/installation?view=graph-powershell-1.0)
 
+
 ## Limitations
 This solution uses latest functionality for most services provided. However, this functionality is only available at certain regions for some of the services. You may determine location for services using following parameters in **terraform.tfvars** file:
 
@@ -54,6 +55,7 @@ Before determining your deployment topology (e.g. where to deploy services), be 
   - japaneast
 
   Regions that support Multimodal embeddings are published [here](https://learn.microsoft.com/en-us/azure/ai-services/computer-vision/overview-image-analysis?tabs=4-0#region-availability)
+
 
 ### Simple Deployment
 
