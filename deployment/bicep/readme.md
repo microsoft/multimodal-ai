@@ -113,17 +113,17 @@ Please note that executing the above command will create application registratio
 
 ### Using the Solution
 
-1. **Upload Your PDF Documents**  
+1. **Upload Your PDF Documents**
    Begin by uploading your PDF files to the blob storage container. By default, the container is named `docs`. Ensure your documents are correctly placed here for indexing.
 
-2. **Run the Indexer**  
-   To process your uploaded PDF files in your Azure AI Search instance:  
-   - Go to the Azure AI Search instance and navigate to the **Search management** section.  
-   - Select **Indexers** and click on the name of your indexer.  
-   - On the indexer's details page, click **Run** to start the indexing process.  
+2. **Run the Indexer**
+   To process your uploaded PDF files in your Azure AI Search instance:
+   - Go to the Azure AI Search instance and navigate to the **Search management** section.
+   - Select **Indexers** and click on the name of your indexer.
+   - On the indexer's details page, click **Run** to start the indexing process.
    - The time required for the indexer to complete depends on the number and size of the documents. Typically, this can range from a few seconds to several minutes. Use the **Refresh** button on the details page to monitor progress.
 
-3. **Interact with the Web Application**  
+3. **Interact with the Web Application**
    Once the indexer has successfully completed, open the web application and start asking your questions. The indexed data will be ready to support your queries.
    > [!TIP]
    >
