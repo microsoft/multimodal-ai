@@ -87,8 +87,57 @@ Before determining your deployment topology (e.g. where to deploy services), be 
 
   Regions that support Multimodal embeddings are published [here](https://learn.microsoft.com/en-us/azure/ai-services/computer-vision/overview-image-analysis?tabs=4-0#region-availability)
 
+## Terraform prerequisites deployment (optional)
+
+In case you don't already have a vnet, network security group, route table and private DNS zones already deployed in your subscription, then first navigate to the directory [`/deployment/terraform/prerequisites`](/deployment/terraform/prerequisites). Edit the file called `vars.tfvars` providing your values.
+
+Next, open the terminal/command line and navigate to the folder [`/deployment/terraform/prerequisites`](/deployment/terraform/prerequisites). Now type the following in the command line:
+
+```sh
+terraform init
+```
+
+This command will download the necessary Terraform providers and configure the project. Next, type:
+
+```sh
+terraform apply -var-file .\vars.tfvars
+```
+
+This command will first return a plan describing the changes that will be applied to Azure once confirmed. Before applying the changes to Azure, Terraform will ask for your confirmation.
+
+Type the following into the command line to apply the changes:
+
+```sh
+yes
+```
+
+Now you will see that Terraform creates a resource group with a virtual network, network security group, route table and will create the **networkingvars.tfvars** file under /deployment/terraform/infra folder. "networkingvars.tfvars" contains resource IDs to run the terraform deployment, which you will require as part of the next step.
+
 ## Deployment
 
+- Next, create a file called `networkingvars.tfvars` and paste the following content and replace the placeholders. If you have run prerequisites config, you can skip this step as the ``networkingvars.tfvars` file will already be created and and populated with all the required parameters.
+
+  ```hcl
+  # Network variables
+  connectivity_delay_in_seconds = 0
+  vnet_id                       = "/subscriptions/<subscription-id>/resourceGroups/<resource-group-name>/providers/Microsoft.Network/virtualNetworks/<vnet-name>"
+  nsg_id                        = "/subscriptions/<subscription-id>/resourceGroups/<resource-group-name>/providers/Microsoft.Network/networkSecurityGroups/<nsg-name>"
+  route_table_id                = "/subscriptions/<subscription-id>/resourceGroups/<resource-group-name>/providers/Microsoft.Network/routeTables/<route-table-name>"
+  subnet_cidr_function          = "10.0.0.0/26"
+  subnet_cidr_private_endpoints = "10.0.0.64/26"
+
+  # DNS variables
+  private_dns_zone_id_blob               = "/subscriptions/<subscription-id>/resourceGroups/<resource-group-name>/providers/Microsoft.Network/privateDnsZones/privatelink.blob.core.windows.net"
+  private_dns_zone_id_queue              = "/subscriptions/<subscription-id>/resourceGroups/<resource-group-name>/providers/Microsoft.Network/privateDnsZones/privatelink.queue.core.windows.net"
+  private_dns_zone_id_table              = "/subscriptions/<subscription-id>/resourceGroups/<resource-group-name>/providers/Microsoft.Network/privateDnsZones/privatelink.table.core.windows.net"
+  private_dns_zone_id_file               = "/subscriptions/<subscription-id>/resourceGroups/<resource-group-name>/providers/Microsoft.Network/privateDnsZones/privatelink.file.core.windows.net"
+  private_dns_zone_id_vault              = "/subscriptions/<subscription-id>/resourceGroups/<resource-group-name>/providers/Microsoft.Network/privateDnsZones/privatelink.vaultcore.azure.net"
+  private_dns_zone_id_sites              = "/subscriptions/<subscription-id>/resourceGroups/<resource-group-name>/providers/Microsoft.Network/privateDnsZones/privatelink.azurewebsites.net"
+  private_dns_zone_id_open_ai            = "/subscriptions/<subscription-id>/resourceGroups/<resource-group-name>/providers/Microsoft.Network/privateDnsZones/privatelink.openai.azure.com"
+  private_dns_zone_id_cognitive_services = "/subscriptions/<subscription-id>/resourceGroups/<resource-group-name>/providers/Microsoft.Network/privateDnsZones/privatelink.cognitiveservices.azure.com"
+
+  ```
+  
 - Edit and set mandatory variables in **terraform.tfvars** file
   - subscription_id
   - location
@@ -111,7 +160,7 @@ az account set --subscription <subscription_name_or_id>
 ```bash
 cd deployment/terraform
 terraform init
-terraform apply
+terraform apply -var-file .\terraform.tfvars -var-file .\networkingvars.tfvars
 ```
 
 - When terraform configuration finishes, it will output the following information:
@@ -252,7 +301,7 @@ By default web application is deployed with Azure Active Directory authenticatio
     .
     .
   }
-  ```
+```
 
 #### Client app registration for Web App
 

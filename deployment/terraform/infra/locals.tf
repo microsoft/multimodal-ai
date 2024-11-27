@@ -1,6 +1,6 @@
 # Abbreviations from JSON file (represented as Terraform locals)
 locals {
-  abbrs = jsondecode(file("abbreviations.json"))
+  abbrs = jsondecode(file("../abbreviations.json"))
 }
 
 # Generate a unique resource token

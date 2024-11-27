@@ -499,3 +499,4 @@ node_modules
 static
 
 local.settings.json
+networkingvars.tfvars
