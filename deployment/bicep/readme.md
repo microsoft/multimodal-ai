@@ -8,13 +8,13 @@
 
 
 ## Limitations
-This solution uses latest functionality for most services provided. However, this functionality is only available at certain regions for some of the services. You may determine location for services using following parameters in **terraform.tfvars** file:
+This solution uses latest functionality for most services provided. However, this functionality is only available at certain regions for some of the services. You may determine location for services using following parameters in **multimodal-ai.bicepparam** file:
 
 - location: This is used as the default location for all services not specified below
-- openai_service_location
-- search_service_location (This is also used to deploy cognitive service (Azure AI services multi-service account) used by search service  )
-- form_recognizer_service_location
-- computer_vision_service_location
+- computer_vision_service_location: aiVisionConfig.location
+- form_recognizer_service_location: docIntelConfig.location
+- search_service_location: aiSearchConfig.location
+- openai_service_location: azureOpenAiConfig.cognitiveServicesConfig.location
 
 Before determining your deployment topology (e.g. where to deploy services), be aware of following restrictions.
 
