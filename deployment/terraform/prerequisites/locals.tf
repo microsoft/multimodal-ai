@@ -1,6 +1,6 @@
 locals {
   # Naming locals
-  prefix = "${lower(var.environment_name)}"
+  prefix = lower(var.environment_name)
 
   abbrs = jsondecode(file("../abbreviations.json"))
 

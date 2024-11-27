@@ -26,8 +26,8 @@ terraform {
 }
 
 provider "azurerm" {
-  environment                     = "public"
-  storage_use_azuread             = true
+  environment         = "public"
+  storage_use_azuread = true
 
   features {
     key_vault {

@@ -150,7 +150,7 @@ module "backend_webapp" {
   }
 
   webapp_build_command = <<EOT
-      cd ../../frontend
+      cd ../../../frontend
       npm install
       npm run build
   EOT

@@ -28,7 +28,7 @@ variable "resource_group_name" {
 variable "backend_service_code_path" {
   description = "Backend service code path."
   type        = string
-  default     = "../../backend"
+  default     = "../../../backend"
 }
 
 variable "skills_service_code_path" {

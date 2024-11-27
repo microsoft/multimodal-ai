@@ -137,7 +137,7 @@ Now you will see that Terraform creates a resource group with a virtual network,
   private_dns_zone_id_cognitive_services = "/subscriptions/<subscription-id>/resourceGroups/<resource-group-name>/providers/Microsoft.Network/privateDnsZones/privatelink.cognitiveservices.azure.com"
 
   ```
-  
+
 - Edit and set mandatory variables in **terraform.tfvars** file
   - subscription_id
   - location
