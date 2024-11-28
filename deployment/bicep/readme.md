@@ -73,10 +73,11 @@ Please note that executing the above command will create application registratio
    - The time required for the indexer to complete depends on the number and size of the documents. Typically, this can range from a few seconds to several minutes. Use the **Refresh** button on the details page to monitor progress.
 
 3. **Interact with the Web Application**
-    Once the indexer has successfully completed, open the web application and start asking your questions. The indexed data will be ready to support your queries.
-    > [!TIP]
-    >
-    > In the web application's **Developer Settings** section, you can explore various search modes and experiment with a range of other configuration options.
+
+   Once the indexer has successfully completed, open the web application and start asking your questions. The indexed data will be ready to support your queries.
+
+   > [!TIP]
+   > In the web application's **Developer Settings** section, you can explore various search modes and experiment with a range of other configuration options.
 
 ### Troubleshooting
 
