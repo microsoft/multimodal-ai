@@ -14,5 +14,6 @@ locals {
     sites              = "privatelink.azurewebsites.net",
     open_ai            = "privatelink.openai.azure.com",
     cognitive_services = "privatelink.cognitiveservices.azure.com",
+    ai_search          = "privatelink.search.windows.net",
   }
 }
