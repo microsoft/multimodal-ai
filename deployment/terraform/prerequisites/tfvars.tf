@@ -1,5 +1,8 @@
 locals {
   infra_tfvars = <<-EOT
+# Logging variables
+log_analytics_workspace_id = "${module.loganalytics.log_analytics_workspace_id}"
+
 # Network variables
 connectivity_delay_in_seconds = 0
 vnet_id                       = "${azurerm_virtual_network.virtual_network.id}"
@@ -21,6 +24,6 @@ private_dns_zone_id_cognitive_services = "${azurerm_private_dns_zone.private_dns
 }
 
 resource "local_file" "infra_tfvars" {
-  filename = "../infra/networkingvars.tfvars"
+  filename = "../infra/prereqs.tfvars"
   content  = local.infra_tfvars
 }

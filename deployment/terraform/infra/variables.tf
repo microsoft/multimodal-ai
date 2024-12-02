@@ -72,10 +72,14 @@ variable "key_vault_sku_name" {
   default     = "standard"
 }
 
-variable "log_analytics_workspace_name" {
-  description = "Log Analytics Name."
+variable "log_analytics_workspace_id" {
+  description = "Specifies the resource ID of the log analytics workspace used for collecting logs."
   type        = string
-  default     = ""
+  sensitive   = false
+  validation {
+    condition     = length(split("/", var.log_analytics_workspace_id)) == 9
+    error_message = "Please specify a valid resource ID."
+  }
 }
 
 variable "search_service_name" {

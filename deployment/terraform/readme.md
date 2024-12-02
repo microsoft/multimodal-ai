@@ -111,13 +111,16 @@ Type the following into the command line to apply the changes:
 yes
 ```
 
-Now you will see that Terraform creates a resource group with a virtual network, network security group, route table and will create the **networkingvars.tfvars** file under /deployment/terraform/infra folder. "networkingvars.tfvars" contains resource IDs to run the terraform deployment, which you will require as part of the next step.
+Now you will see that Terraform creates a resource group with a virtual network, network security group, route table and will create the **prereqs.tfvars** file under /deployment/terraform/infra folder. "prereqs.tfvars" contains resource IDs to run the terraform deployment, which you will require as part of the next step.
 
 ## Deployment
 
-- Next, create a file called `networkingvars.tfvars` and paste the following content and replace the placeholders. If you have run prerequisites config, you can skip this step as the ``networkingvars.tfvars` file will already be created and and populated with all the required parameters.
+- Next, create a file called `prereqs.tfvars` and paste the following content and replace the placeholders. If you have run prerequisites config, you can skip this step as the ``prereqs.tfvars` file will already be created and and populated with all the required parameters.
 
   ```hcl
+  # Logging variables
+  log_analytics_workspace_id = "${module.loganalytics.log_analytics_workspace_id}"
+
   # Network variables
   connectivity_delay_in_seconds = 0
   vnet_id                       = "/subscriptions/<subscription-id>/resourceGroups/<resource-group-name>/providers/Microsoft.Network/virtualNetworks/<vnet-name>"
@@ -158,9 +161,9 @@ az account set --subscription <subscription_name_or_id>
 - Run Terraform command line
 
 ```bash
-cd deployment/terraform
+cd deployment/terraform/infra
 terraform init
-terraform apply -var-file .\terraform.tfvars -var-file .\networkingvars.tfvars
+terraform apply -var-file .\terraform.tfvars -var-file .\prereqs.tfvars
 ```
 
 - When terraform configuration finishes, it will output the following information:

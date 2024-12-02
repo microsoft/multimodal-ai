@@ -23,7 +23,6 @@ skills_service_name          = ""
 application_insights_name    = ""
 key_vault_name               = ""
 key_vault_sku_name           = "standard"
-log_analytics_workspace_name = ""
 search_service_name          = ""
 
 search_service_partition_count       = 1
