@@ -87,6 +87,47 @@ As the architectural diagram in the previous depicts, this project deploys and c
    - To provide the documents to be indexed
    - To host the knowledgestore storing the created/extracted images
 
+## Limitations
+Before determining your deployment topology (e.g. where to deploy services), be aware of following restrictions.
+
+- Open AI Service Location: This is the location where the OpenAI service is deployed. This must be a region that supports gpt-35-turbo,0613 models for OpenAI. Valid values at the time this code published are:
+  - australiaeast
+  - canadaeast
+  - eastus
+  - eastus2
+  - francecentral
+  - japaneast
+  - northcentralus
+  - swedencentral
+  - switzerlandnorth
+  - uksouth
+
+  Regions that support gpt-35-turbo,0613 models are published [here](https://learn.microsoft.com/en-us/azure/ai-services/openai/concepts/models#gpt-35-models)
+
+- Form Recognizer / Document Intelligence Service Location: This is the location where the Form Recognizer cognitive service is deployed. This must be a region that supports API 2024-07-31-preview. Valid values at the time this code published are:
+  - eastus
+  - northcentralus
+  - westeurope
+  - westus2
+
+  Regions that support API 2024-07-31-preview are published [here](https://learn.microsoft.com/en-us/azure/cognitive-services/form-recognizer/overview#supported-apis)
+
+- Computer Vision Service Location : This is the location where the Form Recognizer cognitive service is deployed. This must be a region that supports Multimodal embeddings. Valid values at the time this code published are:
+  - eastus
+  - westus
+  - westus2
+  - francecentral
+  - northeurope
+  - westeurope
+  - swedencentral
+  - switzerlandnorth
+  - australiaeast
+  - southeastasia
+  - koreacentral
+  - japaneast
+
+  Regions that support Multimodal embeddings are published [here](https://learn.microsoft.com/en-us/azure/ai-services/computer-vision/overview-image-analysis?tabs=4-0#region-availability)
+
 ## Deployment
 
 This project is designed to streamline enterprise deployment through CI/CD tooling and pipelines while also allowing easy deployment from developer workstations for evaluation purposes. It can be deployed using either Bicep or Terraform. Please select your preferred deployment solution below:

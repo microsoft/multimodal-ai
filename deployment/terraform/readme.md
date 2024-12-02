@@ -38,55 +38,6 @@
 - When authenticated with a user principal, you need one of the following directory roles to be able to create application registration : Application Administrator or Global Administrator
 - When authenticated with a service principal, it needs  one of the following application roles: Application.ReadWrite.OwnedBy or Application.ReadWrite.All. Additionally, you may need the User.Read.All application role when including user principals in the owners property.
 
-## Limitations
-This solution uses latest functionality for most services provided. However, this functionality is only available at certain regions for some of the services. You may determine location for services using following parameters in **terraform.tfvars** file:
-
-- location: This is used as the default location for all services not specified below
-- openai_service_location
-- search_service_location (This is also used to deploy cognitive service (Azure AI services multi-service account) used by search service  )
-- form_recognizer_service_location
-- computer_vision_service_location
-
-Before determining your deployment topology (e.g. where to deploy services), be aware of following restrictions.
-
-- openai_service_location: This is the location where the OpenAI service is deployed. This must be a region that supports gpt-35-turbo,0613 models for OpenAI. Valid values at the time this code published are:
-  - australiaeast
-  - canadaeast
-  - eastus
-  - eastus2
-  - francecentral
-  - japaneast
-  - northcentralus
-  - swedencentral
-  - switzerlandnorth
-  - uksouth
-
-  Regions that support gpt-35-turbo,0613 models are published [here](https://learn.microsoft.com/en-us/azure/ai-services/openai/concepts/models#gpt-35-models)
-
-- form_recognizer_service_location: This is the location where the Form Recognizer cognitive service is deployed. This must be a region that supports API 2024-07-31-preview. Valid values at the time this code published are:
-  - eastus
-  - northcentralus
-  - westeurope
-  - westus2
-
-  Regions that support API 2024-07-31-preview are published [here](https://learn.microsoft.com/en-us/azure/cognitive-services/form-recognizer/overview#supported-apis)
-
-- computer_vision_service_location: This is the location where the Form Recognizer cognitive service is deployed. This must be a region that supports Multimodal embeddings. Valid values at the time this code published are:
-  - eastus
-  - westus
-  - westus2
-  - francecentral
-  - northeurope
-  - westeurope
-  - swedencentral
-  - switzerlandnorth
-  - australiaeast
-  - southeastasia
-  - koreacentral
-  - japaneast
-
-  Regions that support Multimodal embeddings are published [here](https://learn.microsoft.com/en-us/azure/ai-services/computer-vision/overview-image-analysis?tabs=4-0#region-availability)
-
 ## Terraform prerequisites deployment (optional)
 
 In case you don't already have a vnet, network security group, route table and private DNS zones already deployed in your subscription, then first navigate to the directory [`/deployment/terraform/prerequisites`](/deployment/terraform/prerequisites). Edit the file called `vars.tfvars` providing your values.
@@ -119,7 +70,7 @@ Now you will see that Terraform creates a resource group with a virtual network,
 
   ```hcl
   # Logging variables
-  log_analytics_workspace_id = "${module.loganalytics.log_analytics_workspace_id}"
+  log_analytics_workspace_id = "</subscriptions/<subscription-id>/resourceGroups/<resource-group-name>/providers/Microsoft.OperationalInsights/workspaces/<log-analytics-workspace-name>"
 
   # Network variables
   connectivity_delay_in_seconds = 0
@@ -399,6 +350,7 @@ webapp_auth_settings = {
     ```
 
   - To delete app registration created by this terraform script, run the following command. Note that this command generates commands to delete all app registrations whose name start with "skills". You need to run commands separately from command shell.
+
     ```powershell
     az ad app list --show-mine | ConvertFrom-Json | Where-Object { $_.displayName -like "mmai-functionapp*" -or $_.displayName -like "mmai-clientapp*" -or $_.displayName -like "mmai-serverapp*" } | select-object -Property @{Name = 'Command'; Expression = {"az ad app delete --id "+$_.appId+" #"+$_.displayName}} | Format-Table -AutoSize
     ```

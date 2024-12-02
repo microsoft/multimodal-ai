@@ -5,57 +5,7 @@
 - [Bicep CLI > 0.16.1](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/install)
 - [Az.* PowerShell modules installed](https://learn.microsoft.com/en-us/powershell/azure/install-azure-powershell?view=azps-13.0.0)
 - [Microsoft-Graph PowerShell module installed](https://learn.microsoft.com/en-us/powershell/microsoftgraph/installation?view=graph-powershell-1.0)
-
-
-## Limitations
-This solution uses latest functionality for most services provided. However, this functionality is only available at certain regions for some of the services. You may determine location for services using following parameters in **terraform.tfvars** file:
-
-- location: This is used as the default location for all services not specified below
-- openai_service_location
-- search_service_location (This is also used to deploy cognitive service (Azure AI services multi-service account) used by search service  )
-- form_recognizer_service_location
-- computer_vision_service_location
-
-Before determining your deployment topology (e.g. where to deploy services), be aware of following restrictions.
-
-- openai_service_location: This is the location where the OpenAI service is deployed. This must be a region that supports gpt-35-turbo,0613 models for OpenAI. Valid values at the time this code published are:
-  - australiaeast
-  - canadaeast
-  - eastus
-  - eastus2
-  - francecentral
-  - japaneast
-  - northcentralus
-  - swedencentral
-  - switzerlandnorth
-  - uksouth
-
-  Regions that support gpt-35-turbo,0613 models are published [here](https://learn.microsoft.com/en-us/azure/ai-services/openai/concepts/models#gpt-35-models)
-
-- form_recognizer_service_location: This is the location where the Form Recognizer cognitive service is deployed. This must be a region that supports API 2024-07-31-preview. Valid values at the time this code published are:
-  - eastus
-  - northcentralus
-  - westeurope
-  - westus2
-
-  Regions that support API 2024-07-31-preview are published [here](https://learn.microsoft.com/en-us/azure/cognitive-services/form-recognizer/overview#supported-apis)
-
-- computer_vision_service_location: This is the location where the Form Recognizer cognitive service is deployed. This must be a region that supports Multimodal embeddings. Valid values at the time this code published are:
-  - eastus
-  - westus
-  - westus2
-  - francecentral
-  - northeurope
-  - westeurope
-  - swedencentral
-  - switzerlandnorth
-  - australiaeast
-  - southeastasia
-  - koreacentral
-  - japaneast
-
-  Regions that support Multimodal embeddings are published [here](https://learn.microsoft.com/en-us/azure/ai-services/computer-vision/overview-image-analysis?tabs=4-0#region-availability)
-
+- [Node.js v18.17 or later and npm v9.6 or later](https://nodejs.org/en/download/package-manager)
 
 ### Simple Deployment
 
@@ -109,6 +59,25 @@ If you don't have the necessary permissions to create app registrations in Micro
 ```
 
 Please note that executing the above command will create application registrations in Microsoft Entra ID, which requires you to have the appropriate permissions.
+
+### Using the Solution
+
+1. **Upload Your PDF Documents**
+   Begin by uploading your PDF files to the blob storage container. By default, the container is named `docs`. Ensure your documents are correctly placed here for indexing.
+
+2. **Run the Indexer**
+   To process your uploaded PDF files in your Azure AI Search instance:
+   - Go to the Azure AI Search instance and navigate to the **Search management** section.
+   - Select **Indexers** and click on the name of your indexer.
+   - On the indexer's details page, click **Run** to start the indexing process.
+   - The time required for the indexer to complete depends on the number and size of the documents. Typically, this can range from a few seconds to several minutes. Use the **Refresh** button on the details page to monitor progress.
+
+3. **Interact with the Web Application**
+
+   Once the indexer has successfully completed, open the web application and start asking your questions. The indexed data will be ready to support your queries.
+
+   > [!TIP]
+   > In the web application's **Developer Settings** section, you can explore various search modes and experiment with a range of other configuration options.
 
 ### Troubleshooting
 
