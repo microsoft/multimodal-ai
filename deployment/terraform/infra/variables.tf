@@ -482,12 +482,12 @@ variable "route_table_id" {
   }
 }
 
-variable "subnet_cidr_function" {
-  description = "Specifies the subnet cidr range for the function subnet."
+variable "subnet_cidr_web" {
+  description = "Specifies the subnet cidr range for the web and function apps subnet."
   type        = string
   sensitive   = false
   validation {
-    condition     = length(split("/", var.subnet_cidr_function)) == 2
+    condition     = length(split("/", var.subnet_cidr_web)) == 2
     error_message = "Please specify a valid subnet cidr range."
   }
 }

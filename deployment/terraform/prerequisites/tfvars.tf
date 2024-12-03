@@ -8,7 +8,7 @@ connectivity_delay_in_seconds = 0
 vnet_id                       = "${azurerm_virtual_network.virtual_network.id}"
 nsg_id                        = "${azurerm_network_security_group.network_security_group.id}"
 route_table_id                = "${azurerm_route_table.route_table.id}"
-subnet_cidr_function          = "10.0.0.0/26"
+subnet_cidr_web               = "10.0.0.0/26"
 subnet_cidr_private_endpoints = "10.0.0.64/26"
 
 # DNS variables
