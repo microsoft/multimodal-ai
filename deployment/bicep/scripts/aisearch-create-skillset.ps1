@@ -18,7 +18,7 @@ param (
     #Azure OpenAI model name to create embeddings
     [parameter(mandatory = $true)][string] $azureOpenAITextModelName,
 
-    #AI services multi-service account key
+    #AI services multi-service endpoint
     [parameter(mandatory = $true)][string] $aiMultiServiceAccountEndpoint,
 
     #Endpoint for the pdf merge custom skill
