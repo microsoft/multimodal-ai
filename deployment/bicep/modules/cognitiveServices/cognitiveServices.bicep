@@ -36,6 +36,7 @@ resource cognitiveServicesAccount 'Microsoft.CognitiveServices/accounts@2024-04-
   properties: {
     customSubDomainName: name
     publicNetworkAccess: 'Enabled'
+    disableLocalAuth: true
   }
 }
 
