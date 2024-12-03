@@ -32,25 +32,25 @@ resource cognitiveServicesResource 'Microsoft.CognitiveServices/accounts@2024-04
 }
 
 // Role Definitions
-@description('Lets you read and list keys of Cognitive Services. See https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles/ai-machine-learning#cognitive-services-user')
+@description('Lets you read and list keys of Cognitive Services. See https://learn.microsoft.com/azure/role-based-access-control/built-in-roles/ai-machine-learning#cognitive-services-user')
 resource roleDefinitionDocumentIntelligenceCognitiveServicesUser 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
   scope: documentIntelligenceResource
   name: 'a97b65f3-24c7-4388-baec-2e87135dc908'
 }
 
-@description('Lets you read and list keys of Cognitive Services. See https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles/ai-machine-learning#cognitive-services-user')
+@description('Lets you read and list keys of Cognitive Services. See https://learn.microsoft.com/azure/role-based-access-control/built-in-roles/ai-machine-learning#cognitive-services-user')
 resource roleDefinitionAzureAIVisionCognitiveServicesUser 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
   scope: azureAIVisionResource
   name: 'a97b65f3-24c7-4388-baec-2e87135dc908'
 }
 
-@description('Read access to view files, models, deployments. The ability to create completion and embedding calls. See https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles/ai-machine-learning#cognitive-services-openai-user')
+@description('Read access to view files, models, deployments. The ability to create completion and embedding calls. See https://learn.microsoft.com/azure/role-based-access-control/built-in-roles/ai-machine-learning#cognitive-services-openai-user')
 resource roleDefinitionOpenAIUser 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
   scope: azureOpenAIResource
   name: '5e0bd9bd-7b93-4f28-af87-19fc36ad61bd'
 }
 
-@description('Lets you read and list keys of Cognitive Services. See https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles/ai-machine-learning#cognitive-services-user')
+@description('Enables *READ* permission to the Microsoft.CognitiveServices/acccounts resources via ARM control plane. See https://learn.microsoft.com/azure/role-based-access-control/built-in-roles/ai-machine-learning#cognitive-services-user')
 resource roleDefinitionCognitiveServiceUser 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
   scope: cognitiveServicesResource
   name: 'a97b65f3-24c7-4388-baec-2e87135dc908'

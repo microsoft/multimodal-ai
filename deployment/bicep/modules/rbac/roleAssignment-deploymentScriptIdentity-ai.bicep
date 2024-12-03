@@ -17,13 +17,13 @@ resource cognitiveServicesResource 'Microsoft.CognitiveServices/accounts@2024-04
   name: cognitiveServicesresourceName
 }
 
-@description('This is the Search Service Contributor built-in role. See https://learn.microsoft.com/en-gb/azure/role-based-access-control/built-in-roles#ai--machine-learning')
+@description('This is the Search Service Contributor built-in role. See https://learn.microsoft.com/azure/role-based-access-control/built-in-roles#ai--machine-learning')
 resource roleDefinition 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
   scope: searchResource
   name: '7ca78c08-252a-4471-8644-bb5ff32d4ba0'
 }
 
-@description('Lets you read and list keys of Cognitive Services. See https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles/ai-machine-learning#cognitive-services-user')
+@description('Enables *READ* permission to the Microsoft.CognitiveServices/acccounts resources via ARM control. plane See https://learn.microsoft.com/azure/role-based-access-control/built-in-roles/ai-machine-learning#cognitive-services-user')
 resource roleDefinitionCognitiveServiceUser 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
   scope: cognitiveServicesResource
   name: 'a97b65f3-24c7-4388-baec-2e87135dc908'
