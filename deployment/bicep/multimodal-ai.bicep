@@ -277,6 +277,7 @@ module deploymentScriptIdentityRoleAssignmentAI 'modules/rbac/roleAssignment-dep
   params: {
     aiSearchName: aiSearch.outputs.searchResourceName
     managedIdentityPrincipalId: deploymentScriptIdentity.outputs.managedIdentityPrincipalId
+    cognitiveServicesresourceName: azureCognitiveServices.outputs.cognitiveServicesAccountName
   }
 }
 
@@ -287,6 +288,7 @@ module aiSearchRoleAssignmentAI 'modules/rbac/roleAssignment-searchService-ai.bi
     azureOpenAIResourceName: azureOpenAI.outputs.cognitiveServicesAccountName
     azureAIVisionResourceName: azureAIVision.outputs.cognitiveServicesAccountName
     documentIntelligenceResourceName: documentIntelligence.outputs.cognitiveServicesAccountName
+    cognitiveServicesresourceName: azureCognitiveServices.outputs.cognitiveServicesAccountName
     managedIdentityPrincipalId: aiSearch.outputs.searchResourcePrincipalId
   }
 }
@@ -572,7 +574,7 @@ module aiSearchSkillset 'modules/aiSearch/aiSearch-skillset.bicep' = {
     knowledgeStoreStorageContainer: storageAccountDocsContainerName
     pdfMergeCustomSkillEndpoint: azureFunction.outputs.pdfTextImageMergeSkillEndpoint
     aadAppId: empty(functionAppEntraIdRegistration.appId) ? azureFunctionAppRegistration.outputs.appId : functionAppEntraIdRegistration.appId
-    cognitiveServicesAccountId: azureCognitiveServices.outputs.cognitiveServicesAccountId
+    aiMultiServiceAccountEndpoint: 'https://${azureCognitiveServices.outputs.cognitiveServicesAccountName}.cognitiveservices.azure.com/'
     managedIdentityId: deploymentScriptIdentity.outputs.managedIdentityId
   }
 }

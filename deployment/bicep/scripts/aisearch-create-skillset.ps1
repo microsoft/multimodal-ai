@@ -19,7 +19,7 @@ param (
     [parameter(mandatory = $true)][string] $azureOpenAITextModelName,
 
     #AI services multi-service account key
-    [parameter(mandatory = $true)][string] $aiMultiServiceAccountKey,
+    [parameter(mandatory = $true)][string] $aiMultiServiceAccountEndpoint,
 
     #Endpoint for the pdf merge custom skill
     [parameter(mandatory = $true)][string] $pdfMergeCustomSkillEndpoint,
@@ -44,7 +44,7 @@ $replacements = @{
     "azureOpenAI_text_deployment_id"            = "$azureOpenAITextDeploymentId"
     "azureOpenAI_text_model_name"               = "$azureOpenAITextModelName"
     "pdf_text_image_merge_skill_url"            = "$pdfMergeCustomSkillEndpoint"
-    "cognitiveServices_multiService_accountKey" = "$aiMultiServiceAccountKey"
+    "cognitiveServices_multiService_endpoint"   = "$aiMultiServiceAccountEndpoint"
     "storage_account_resource_uri"              = "$knowledgeStoreStorageResourceUri"
     "storage_account_image_container_name"      = "$knowledgeStoreStorageContainer"
     "aad_app_id"                                = "$aadAppId"
@@ -58,11 +58,19 @@ foreach ($key in $replacements.Keys) {
     $jsonTemplate = $jsonTemplate -replace $placeholder, $replacements[$key]
 }
 
-$tokenRequest = Get-AzAccessToken -ResourceUrl "https://search.azure.com/"
-$token = $tokenRequest.token
+try {
+    $tokenRequest = Get-AzAccessToken -ResourceUrl "https://search.azure.com/"
+    if ($null -eq $tokenRequest.token) {
+        throw "Failed to retrieve the token."
+    }
+    $token = $tokenRequest.token
+} catch {
+    Write-Error "Error retrieving the token: $_"
+    exit 1
+}
 
 $aiSearchRequest = @{
-    Uri     = "https://$($aiSearchEndpoint).search.windows.net/skillsets/$($skillsetName)?api-version=2024-05-01-preview"
+    Uri     = "https://$($aiSearchEndpoint).search.windows.net/skillsets/$($skillsetName)?api-version=2024-11-01-preview"
     Headers = @{
         Authorization  = "Bearer $($token)"
         'Content-Type' = 'application/json'
