@@ -18,13 +18,12 @@ semantic_search_sku   = "standard"
 storage_container_name_content        = "docs"
 storage_container_name_knowledgestore = "knowledgestore"
 
-backend_service_name         = ""
-skills_service_name          = ""
-application_insights_name    = ""
-key_vault_name               = ""
-key_vault_sku_name           = "standard"
-log_analytics_workspace_name = ""
-search_service_name          = ""
+backend_service_name      = ""
+skills_service_name       = ""
+application_insights_name = ""
+key_vault_name            = ""
+key_vault_sku_name        = "standard"
+search_service_name       = ""
 
 search_service_partition_count       = 1
 search_service_replica_count         = 1

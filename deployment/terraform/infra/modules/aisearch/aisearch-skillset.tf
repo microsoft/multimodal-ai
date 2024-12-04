@@ -3,7 +3,7 @@ locals {
 }
 
 resource "local_file" "skillset_config" {
-  content = templatefile("${path.module}/../../../library/skillset_template.json", {
+  content = templatefile("${path.module}/../../../../library/skillset_template.json", {
     index_name                                = var.search_service_index_name
     skillset_name                             = var.search_service_skillset_name
     azureOpenAI_endpoint                      = var.azure_openai_endpoint

@@ -1,12 +1,3 @@
-module "loganalytics" {
-  source = "./modules/loganalytics"
-
-  location                     = var.location
-  tags                         = local.tags
-  resource_group_name          = azurerm_resource_group.resource_group.name
-  log_analytics_workspace_name = var.log_analytics_workspace_name != "" ? var.log_analytics_workspace_name : "${local.abbrs.operationalInsightsWorkspaces}${local.resourceToken}"
-}
-
 module "applicationinsights" {
   source = "./modules/applicationinsights"
 
@@ -14,7 +5,7 @@ module "applicationinsights" {
   tags                       = local.tags
   resource_group_name        = azurerm_resource_group.resource_group.name
   application_insights_name  = var.application_insights_name != "" ? var.application_insights_name : "${local.abbrs.insightsComponents}${local.resourceToken}"
-  log_analytics_workspace_id = module.loganalytics.log_analytics_id
+  log_analytics_workspace_id = var.log_analytics_workspace_id
 }
 
 module "keyvault" {
@@ -22,7 +13,7 @@ module "keyvault" {
   location                   = var.location
   tags                       = local.tags
   resource_group_name        = azurerm_resource_group.resource_group.name
-  log_analytics_workspace_id = module.loganalytics.log_analytics_id
+  log_analytics_workspace_id = var.log_analytics_workspace_id
   key_vault_name             = var.key_vault_name != "" ? var.key_vault_name : "${local.abbrs.keyVaultVaults}${local.resourceToken}"
   key_vault_sku_name         = var.key_vault_sku_name
 
@@ -57,7 +48,7 @@ module "storage" {
   storage_account_name            = var.storage_account_name != "" ? var.storage_account_name : substr("${local.abbrs.storageStorageAccounts}${local.resourceToken}", 0, 24)
   storage_account_container_names = [var.storage_container_name_content, var.storage_container_name_knowledgestore]
   # storage_account_share_names      = [var.storage_share_name_function_app]
-  log_analytics_workspace_id = module.loganalytics.log_analytics_id
+  log_analytics_workspace_id = var.log_analytics_workspace_id
   #   subnet_id                = module.network.subnet_private_endpoints_id
   #   cmk_uai_id               = module.user_assigned_identity.user_assigned_identity_id
   #   cmk_key_vault_id         = module.key_vault.key_vault_id
@@ -72,7 +63,7 @@ module "skills" {
   tags                                              = local.tags
   resource_group_name                               = azurerm_resource_group.resource_group.name
   subscription_id                                   = data.azurerm_client_config.current.subscription_id
-  log_analytics_workspace_id                        = module.loganalytics.log_analytics_id
+  log_analytics_workspace_id                        = var.log_analytics_workspace_id
   function_name                                     = var.skills_service_name != "" ? var.skills_service_name : "skills-${local.resourceToken}"
   function_sku                                      = var.appservice_plan_sku
   function_application_insights_connection_string   = module.applicationinsights.application_insights_connection_string
@@ -99,7 +90,7 @@ module "backend_webapp" {
   tags                                            = local.tags
   resource_group_name                             = azurerm_resource_group.resource_group.name
   subscription_id                                 = data.azurerm_client_config.current.subscription_id
-  log_analytics_workspace_id                      = module.loganalytics.log_analytics_id
+  log_analytics_workspace_id                      = var.log_analytics_workspace_id
   webapp_name                                     = var.backend_service_name != "" ? var.backend_service_name : "backend-${local.resourceToken}"
   webapp_sku                                      = var.appservice_plan_sku
   webapp_application_insights_connection_string   = module.applicationinsights.application_insights_connection_string
@@ -150,7 +141,7 @@ module "backend_webapp" {
   }
 
   webapp_build_command = <<EOT
-      cd ../../frontend
+      cd ../../../frontend
       npm install
       npm run build
   EOT
@@ -161,7 +152,7 @@ module "aisearch" {
   location                              = var.search_service_location != "" ? var.search_service_location : var.location
   tags                                  = local.tags
   resource_group_name                   = azurerm_resource_group.resource_group.name
-  log_analytics_workspace_id            = module.loganalytics.log_analytics_id
+  log_analytics_workspace_id            = var.log_analytics_workspace_id
   search_service_name                   = var.search_service_name != "" ? var.search_service_name : "${local.abbrs.searchServices}${local.resourceToken}"
   search_service_sku                    = var.search_service_sku
   semantic_search_sku                   = var.semantic_search_sku
@@ -207,7 +198,7 @@ module "aoai" {
   location                   = var.openai_service_location != "" ? var.openai_service_location : var.location
   tags                       = local.tags
   resource_group_name        = azurerm_resource_group.resource_group.name
-  log_analytics_workspace_id = module.loganalytics.log_analytics_id
+  log_analytics_workspace_id = var.log_analytics_workspace_id
   cognitive_service_name     = var.openai_service_name != "" ? var.openai_service_name : "${local.abbrs.cognitiveServicesOpenAI}${local.resourceToken}"
   cognitive_service_kind     = "OpenAI"
   cognitive_service_sku      = var.openai_service_sku
@@ -220,7 +211,7 @@ module "cognitive_service" {
   location                   = var.search_service_location != "" ? var.search_service_location : var.location # must be in the same location as search service
   tags                       = local.tags
   resource_group_name        = azurerm_resource_group.resource_group.name
-  log_analytics_workspace_id = module.loganalytics.log_analytics_id
+  log_analytics_workspace_id = var.log_analytics_workspace_id
   cognitive_service_name     = var.cognitive_service_name != "" ? var.cognitive_service_name : "${local.abbrs.cognitiveServicesAccounts}${local.resourceToken}"
   cognitive_service_kind     = "CognitiveServices"
   cognitive_service_sku      = var.cognitive_service_sku
@@ -232,7 +223,7 @@ module "form_recognizer" {
   location                   = var.form_recognizer_service_location != "" ? var.form_recognizer_service_location : var.location
   tags                       = local.tags
   resource_group_name        = azurerm_resource_group.resource_group.name
-  log_analytics_workspace_id = module.loganalytics.log_analytics_id
+  log_analytics_workspace_id = var.log_analytics_workspace_id
   cognitive_service_name     = var.form_recognizer_name != "" ? var.form_recognizer_name : "${local.abbrs.cognitiveServicesFormRecognizer}${local.resourceToken}"
   cognitive_service_kind     = "FormRecognizer"
   cognitive_service_sku      = var.form_recognizer_sku
@@ -244,7 +235,7 @@ module "computer_vision" {
   location                   = var.computer_vision_service_location != "" ? var.computer_vision_service_location : var.location
   tags                       = local.tags
   resource_group_name        = azurerm_resource_group.resource_group.name
-  log_analytics_workspace_id = module.loganalytics.log_analytics_id
+  log_analytics_workspace_id = var.log_analytics_workspace_id
   cognitive_service_name     = var.computer_vision_name != "" ? var.computer_vision_name : "${local.abbrs.cognitiveServicesComputerVision}${local.resourceToken}"
   cognitive_service_kind     = "ComputerVision"
   cognitive_service_sku      = var.computer_vision_sku

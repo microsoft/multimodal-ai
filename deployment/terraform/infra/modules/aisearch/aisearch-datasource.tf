@@ -3,7 +3,7 @@ locals {
 }
 
 resource "local_file" "datasource_config" {
-  content = templatefile("${path.module}/../../../library/datasource_blob_template.json", {
+  content = templatefile("${path.module}/../../../../library/datasource_blob_template.json", {
     datasource_name                   = var.search_service_datasource_name
     datasource_description            = "Data source for indexing documents from Azure Blob Storage"
     storage_account_connection_string = "ResourceId=${var.storage_account_id}"
