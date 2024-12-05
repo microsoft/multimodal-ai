@@ -4,8 +4,7 @@ resource "azurerm_linux_function_app" "linux_function_app" {
   resource_group_name = var.resource_group_name
   tags                = var.tags
   identity {
-    type = var.function_user_assigned_identity_id != "" && var.function_user_assigned_identity_id != null ? "SystemAssigned, UserAssigned" : "SystemAssigned"
-    #identity_ids = var.function_user_assigned_identity_id  != "" ? [var.function_user_assigned_identity_id] : []
+    type         = var.function_user_assigned_identity_id != "" && var.function_user_assigned_identity_id != null ? "SystemAssigned, UserAssigned" : "SystemAssigned"
     identity_ids = try(var.function_user_assigned_identity_id != "" && var.function_user_assigned_identity_id != null ? [var.function_user_assigned_identity_id] : [], [])
   }
 
@@ -20,7 +19,7 @@ resource "azurerm_linux_function_app" "linux_function_app" {
   functions_extension_version              = "~4"
   https_only                               = true
   key_vault_reference_identity_id          = var.function_user_assigned_identity_id
-  public_network_access_enabled            = true
+  public_network_access_enabled            = false
   service_plan_id                          = azurerm_service_plan.service_plan.id
   site_config {
     always_on       = var.function_always_on
@@ -44,7 +43,7 @@ resource "azurerm_linux_function_app" "linux_function_app" {
     scm_ip_restriction_default_action = "Allow" # Must be updated for prod environment to "Deny"
     scm_minimum_tls_version           = "1.2"
     use_32_bit_worker                 = false
-    vnet_route_all_enabled            = false
+    vnet_route_all_enabled            = true
     websockets_enabled                = false
   }
   storage_account_name                           = data.azurerm_storage_account.storage_account.name

@@ -112,7 +112,7 @@ variable "webapp_sku" {
   type        = string
   sensitive   = false
   validation {
-    condition     = contains(["B1", "B2", "B3", "S1", "S2", "S3", "EP1", "EP2", "EP3"], var.webapp_sku)
+    condition     = contains(["B3", "S1", "S2", "S3", "EP1", "EP2", "EP3"], var.webapp_sku)
     error_message = "Please use an allowed value: \"B1\",\"B2\",\"B3\",\"S1\",\"S2\",\"S3\",\"EP1\", \"EP2\", \"EP3\"."
   }
 }
@@ -157,7 +157,7 @@ variable "log_analytics_workspace_id" {
 
 # Network variables
 variable "subnet_id" {
-  description = "Specifies the subnet ID."
+  description = "Specifies the subnet name."
   type        = string
   sensitive   = false
   default     = null

@@ -72,12 +72,12 @@ module "skills" {
   function_code_path                                = var.skills_service_code_path
   function_storage_account_id                       = module.storage.storage_account_id
   skills_function_appregistration_client_id         = var.skills_function_appregistration_client_id
+
+  subnet_id                 = azapi_resource.subnet_private_endpoints.id
+  private_dns_zone_id_sites = var.private_dns_zone_id_sites
+
   function_application_settings = {
-    FUNCTIONS_WORKER_RUNTIME = "python"
-    #WEBSITE_RUN_FROM_PACKAGE              = 1
-    #SCM_DO_BUILD_DURING_DEPLOYMENT        = true
-    #ENABLE_ORYX_BUILD                     = true
-    #PYTHON_ENABLE_GUNICORN_MULTIWORKERS   = true
+    FUNCTIONS_WORKER_RUNTIME      = "python"
     PYTHONUNBUFFERED              = "1"
     DOCUMENT_INTELLIGENCE_SERVICE = module.form_recognizer.cognitive_services_name
     FUNCTIONS_EXTENSION_VERSION   = "~4"
@@ -102,6 +102,9 @@ module "backend_webapp" {
   server_app_id                                   = var.webapp_auth_settings.server_app.app_id
   resource_token                                  = local.resourceToken
   client_secret_setting_name                      = "MICROSOFT_PROVIDER_AUTHENTICATION_SECRET"
+
+  subnet_id = azapi_resource.subnet_web.id
+
   webapp_application_settings = {
     AZURE_STORAGE_ACCOUNT               = module.storage.storage_account_name
     AZURE_STORAGE_CONTAINER             = var.storage_container_name_content
