@@ -1,9 +1,3 @@
-locals {
-  private_dns_zone_sites = {
-    resource_group_name = split("/", var.private_dns_zone_id_sites)[4]
-    name                = split("/", var.private_dns_zone_id_sites)[8]
-  }
-}
 
 data "azurerm_private_dns_zone" "private_dns_zone_sites" {
   name                = local.private_dns_zone_sites.name

@@ -19,4 +19,9 @@ locals {
   }
 
   skills_function_appregistration_client_id = var.skills_function_appregistration_client_id != "" ? var.skills_function_appregistration_client_id : azuread_application.function_ad_app[0].client_id
+
+  private_dns_zone_sites = {
+    resource_group_name = split("/", var.private_dns_zone_id_sites)[4]
+    name                = split("/", var.private_dns_zone_id_sites)[8]
+  }
 }
