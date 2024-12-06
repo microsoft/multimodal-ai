@@ -73,7 +73,8 @@ module "skills" {
   function_storage_account_id                       = module.storage.storage_account_id
   skills_function_appregistration_client_id         = var.skills_function_appregistration_client_id
 
-  subnet_id                 = azapi_resource.subnet_private_endpoints.id
+  private_subnet_id         = azapi_resource.subnet_private_endpoints.id
+  integration_subnet_id     = azapi_resource.subnet_web.id
   private_dns_zone_id_sites = var.private_dns_zone_id_sites
 
   function_application_settings = {

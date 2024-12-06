@@ -131,8 +131,15 @@ variable "skills_function_appregistration_client_id" {
 }
 
 # Network variables
-variable "subnet_id" {
-  description = "Specifies the subnet id."
+variable "private_subnet_id" {
+  description = "Specifies the subnet id for private endpoints."
+  type        = string
+  sensitive   = false
+  default     = null
+}
+
+variable "integration_subnet_id" {
+  description = "Specifies the delegated subnet id for vnet integration for function app."
   type        = string
   sensitive   = false
   default     = null

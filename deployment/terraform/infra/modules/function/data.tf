@@ -31,3 +31,8 @@ data "archive_file" "file_function" {
   source_dir  = var.function_code_path
   output_path = "${path.module}/${format("function-${var.function_name}-%s.zip", formatdate("YYYY-MM-DD'-'hh_mm_ss", timestamp()))}"
 }
+
+data "azurerm_private_dns_zone" "private_dns_zone_sites" {
+  name                = local.private_dns_zone_sites.name
+  resource_group_name = local.private_dns_zone_sites.resource_group_name
+}
