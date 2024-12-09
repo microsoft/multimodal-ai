@@ -204,6 +204,11 @@ module "aoai" {
   cognitive_service_sku      = var.openai_service_sku
   aoai_deployments           = var.aoai_deployments
   local_auth_enabled         = false
+  connectivity_delay_in_seconds = var.connectivity_delay_in_seconds
+  subnet_id = azapi_resource.subnet_private_endpoints.id
+  public_network_access_enabled = false
+  outbound_network_access_restricted = true
+  private_dns_zone_id_open_ai = var.private_dns_zone_id_open_ai
 }
 
 module "cognitive_service" {
