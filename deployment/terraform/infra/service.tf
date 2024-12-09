@@ -194,21 +194,21 @@ resource "null_resource" "update_function_app_allowed_applications" {
 }
 
 module "aoai" {
-  source                     = "./modules/aoai"
-  location                   = var.openai_service_location != "" ? var.openai_service_location : var.location
-  tags                       = local.tags
-  resource_group_name        = azurerm_resource_group.resource_group.name
-  log_analytics_workspace_id = var.log_analytics_workspace_id
-  cognitive_service_name     = var.openai_service_name != "" ? var.openai_service_name : "${local.abbrs.cognitiveServicesOpenAI}${local.resourceToken}"
-  cognitive_service_kind     = "OpenAI"
-  cognitive_service_sku      = var.openai_service_sku
-  aoai_deployments           = var.aoai_deployments
-  local_auth_enabled         = false
-  connectivity_delay_in_seconds = var.connectivity_delay_in_seconds
-  subnet_id = azapi_resource.subnet_private_endpoints.id
-  public_network_access_enabled = false
+  source                             = "./modules/aoai"
+  location                           = var.openai_service_location != "" ? var.openai_service_location : var.location
+  tags                               = local.tags
+  resource_group_name                = azurerm_resource_group.resource_group.name
+  log_analytics_workspace_id         = var.log_analytics_workspace_id
+  cognitive_service_name             = var.openai_service_name != "" ? var.openai_service_name : "${local.abbrs.cognitiveServicesOpenAI}${local.resourceToken}"
+  cognitive_service_kind             = "OpenAI"
+  cognitive_service_sku              = var.openai_service_sku
+  aoai_deployments                   = var.aoai_deployments
+  local_auth_enabled                 = false
+  connectivity_delay_in_seconds      = var.connectivity_delay_in_seconds
+  subnet_id                          = azapi_resource.subnet_private_endpoints.id
+  public_network_access_enabled      = false
   outbound_network_access_restricted = true
-  private_dns_zone_id_open_ai = var.private_dns_zone_id_open_ai
+  private_dns_zone_id_open_ai        = var.private_dns_zone_id_open_ai
 }
 
 module "cognitive_service" {

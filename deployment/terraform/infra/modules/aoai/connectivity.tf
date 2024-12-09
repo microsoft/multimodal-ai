@@ -12,7 +12,7 @@ resource "azurerm_private_endpoint" "private_endpoint_open_ai" {
   }
   subnet_id = var.subnet_id
   private_dns_zone_group {
-    name = "${var.cognitive_service_name}-arecord"
+    name                 = "${var.cognitive_service_name}-arecord"
     private_dns_zone_ids = [var.private_dns_zone_id_open_ai]
   }
 }
