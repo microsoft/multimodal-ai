@@ -4,7 +4,7 @@ locals {
 }
 
 resource "local_file" "index_config" {
-  content = templatefile("${path.module}/../../../library/index_template.json", {
+  content = templatefile("${path.module}/../../../../library/index_template.json", {
     index_name                     = var.search_service_index_name
     azureOpenAI_endpoint           = var.azure_openai_endpoint
     azureOpenAI_text_deployment_id = var.azure_openai_text_deployment_id

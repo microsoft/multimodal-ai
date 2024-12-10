@@ -4,7 +4,7 @@ locals {
 }
 
 resource "local_file" "indexer_config" {
-  content = templatefile("${path.module}/../../../library/indexer_template.json", {
+  content = templatefile("${path.module}/../../../../library/indexer_template.json", {
     datasource_name     = var.search_service_datasource_name
     index_name          = var.search_service_index_name
     indexer_name        = var.search_service_indexer_name
