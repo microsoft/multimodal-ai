@@ -36,9 +36,11 @@ resource cognitiveServicesAccount 'Microsoft.CognitiveServices/accounts@2024-04-
   properties: {
     customSubDomainName: name
     publicNetworkAccess: 'Enabled'
+    disableLocalAuth: true
   }
 }
 
 output cognitiveServicesAccountId string = cognitiveServicesAccount.id
 output cognitiveServicesAccountName string = cognitiveServicesAccount.name
 output cognitiveServicesPrincipalId string = cognitiveServicesAccount.identity.principalId
+output cognitiveServicesEndpoint string = cognitiveServicesAccount.properties.endpoint

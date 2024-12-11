@@ -77,9 +77,10 @@
     }
   ],
   "cognitiveServices": {
-    "@odata.type": "#Microsoft.Azure.Search.CognitiveServicesByKey",
+    "@odata.type": "#Microsoft.Azure.Search.AIServicesByIdentity",
     "description": null,
-    "key": "${cognitiveServices_multiService_accountKey}"
+    "subdomainUrl": "${cognitiveServices_multiService_endpoint}",
+    "identity": null
   },
   "knowledgeStore": {
     "storageConnectionString": "${storage_account_resource_uri}",
