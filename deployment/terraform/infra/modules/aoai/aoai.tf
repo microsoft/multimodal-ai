@@ -22,8 +22,8 @@ resource "azurerm_cognitive_account" "aoai" {
     default_action = "Allow"
     ip_rules       = []
   }
-  outbound_network_access_restricted = false
-  public_network_access_enabled      = true
+  outbound_network_access_restricted = var.outbound_network_access_restricted
+  public_network_access_enabled      = var.public_network_access_enabled
   sku_name                           = var.cognitive_service_sku
 
 }
