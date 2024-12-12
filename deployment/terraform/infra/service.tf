@@ -152,36 +152,35 @@ module "backend_webapp" {
 }
 
 module "aisearch" {
-  source                                  = "./modules/aisearch"
-  location                                = var.search_service_location != "" ? var.search_service_location : var.location
-  tags                                    = local.tags
-  resource_group_name                     = azurerm_resource_group.resource_group.name
-  log_analytics_workspace_id              = var.log_analytics_workspace_id
-  search_service_name                     = var.search_service_name != "" ? var.search_service_name : "${local.abbrs.searchServices}${local.resourceToken}"
-  search_service_sku                      = var.search_service_sku
-  semantic_search_sku                     = var.semantic_search_sku
-  search_service_partition_count          = var.search_service_partition_count
-  search_service_replica_count            = var.search_service_replica_count
-  storage_account_id                      = module.storage.storage_account_id
-  storage_container_name_content          = var.storage_container_name_content
-  search_service_datasource_name          = var.search_service_datasource_name != "" ? var.search_service_datasource_name : "${local.abbrs.searchServices}ds-${local.resourceToken}"
-  search_service_index_name               = var.search_service_index_name != "" ? var.search_service_index_name : "${local.abbrs.searchServices}ind-${local.resourceToken}"
-  search_service_indexer_name             = var.search_service_indexer_name != "" ? var.search_service_indexer_name : "${local.abbrs.searchServices}inder-${local.resourceToken}"
-  search_service_skillset_name            = var.search_service_skillset_name != "" ? var.search_service_skillset_name : "${local.abbrs.searchServices}skl-${local.resourceToken}"
-  azure_openai_endpoint                   = module.aoai.cognitive_account_endpoint
-  azure_openai_text_deployment_id         = var.azure_openai_text_deployment_id
-  azure_openai_text_model_name            = var.azure_openai_text_model_name
-  cognitive_services_endpoint             = module.cognitive_service.cognitive_account_endpoint
-  cognitive_services_key                  = module.cognitive_service.cognitive_services_key
-  cognitiveServices_multiService_endpoint = "TODO"
-  computer_vision_endpoint                = module.computer_vision.cognitive_account_endpoint
-  pdf_merge_customskill_endpoint          = "https://${module.skills.linux_function_app_default_hostname}/api/pdf_text_image_merge_skill"
-  knowledgestore_storage_account_id       = module.storage.storage_account_id
-  storage_container_name_knowledgestore   = var.storage_container_name_knowledgestore
-  function_app_id                         = module.skills.skills_function_appregistration_client_id
-  public_network_access_enabled           = false
-  subnet_id                               = azapi_resource.subnet_private_endpoints.id
-  private_dns_zone_id_ai_search           = var.private_dns_zone_id_ai_search
+  source                                = "./modules/aisearch"
+  location                              = var.search_service_location != "" ? var.search_service_location : var.location
+  tags                                  = local.tags
+  resource_group_name                   = azurerm_resource_group.resource_group.name
+  log_analytics_workspace_id            = var.log_analytics_workspace_id
+  search_service_name                   = var.search_service_name != "" ? var.search_service_name : "${local.abbrs.searchServices}${local.resourceToken}"
+  search_service_sku                    = var.search_service_sku
+  semantic_search_sku                   = var.semantic_search_sku
+  search_service_partition_count        = var.search_service_partition_count
+  search_service_replica_count          = var.search_service_replica_count
+  storage_account_id                    = module.storage.storage_account_id
+  storage_container_name_content        = var.storage_container_name_content
+  search_service_datasource_name        = var.search_service_datasource_name != "" ? var.search_service_datasource_name : "${local.abbrs.searchServices}ds-${local.resourceToken}"
+  search_service_index_name             = var.search_service_index_name != "" ? var.search_service_index_name : "${local.abbrs.searchServices}ind-${local.resourceToken}"
+  search_service_indexer_name           = var.search_service_indexer_name != "" ? var.search_service_indexer_name : "${local.abbrs.searchServices}inder-${local.resourceToken}"
+  search_service_skillset_name          = var.search_service_skillset_name != "" ? var.search_service_skillset_name : "${local.abbrs.searchServices}skl-${local.resourceToken}"
+  azure_openai_endpoint                 = module.aoai.cognitive_account_endpoint
+  azure_openai_text_deployment_id       = var.azure_openai_text_deployment_id
+  azure_openai_text_model_name          = var.azure_openai_text_model_name
+  cognitive_services_endpoint           = module.cognitive_service.cognitive_account_endpoint
+  cognitive_services_key                = module.cognitive_service.cognitive_services_key
+  computer_vision_endpoint              = module.computer_vision.cognitive_account_endpoint
+  pdf_merge_customskill_endpoint        = "https://${module.skills.linux_function_app_default_hostname}/api/pdf_text_image_merge_skill"
+  knowledgestore_storage_account_id     = module.storage.storage_account_id
+  storage_container_name_knowledgestore = var.storage_container_name_knowledgestore
+  function_app_id                       = module.skills.skills_function_appregistration_client_id
+  public_network_access_enabled         = false
+  subnet_id                             = azapi_resource.subnet_private_endpoints.id
+  private_dns_zone_id_ai_search         = var.private_dns_zone_id_ai_search
 
   depends_on = [module.aoai, module.cognitive_service, module.storage, module.skills]
 }

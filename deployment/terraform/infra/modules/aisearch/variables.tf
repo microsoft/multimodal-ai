@@ -3,27 +3,6 @@ variable "location" {
   description = "Specifies the location of the search service."
   type        = string
   sensitive   = false
-  validation {
-    condition     = contains(["eastus", "westus", "westus2", "francecentral", "northeurope", "westeurope", "swedencentral", "switzerlandnorth", "australiaeast", "southeastasia", "koreacentral", "japaneast"], var.location)
-    error_message = <<EOT
-    Please specify a region for search service that supports Multimodal embeddings
-    Valid values at the time this code published are:
-      - eastus
-      - westus
-      - westus2
-      - francecentral
-      - northeurope
-      - westeurope
-      - swedencentral
-      - switzerlandnorth
-      - australiaeast
-      - southeastasia
-      - koreacentral
-      - japaneast
-    Regions that support multimodal embeddings are published here
-    https://learn.microsoft.com/en-us/azure/ai-services/computer-vision/overview-image-analysis?tabs=4-0#region-availability
-    EOT
-  }
 }
 
 variable "resource_group_name" {
@@ -137,12 +116,6 @@ variable "cognitive_services_key" {
   type        = string
   sensitive   = false
 
-}
-
-variable "cognitiveServices_multiService_endpoint" {
-  description = "Specifies the endpoint of the Cognitive Services Multiservice Account"
-  type        = string
-  sensitive   = false
 }
 
 variable "knowledgestore_storage_account_id" {

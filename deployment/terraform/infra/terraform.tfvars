@@ -3,7 +3,7 @@ environment_name = "mmai"
 
 location                         = "eastus2"
 openai_service_location          = "eastus2"
-search_service_location          = "eastus"
+search_service_location          = "eastus2"
 form_recognizer_service_location = "eastus"
 computer_vision_service_location = "eastus"
 
