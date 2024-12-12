@@ -179,6 +179,7 @@ module "aisearch" {
   storage_container_name_knowledgestore = var.storage_container_name_knowledgestore
   function_app_id                       = module.skills.skills_function_appregistration_client_id
   public_network_access_enabled         = false
+  vnet_location                         = data.azurerm_virtual_network.virtual_network.location
   subnet_id                             = azapi_resource.subnet_private_endpoints.id
   private_dns_zone_id_ai_search         = var.private_dns_zone_id_ai_search
 

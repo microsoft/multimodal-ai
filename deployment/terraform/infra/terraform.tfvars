@@ -1,8 +1,8 @@
 subscription_id  = ""
 environment_name = "mmai"
 
-location                         = "eastus"
-openai_service_location          = "eastus"
+location                         = "eastus2"
+openai_service_location          = "eastus2"
 search_service_location          = "eastus"
 form_recognizer_service_location = "eastus"
 computer_vision_service_location = "eastus"

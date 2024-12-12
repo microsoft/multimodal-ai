@@ -18,7 +18,7 @@ resource "null_resource" "ai_search_disable_public_network_access" {
 
 resource "azurerm_private_endpoint" "private_endpoint_search_service" {
   name                = "${var.search_service_name}-pe"
-  location            = var.location
+  location            = var.vnet_location
   resource_group_name = var.resource_group_name
 
   custom_network_interface_name = "${var.search_service_name}-nic"

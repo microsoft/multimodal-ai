@@ -193,6 +193,11 @@ variable "log_analytics_workspace_id" {
 }
 
 # Network variables
+variable "vnet_location" {
+  description = "The location of the VNET to create the private endpoint in the same location."
+  type        = string
+}
+
 variable "subnet_id" {
   description = "Specifies the subnet ID."
   type        = string
