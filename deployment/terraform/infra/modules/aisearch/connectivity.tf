@@ -16,6 +16,13 @@ resource "azurerm_private_endpoint" "private_endpoint_search_service" {
     name                 = "${var.search_service_name}-arecord"
     private_dns_zone_ids = [var.private_dns_zone_id_ai_search]
   }
+
+  depends_on = [
+    null_resource.create_datasource,
+    null_resource.create_index,
+    null_resource.create_skillset,
+    null_resource.create_indexer
+  ]
 }
 
 resource "time_sleep" "sleep_connectivity" {

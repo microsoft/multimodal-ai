@@ -139,6 +139,12 @@ variable "cognitive_services_key" {
 
 }
 
+variable "cognitiveServices_multiService_endpoint" {
+  description = "Specifies the endpoint of the Cognitive Services Multiservice Account"
+  type        = string
+  sensitive   = false
+}
+
 variable "knowledgestore_storage_account_id" {
   description = "Specifies knowledge resource stroager."
   type        = string
