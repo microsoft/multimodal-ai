@@ -14,7 +14,7 @@ resource "azurerm_search_service" "search_service" {
   semantic_search_sku                      = var.semantic_search_sku
   partition_count                          = var.search_service_partition_count
   replica_count                            = var.search_service_replica_count
-  public_network_access_enabled            = true
+  public_network_access_enabled            = var.public_network_access_enabled
   local_authentication_enabled             = false
   customer_managed_key_enforcement_enabled = false
 }

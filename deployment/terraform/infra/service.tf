@@ -178,6 +178,7 @@ module "aisearch" {
   knowledgestore_storage_account_id     = module.storage.storage_account_id
   storage_container_name_knowledgestore = var.storage_container_name_knowledgestore
   function_app_id                       = module.skills.skills_function_appregistration_client_id
+  public_network_access_enabled         = false
 
   depends_on = [module.aoai, module.cognitive_service, module.storage, module.skills]
 }
