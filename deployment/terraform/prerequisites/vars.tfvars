@@ -1,5 +1,5 @@
 # General variables
-location         = "eastus2"
+location         = "eastus"
 environment_name = "mmai"
 tags             = {}
 
