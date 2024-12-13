@@ -25,5 +25,4 @@ resource "azurerm_cognitive_account" "cognitive_service" {
   outbound_network_access_restricted = false
   public_network_access_enabled      = true
   sku_name                           = var.cognitive_service_sku
-
 }

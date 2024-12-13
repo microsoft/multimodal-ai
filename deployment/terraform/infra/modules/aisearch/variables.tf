@@ -112,7 +112,6 @@ variable "function_app_id" {
   description = ""
   type        = string
   sensitive   = false
-
 }
 
 variable "pdf_merge_customskill_endpoint" {
@@ -130,13 +129,6 @@ variable "computer_vision_endpoint" {
 variable "cognitive_services_endpoint" {
   description = "Azure Cognitive Services endpoint"
   type        = string
-}
-
-variable "cognitive_services_key" {
-  description = "Specifies cognitive services key."
-  type        = string
-  sensitive   = false
-
 }
 
 variable "knowledgestore_storage_account_id" {

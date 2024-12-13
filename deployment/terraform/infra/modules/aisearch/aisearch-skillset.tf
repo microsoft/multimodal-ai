@@ -4,17 +4,16 @@ locals {
 
 resource "local_file" "skillset_config" {
   content = templatefile("${path.module}/../../../../library/skillset_template.json", {
-    index_name                                = var.search_service_index_name
-    skillset_name                             = var.search_service_skillset_name
-    azureOpenAI_endpoint                      = var.azure_openai_endpoint
-    azureOpenAI_text_deployment_id            = var.azure_openai_text_deployment_id
-    azureOpenAI_text_model_name               = var.azure_openai_text_model_name
-    pdf_text_image_merge_skill_url            = var.pdf_merge_customskill_endpoint
-    cognitiveServices_multiService_accountKey = var.cognitive_services_key # https://learn.microsoft.com/azure/search/cognitive-search-attach-cognitive-services?tabs=portal%2Cportal-remove#how-the-key-is-used
-    cognitiveServices_multiService_endpoint   = var.cognitive_services_endpoint
-    storage_account_resource_uri              = "ResourceId=${var.knowledgestore_storage_account_id}"
-    storage_account_image_container_name      = var.storage_container_name_knowledgestore
-    aad_app_id                                = var.function_app_id
+    index_name                              = var.search_service_index_name
+    skillset_name                           = var.search_service_skillset_name
+    azureOpenAI_endpoint                    = var.azure_openai_endpoint
+    azureOpenAI_text_deployment_id          = var.azure_openai_text_deployment_id
+    azureOpenAI_text_model_name             = var.azure_openai_text_model_name
+    pdf_text_image_merge_skill_url          = var.pdf_merge_customskill_endpoint
+    cognitiveServices_multiService_endpoint = var.cognitive_services_endpoint
+    storage_account_resource_uri            = "ResourceId=${var.knowledgestore_storage_account_id}"
+    storage_account_image_container_name    = var.storage_container_name_knowledgestore
+    aad_app_id                              = var.function_app_id
   })
   filename = "${path.module}/${local.skillset_config_file}"
 }

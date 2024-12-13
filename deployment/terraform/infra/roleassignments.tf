@@ -16,6 +16,12 @@ resource "azurerm_role_assignment" "search_service_to_computer_vision" {
   principal_id         = module.aisearch.search_service_identity
 }
 
+resource "azurerm_role_assignment" "search_service_to_cognitive_services_multiservice_account" {
+  scope                = module.cognitive_service.cognitive_account_id
+  role_definition_name = "Cognitive Services User"
+  principal_id         = module.aisearch.search_service_identity
+}
+
 resource "azurerm_role_assignment" "functionapp_to_cognitive_service" {
   scope                = module.form_recognizer.cognitive_account_id
   role_definition_name = "Cognitive Services User"
