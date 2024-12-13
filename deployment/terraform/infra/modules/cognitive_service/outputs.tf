@@ -8,11 +8,6 @@ output "cognitive_account_endpoint" {
   value       = azurerm_cognitive_account.cognitive_service.endpoint
 }
 
-output "cognitive_services_key" {
-  description = "Cognitive services key."
-  value       = azurerm_cognitive_account.cognitive_service.primary_access_key
-}
-
 output "cognitive_services_name" {
   description = "Cognitive services name."
   value       = azurerm_cognitive_account.cognitive_service.name

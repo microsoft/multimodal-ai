@@ -41,12 +41,13 @@ module "keyvault" {
 
 
 module "storage" {
-  source                          = "./modules/storage"
-  location                        = var.location
-  tags                            = local.tags
-  resource_group_name             = azurerm_resource_group.resource_group.name
-  storage_account_name            = var.storage_account_name != "" ? var.storage_account_name : substr("${local.abbrs.storageStorageAccounts}${local.resourceToken}", 0, 24)
-  storage_account_container_names = [var.storage_container_name_content, var.storage_container_name_knowledgestore]
+  source                                    = "./modules/storage"
+  location                                  = var.location
+  tags                                      = local.tags
+  resource_group_name                       = azurerm_resource_group.resource_group.name
+  storage_account_name                      = var.storage_account_name != "" ? var.storage_account_name : substr("${local.abbrs.storageStorageAccounts}${local.resourceToken}", 0, 24)
+  storage_account_container_names           = [var.storage_container_name_content, var.storage_container_name_knowledgestore]
+  storage_account_shared_access_key_enabled = false
   # storage_account_share_names      = [var.storage_share_name_function_app]
   log_analytics_workspace_id = var.log_analytics_workspace_id
   #   subnet_id                = module.network.subnet_private_endpoints_id
@@ -174,7 +175,6 @@ module "aisearch" {
   azure_openai_text_deployment_id       = var.azure_openai_text_deployment_id
   azure_openai_text_model_name          = var.azure_openai_text_model_name
   cognitive_services_endpoint           = module.cognitive_service.cognitive_account_endpoint
-  cognitive_services_key                = module.cognitive_service.cognitive_services_key
   computer_vision_endpoint              = module.computer_vision.cognitive_account_endpoint
   pdf_merge_customskill_endpoint        = "https://${module.skills.linux_function_app_default_hostname}/api/pdf_text_image_merge_skill"
   knowledgestore_storage_account_id     = module.storage.storage_account_id
@@ -231,7 +231,7 @@ module "cognitive_service" {
   cognitive_service_name     = var.cognitive_service_name != "" ? var.cognitive_service_name : "${local.abbrs.cognitiveServicesAccounts}${local.resourceToken}"
   cognitive_service_kind     = "CognitiveServices"
   cognitive_service_sku      = var.cognitive_service_sku
-  local_auth_enabled         = true
+  local_auth_enabled         = false
 }
 
 module "form_recognizer" {
