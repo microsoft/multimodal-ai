@@ -1,6 +1,6 @@
 resource "azurerm_private_endpoint" "private_endpoint_open_ai" {
   name                = "${var.cognitive_service_name}-pe"
-  location            = var.location
+  location            = var.vnet_location
   resource_group_name = var.resource_group_name
 
   custom_network_interface_name = "${var.cognitive_service_name}-nic"

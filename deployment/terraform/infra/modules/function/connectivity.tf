@@ -2,7 +2,7 @@
 
 resource "azurerm_private_endpoint" "function_private_endpoint" {
   name                = "function_private_endpoint"
-  location            = var.location
+  location            = var.vnet_location
   resource_group_name = var.resource_group_name
   subnet_id           = var.private_subnet_id
 

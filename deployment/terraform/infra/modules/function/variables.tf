@@ -131,6 +131,11 @@ variable "skills_function_appregistration_client_id" {
 }
 
 # Network variables
+variable "vnet_location" {
+  description = "The location of the VNET to create the private endpoint in the same location."
+  type        = string
+}
+
 variable "private_subnet_id" {
   description = "Specifies the subnet id for private endpoints."
   type        = string
