@@ -76,6 +76,7 @@ module "skills" {
   private_subnet_id         = azapi_resource.subnet_private_endpoints.id
   integration_subnet_id     = azapi_resource.subnet_web.id
   private_dns_zone_id_sites = var.private_dns_zone_id_sites
+  vnet_location             = data.azurerm_virtual_network.virtual_network.location
 
   function_application_settings = {
     FUNCTIONS_WORKER_RUNTIME      = "python"
@@ -104,7 +105,8 @@ module "backend_webapp" {
   resource_token                                  = local.resourceToken
   client_secret_setting_name                      = "MICROSOFT_PROVIDER_AUTHENTICATION_SECRET"
 
-  subnet_id = azapi_resource.subnet_web.id
+  subnet_id     = azapi_resource.subnet_web.id
+  vnet_location = data.azurerm_virtual_network.virtual_network.location
 
   webapp_application_settings = {
     AZURE_STORAGE_ACCOUNT               = module.storage.storage_account_name
@@ -209,6 +211,7 @@ module "aoai" {
   aoai_deployments                   = var.aoai_deployments
   local_auth_enabled                 = false
   connectivity_delay_in_seconds      = var.connectivity_delay_in_seconds
+  vnet_location                      = data.azurerm_virtual_network.virtual_network.location
   subnet_id                          = azapi_resource.subnet_private_endpoints.id
   public_network_access_enabled      = false
   outbound_network_access_restricted = true
