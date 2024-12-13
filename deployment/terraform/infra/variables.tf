@@ -590,3 +590,14 @@ variable "private_dns_zone_id_cognitive_services" {
     error_message = "Please specify a valid resource ID for the private DNS Zone."
   }
 }
+
+variable "private_dns_zone_id_ai_search" {
+  description = "Specifies the resource ID of the private DNS zone for Azure AI Search. Not required if DNS A-records get created via Azure Policy."
+  type        = string
+  sensitive   = false
+  default     = ""
+  validation {
+    condition     = var.private_dns_zone_id_ai_search == "" || (length(split("/", var.private_dns_zone_id_ai_search)) == 9 && endswith(var.private_dns_zone_id_ai_search, "privatelink.search.windows.net"))
+    error_message = "Please specify a valid resource ID for the private DNS Zone."
+  }
+}

@@ -77,7 +77,7 @@ Now you will see that Terraform creates a resource group with a virtual network,
   vnet_id                       = "/subscriptions/<subscription-id>/resourceGroups/<resource-group-name>/providers/Microsoft.Network/virtualNetworks/<vnet-name>"
   nsg_id                        = "/subscriptions/<subscription-id>/resourceGroups/<resource-group-name>/providers/Microsoft.Network/networkSecurityGroups/<nsg-name>"
   route_table_id                = "/subscriptions/<subscription-id>/resourceGroups/<resource-group-name>/providers/Microsoft.Network/routeTables/<route-table-name>"
-  subnet_cidr_function          = "10.0.0.0/26"
+  subnet_cidr_web               = "10.0.0.0/26"
   subnet_cidr_private_endpoints = "10.0.0.64/26"
 
   # DNS variables
@@ -89,6 +89,7 @@ Now you will see that Terraform creates a resource group with a virtual network,
   private_dns_zone_id_sites              = "/subscriptions/<subscription-id>/resourceGroups/<resource-group-name>/providers/Microsoft.Network/privateDnsZones/privatelink.azurewebsites.net"
   private_dns_zone_id_open_ai            = "/subscriptions/<subscription-id>/resourceGroups/<resource-group-name>/providers/Microsoft.Network/privateDnsZones/privatelink.openai.azure.com"
   private_dns_zone_id_cognitive_services = "/subscriptions/<subscription-id>/resourceGroups/<resource-group-name>/providers/Microsoft.Network/privateDnsZones/privatelink.cognitiveservices.azure.com"
+   private_dns_zone_id_ai_search         = "/subscriptions/<subscription-id>/resourceGroups/<resource-group-name>/providers/Microsoft.Network/privateDnsZones/privatelink.search.windows.net"
 
   ```
 

@@ -20,6 +20,7 @@ private_dns_zone_id_vault              = "${azurerm_private_dns_zone.private_dns
 private_dns_zone_id_sites              = "${azurerm_private_dns_zone.private_dns_zone["sites"].id}"
 private_dns_zone_id_open_ai            = "${azurerm_private_dns_zone.private_dns_zone["open_ai"].id}"
 private_dns_zone_id_cognitive_services = "${azurerm_private_dns_zone.private_dns_zone["cognitive_services"].id}"
+private_dns_zone_id_ai_search          = "${azurerm_private_dns_zone.private_dns_zone["ai_search"].id}"
   EOT
 }
 
