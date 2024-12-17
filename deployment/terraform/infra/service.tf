@@ -34,8 +34,10 @@ module "keyvault" {
   )
 
   #   cmk_uai_id                    = module.user_assigned_identity.user_assigned_identity_id
-  #   subnet_id                     = module.network.subnet_private_endpoints_id
-  #   private_dns_zone_id_key_vault = module.network.private_dns_zone_key_vault_id
+  subnet_id                     = azapi_resource.subnet_private_endpoints.id
+  private_dns_zone_id_key_vault = var.private_dns_zone_id_vault
+  vnet_location                 = data.azurerm_virtual_network.virtual_network.location
+  public_network_access_enabled = false
 }
 
 

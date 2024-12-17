@@ -82,9 +82,45 @@ variable "log_analytics_workspace_id" {
 }
 
 # Network variables
+variable "vnet_location" {
+  description = "The location of the VNET to create the private endpoint in the same location."
+  type        = string
+}
+
 variable "subnet_id" {
   description = "Specifies the subnet ID."
   type        = string
   sensitive   = false
   default     = null
+}
+
+variable "public_network_access_enabled" {
+  description = "Specifies whether public network access should be enabld for the cognitive service."
+  type        = bool
+  sensitive   = false
+  nullable    = false
+  default     = false
+}
+
+variable "connectivity_delay_in_seconds" {
+  description = "Specifies the delay in seconds after the private endpoint deployment (required for the DNS automation via Policies)."
+  type        = number
+  sensitive   = false
+  nullable    = false
+  default     = 120
+  validation {
+    condition     = var.connectivity_delay_in_seconds >= 0
+    error_message = "Please specify a valid non-negative number."
+  }
+}
+
+variable "private_dns_zone_id_key_vault" {
+  description = "Specifies the resource ID of the private DNS zone for Azure Key Vault. Not required if DNS A-records get created via Azure Policy."
+  type        = string
+  sensitive   = false
+  default     = ""
+  validation {
+    condition     = var.private_dns_zone_id_key_vault == "" || (length(split("/", var.private_dns_zone_id_key_vault)) == 9 && endswith(var.private_dns_zone_id_key_vault, "privatelink.vaultcore.azure.net"))
+    error_message = "Please specify a valid resource ID for the private DNS Zone."
+  }
 }
