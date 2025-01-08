@@ -48,6 +48,11 @@ locals {
   client_app_object_id = length(azuread_application.client_app) > 0 ? azuread_application.client_app[0].object_id : ""
 
   permission_scope_id = random_uuid.permission_scope_id.result
+
+  private_dns_zone_sites = {
+    resource_group_name = split("/", var.private_dns_zone_id_sites)[4]
+    name                = split("/", var.private_dns_zone_id_sites)[8]
+  }
 }
 
 resource "random_uuid" "permission_scope_id" {

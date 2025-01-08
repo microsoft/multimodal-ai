@@ -36,8 +36,10 @@ resource "null_resource" "linux_webapp_deployment" {
     interpreter = local.is_windows ? ["PowerShell", "-Command"] : []
     command     = <<EOT
       ${var.subscription_id != "" ? "az account set -s ${var.subscription_id}" : ""}
+      az webapp update --resource-group ${var.resource_group_name} --name ${var.webapp_name} --set publicNetworkAccess=Enabled
       az webapp deploy --resource-group ${var.resource_group_name} --name ${var.webapp_name} --src-path ${one(data.archive_file.file_function[*].output_path)} --type zip --async true --track-status
       ${format(local.delete_file_command, one(data.archive_file.file_function[*].output_path))}
+      az webapp update --resource-group ${var.resource_group_name} --name ${var.webapp_name} --set publicNetworkAccess=Disabled
     EOT
   }
   depends_on = [time_sleep.wait_after_webapp_creation, null_resource.linux_webapp_build]

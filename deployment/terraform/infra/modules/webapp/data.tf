@@ -21,3 +21,8 @@ data "archive_file" "file_function" {
 
   depends_on = [null_resource.linux_webapp_build]
 }
+
+data "azurerm_private_dns_zone" "private_dns_zone_sites" {
+  name                = local.private_dns_zone_sites.name
+  resource_group_name = local.private_dns_zone_sites.resource_group_name
+}

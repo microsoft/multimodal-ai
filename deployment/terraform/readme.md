@@ -132,7 +132,14 @@ terraform apply -var-file .\terraform.tfvars -var-file .\prereqs.tfvars
 
 ## Using the solution
 
-- Navigate to the web site URL provided in the terraform output variable **multimodal_ai_web_site**. Note that if you used a smaller SKU for web app (e.g. B1 (default) or B2), it may take a few minutes for the web app to start. If you see a 504.0 GatewayTimeout error please refresh the web site .
+- By default the web application that hosts the **multimodal_ai_web_site** is deployed into a private network. In order to access the web site you will need to do one of the following:
+  - Enable public network access for the web app. From Azure portal navigate to Web app > Settings > Networking and click on the line where it reads "Public network access      Disabled". Alternatively, you may use the following CLI command to enable public network access
+    ```bash
+    az webapp update --resource-group <resource_group_name> --name <webapp_name> --set publicNetworkAccess=Enabled
+    ```
+  - If you don't want to enable public network access, use a VPN connection to the virtual network where the web app is deployed.
+
+- Once you provided the connectivity, navigate to the web site URL provided in the terraform output variable **multimodal_ai_web_site**. Note that if you used a smaller SKU for web app (e.g. B1 or B2), it may take a few minutes for the web app to start. If you see a 504.0 GatewayTimeout error please refresh the web site .
 
 - In order to index and use your own documents for the solution follow instructions provided in section [Indexing Documents](#indexing-documents).
 
