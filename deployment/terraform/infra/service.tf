@@ -105,7 +105,7 @@ module "backend_webapp" {
   private_subnet_id         = azapi_resource.subnet_private_endpoints.id
   integration_subnet_id     = azapi_resource.subnet_web.id
   private_dns_zone_id_sites = var.private_dns_zone_id_sites
-  vnet_location =  data.azurerm_virtual_network.virtual_network.location
+  vnet_location             = data.azurerm_virtual_network.virtual_network.location
 
   webapp_application_settings = {
     AZURE_STORAGE_ACCOUNT               = module.storage.storage_account_name
