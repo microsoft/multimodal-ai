@@ -50,13 +50,17 @@ module "storage" {
   storage_account_name                      = var.storage_account_name != "" ? var.storage_account_name : substr("${local.abbrs.storageStorageAccounts}${local.resourceToken}", 0, 24)
   storage_account_container_names           = [var.storage_container_name_content, var.storage_container_name_knowledgestore]
   storage_account_shared_access_key_enabled = false
-  # storage_account_share_names      = [var.storage_share_name_function_app]
-  log_analytics_workspace_id = var.log_analytics_workspace_id
-  #   subnet_id                = module.network.subnet_private_endpoints_id
-  #   cmk_uai_id               = module.user_assigned_identity.user_assigned_identity_id
-  #   cmk_key_vault_id         = module.key_vault.key_vault_id
-  #   cmk_key_name             = module.key_vault.key_vault_cmk_name
-  #   private_dns_zone_id_blob = module.network.private_dns_zone_blob_id
+  log_analytics_workspace_id                = var.log_analytics_workspace_id
+  subnet_id                                 = azapi_resource.subnet_private_endpoints.id
+  private_dns_zone_id_blob                  = var.private_dns_zone_id_blob
+  private_dns_zone_id_file                  = var.private_dns_zone_id_file
+  vnet_location                             = data.azurerm_virtual_network.virtual_network.location
+  public_network_access_enabled             = false
+  network_bypass                            = ["None"]
+  private_endpoint_subresource_names        = ["blob", "file"]
+  network_private_link_access = [
+    "/subscriptions/${data.azurerm_client_config.current.subscription_id}/providers/Microsoft.Security/datascanners/StorageDataScanner"
+  ]
 }
 
 
