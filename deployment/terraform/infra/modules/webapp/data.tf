@@ -6,7 +6,6 @@ data "azurerm_monitor_diagnostic_categories" "diagnostic_categories_linux_webapp
   resource_id = azurerm_linux_web_app.linux_webapp.id
 }
 
-
 data "azurerm_key_vault" "key_vault" {
   name                = local.key_vault.name
   resource_group_name = local.key_vault.resource_group_name
@@ -22,7 +21,3 @@ data "archive_file" "file_function" {
   depends_on = [null_resource.linux_webapp_build]
 }
 
-data "azurerm_private_dns_zone" "private_dns_zone_sites" {
-  name                = local.private_dns_zone_sites.name
-  resource_group_name = local.private_dns_zone_sites.resource_group_name
-}

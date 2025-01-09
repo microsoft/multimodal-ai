@@ -49,10 +49,6 @@ locals {
 
   permission_scope_id = random_uuid.permission_scope_id.result
 
-  private_dns_zone_sites = {
-    resource_group_name = split("/", var.private_dns_zone_id_sites)[4]
-    name                = split("/", var.private_dns_zone_id_sites)[8]
-  }
 }
 
 resource "random_uuid" "permission_scope_id" {
