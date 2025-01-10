@@ -4,7 +4,7 @@ resource "azurerm_private_endpoint" "webapp_private_endpoint" {
   resource_group_name = var.resource_group_name
   subnet_id           = var.private_subnet_id
 
-  custom_network_interface_name = "${var.webapp_name}-pe"
+  custom_network_interface_name = "${var.webapp_name}-nic"
   private_dns_zone_group {
     name                 = "${var.webapp_name}-arecord"
     private_dns_zone_ids = [var.private_dns_zone_id_sites]
