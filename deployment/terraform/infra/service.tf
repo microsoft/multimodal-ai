@@ -51,6 +51,16 @@ module "storage" {
   storage_account_container_names           = [var.storage_container_name_content, var.storage_container_name_knowledgestore]
   storage_account_shared_access_key_enabled = false
   log_analytics_workspace_id                = var.log_analytics_workspace_id
+  subnet_id                                 = azapi_resource.subnet_private_endpoints.id
+  private_dns_zone_id_blob                  = var.private_dns_zone_id_blob
+  private_dns_zone_id_file                  = var.private_dns_zone_id_file
+  vnet_location                             = data.azurerm_virtual_network.virtual_network.location
+  public_network_access_enabled             = false
+  network_bypass                            = ["None"]
+  private_endpoint_subresource_names        = ["blob", "file"]
+  network_private_link_access = [
+    "/subscriptions/${data.azurerm_client_config.current.subscription_id}/providers/Microsoft.Security/datascanners/StorageDataScanner"
+  ]
 }
 
 

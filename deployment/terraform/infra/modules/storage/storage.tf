@@ -35,24 +35,27 @@ resource "azurerm_storage_account" "storage" {
   large_file_share_enabled          = false
   min_tls_version                   = "TLS1_2"
   network_rules {
-    # bypass                     = ["Metrics","Logging","AzureServices"]
-    default_action = "Allow"
-    # ip_rules                   = []
-    # virtual_network_subnet_ids = []
-    # private_link_access {
-    #   endpoint_tenant_id   = data.azurerm_client_config.current.tenant_id
-    #   endpoint_resource_id = "/subscriptions/${data.azurerm_client_config.current.subscription_id}/providers/Microsoft.Security/datascanners/StorageDataScanner"
-    # }
+    bypass                     = var.network_bypass
+    default_action             = var.default_action
+    ip_rules                   = []
+    virtual_network_subnet_ids = []
+    dynamic "private_link_access" {
+      for_each = var.network_private_link_access
+      content {
+        endpoint_resource_id = private_link_access.value
+        endpoint_tenant_id   = data.azurerm_client_config.current.tenant_id
+      }
+    }
   }
   nfsv3_enabled                 = false
-  public_network_access_enabled = true
+  public_network_access_enabled = var.public_network_access_enabled
   queue_encryption_key_type     = "Account"
   table_encryption_key_type     = "Account"
-  # routing {
-  #   choice                      = "MicrosoftRouting"
-  #   publish_internet_endpoints  = false
-  #   publish_microsoft_endpoints = false
-  # }
+  routing {
+    choice                      = "MicrosoftRouting"
+    publish_internet_endpoints  = false
+    publish_microsoft_endpoints = false
+  }
   sftp_enabled              = false
   shared_access_key_enabled = var.storage_account_shared_access_key_enabled
 }
