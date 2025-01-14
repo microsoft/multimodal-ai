@@ -20,4 +20,3 @@ data "archive_file" "file_function" {
 
   depends_on = [null_resource.linux_webapp_build]
 }
-

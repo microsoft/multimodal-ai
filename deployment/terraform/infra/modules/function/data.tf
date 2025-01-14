@@ -31,4 +31,3 @@ data "archive_file" "file_function" {
   source_dir  = var.function_code_path
   output_path = "${path.module}/${format("function-${var.function_name}-%s.zip", formatdate("YYYY-MM-DD'-'hh_mm_ss", timestamp()))}"
 }
-
