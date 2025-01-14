@@ -48,6 +48,7 @@ locals {
   client_app_object_id = length(azuread_application.client_app) > 0 ? azuread_application.client_app[0].object_id : ""
 
   permission_scope_id = random_uuid.permission_scope_id.result
+
 }
 
 resource "random_uuid" "permission_scope_id" {

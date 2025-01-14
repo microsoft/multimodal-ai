@@ -39,7 +39,7 @@ resource "azurerm_linux_web_app" "linux_webapp" {
   ftp_publish_basic_authentication_enabled = false
   https_only                               = true
   key_vault_reference_identity_id          = var.webapp_user_assigned_identity_id
-  public_network_access_enabled            = true
+  public_network_access_enabled            = false
   service_plan_id                          = azurerm_service_plan.service_plan.id
   site_config {
     app_command_line = "python3 -m gunicorn main:app"

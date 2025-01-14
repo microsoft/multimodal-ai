@@ -112,8 +112,10 @@ module "backend_webapp" {
   resource_token                                  = local.resourceToken
   client_secret_setting_name                      = "MICROSOFT_PROVIDER_AUTHENTICATION_SECRET"
 
-  subnet_id     = azapi_resource.subnet_web.id
-  vnet_location = data.azurerm_virtual_network.virtual_network.location
+  private_subnet_id         = azapi_resource.subnet_private_endpoints.id
+  integration_subnet_id     = azapi_resource.subnet_web.id
+  private_dns_zone_id_sites = var.private_dns_zone_id_sites
+  vnet_location             = data.azurerm_virtual_network.virtual_network.location
 
   webapp_application_settings = {
     AZURE_STORAGE_ACCOUNT               = module.storage.storage_account_name

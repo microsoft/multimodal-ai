@@ -161,11 +161,30 @@ variable "vnet_location" {
   type        = string
 }
 
-variable "subnet_id" {
-  description = "Specifies the subnet name."
+# Network variables
+variable "private_subnet_id" {
+  description = "Specifies the subnet id for private endpoints."
   type        = string
   sensitive   = false
   default     = null
+}
+
+variable "integration_subnet_id" {
+  description = "Specifies the delegated subnet id for vnet integration for function app."
+  type        = string
+  sensitive   = false
+  default     = null
+}
+
+variable "private_dns_zone_id_sites" {
+  description = "Specifies the resource ID of the private DNS zone for Azure Websites. Not required if DNS A-records get created via Azue Policy."
+  type        = string
+  sensitive   = false
+  default     = ""
+  validation {
+    condition     = var.private_dns_zone_id_sites == "" || (length(split("/", var.private_dns_zone_id_sites)) == 9 && endswith(var.private_dns_zone_id_sites, "privatelink.azurewebsites.net"))
+    error_message = "Please specify a valid resource ID for the private DNS Zone."
+  }
 }
 
 # Customer-managed key variables
