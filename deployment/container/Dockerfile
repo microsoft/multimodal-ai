@@ -8,7 +8,7 @@ RUN apt-get update && apt-get install -y curl jq && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-RUN chmod +x ./entrypoint.sh
+RUN chmod +x entrypoint.sh
 
 USER runner
 
