@@ -33,6 +33,9 @@ on:
       AZURE_SUBSCRIPTION_ID:
         required: true
         description: "Specifies the Azure Subscription ID."
+      AZURE_CLIENT_ID:
+        required: true
+        description: "Specifies the Azure App Client ID."
 
 permissions:
   id-token: write
@@ -51,6 +54,8 @@ jobs:
         env:
           ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
           ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          ARM_CLIENT_ID: "${{ secrets.AZURE_CLIENT_ID }}"
+          ARM_USE_AZUREAD: true
 
         steps:
             # Setup Node
