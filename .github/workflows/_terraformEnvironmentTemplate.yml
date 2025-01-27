@@ -42,7 +42,7 @@ jobs:
         concurrency:
             group: terraform-${{ inputs.environment }}
             cancel-in-progress: false
-    
+
         steps:
             # Setup Node
             - name: Setup Node
@@ -50,7 +50,7 @@ jobs:
               uses: actions/setup-node@v4
               with:
                 node-version: ${{ inputs.node_version }}
-    
+
             # Setup Terraform
             - name: Setup Terraform
               id: terraform_setup
@@ -58,18 +58,18 @@ jobs:
               with:
                 terraform_version: ${{ inputs.terraform_version }}
                 terraform_wrapper: true
-    
+
             # Check Out Repository
             - name: Check Out Repository
               id: checkout_repository
               uses: actions/checkout@v4
-    
+
             # Terraform Init
             - name: Terraform Init Prereqs
               working-directory: ${{ inputs.prereqs_working_directory }}
               run: |
                 terraform init
-    
+
             # Terraform Apply
             - name: Terraform Apply Prereqs
               working-directory: ${{ inputs.prereqs_working_directory }}

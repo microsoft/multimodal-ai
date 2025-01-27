@@ -12,7 +12,7 @@ jobs:
     name: "Build & Publish"
     with:
       environment: "dev"
-      working_directory: "./code/container"
+      working_directory: "./deployment/container"
       registry_uri: "ghcr.io"
       image_namespace_name: "multimodal-ai"
       image_name: "GitHubAgentAzure"
