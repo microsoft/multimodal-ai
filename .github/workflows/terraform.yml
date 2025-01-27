@@ -13,10 +13,12 @@ jobs:
     uses: ./.github/workflows/_terraformEnvironmentTemplate.yml
     name: "Dev"
     with:
-      environment: "dev"
-      terraform_version: "1.9.6"
-      node_version: 20
-      prereqs_working_directory: "./deployment/terraform/prerequisites"
-      runner_working_directory: "./deployment/terraform/runner"
+        environment: "dev"
+        terraform_version: "1.9.6"
+        node_version: 20
+        prereqs_working_directory: "./deployment/terraform/prerequisites"
+        runner_working_directory: "./deployment/terraform/runner"
     secrets:
-      PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+        PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+        AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+        AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
