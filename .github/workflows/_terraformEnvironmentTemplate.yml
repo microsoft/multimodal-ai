@@ -1,0 +1,77 @@
+name: Terraform Template
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+        description: "Specifies the environment of the deployment."
+      terraform_version:
+        required: true
+        type: string
+        description: "Specifies the terraform version."
+      node_version:
+        required: true
+        type: number
+        description: "Specifies the node version."
+      prereqs_working_directory:
+        required: true
+        type: string
+        description: "Specifies the working directory for prereqs."
+      runner_working_directory:
+        required: true
+        type: string
+        description: "Specifies the working directory for the runner."
+    secrets:
+      PERSONAL_ACCESS_TOKEN:
+        required: true
+        description: "Specifies a GitHub PAT."
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+    deploy-prereqs:
+        name: Terraform Deploy Prereqs
+        runs-on: [ubuntu-latest]
+        continue-on-error: false
+        # environment: ${{ inputs.environment }}
+        if: github.event_name == 'push' || github.event_name == 'release'
+        concurrency:
+            group: terraform-${{ inputs.environment }}
+            cancel-in-progress: false
+    
+        steps:
+            # Setup Node
+            - name: Setup Node
+              id: node_setup
+              uses: actions/setup-node@v4
+              with:
+                node-version: ${{ inputs.node_version }}
+    
+            # Setup Terraform
+            - name: Setup Terraform
+              id: terraform_setup
+              uses: hashicorp/setup-terraform@v3
+              with:
+                terraform_version: ${{ inputs.terraform_version }}
+                terraform_wrapper: true
+    
+            # Check Out Repository
+            - name: Check Out Repository
+              id: checkout_repository
+              uses: actions/checkout@v4
+    
+            # Terraform Init
+            - name: Terraform Init Prereqs
+              working-directory: ${{ inputs.prereqs_working_directory }}
+              run: |
+                terraform init
+    
+            # Terraform Apply
+            - name: Terraform Apply Prereqs
+              working-directory: ${{ inputs.prereqs_working_directory }}
+              run: |
+                terraform apply -var-file=vars.tfvars -auto-approve -input=false
