@@ -46,7 +46,7 @@ jobs:
         name: Terraform Deploy Prereqs
         runs-on: [ubuntu-latest]
         continue-on-error: false
-        environment: ${{ inputs.environment }}
+        #environment: ${{ inputs.environment }}
         concurrency:
             group: terraform-${{ inputs.environment }}
             cancel-in-progress: false
