@@ -5,7 +5,7 @@ on:
       - main
     paths:
       - "**.tf"
-      - "deployment/terraform/prerequisites/**"
+      - "deployment/terraform/**"
       - ".github/workflows/terraform.yml"
 
 jobs:
