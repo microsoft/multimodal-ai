@@ -36,6 +36,15 @@ on:
       AZURE_CLIENT_ID:
         required: true
         description: "Specifies the Azure App Client ID."
+      AZURE_TF_STATE_RESOURCE_GROUP_NAME:
+        required: true
+        description: "Specifies the Azure Resource Group Name for TF state."
+      AZURE_TF_STATE_STORAGE_ACCOUNT_NAME:
+        required: true
+        description: "Specifies the Azure Storage Account Name for TF state."
+      AZURE_TF_STATE_CONTAINER_NAME_PREFIX:
+        required: true
+        description: "Specifies the Azure Storage Container Name Prefix for TF state."
 
 permissions:
   id-token: write
@@ -82,7 +91,13 @@ jobs:
             - name: Terraform Init Prereqs
               working-directory: ${{ inputs.prereqs_working_directory }}
               run: |
-                terraform init
+                terraform init \
+                    -backend-config="environment=public" \
+                    -backend-config="subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}" \
+                    -backend-config="resource_group_name=${{ secrets.AZURE_TF_STATE_RESOURCE_GROUP_NAME }}" \
+                    -backend-config="storage_account_name=${{ secrets.AZURE_TF_STATE_STORAGE_ACCOUNT_NAME }}" \
+                    -backend-config="container_name=${{ secrets.AZURE_TF_STATE_CONTAINER_NAME_PREFIX }}-prereqs" \
+                    -backend-config="key=prereqs.tfstate"
 
             # Terraform Apply
             - name: Terraform Apply Prereqs
@@ -101,6 +116,7 @@ jobs:
         name: Terraform Deploy Runner
         runs-on: [ubuntu-latest]
         continue-on-error: false
+        needs: [deploy-prereqs]
         #environment: ${{ inputs.environment }}
         concurrency:
             group: terraform-${{ inputs.environment }}
@@ -144,7 +160,13 @@ jobs:
             - name: Terraform Init Runner
               working-directory: ${{ inputs.runner_working_directory }}
               run: |
-                terraform init
+                terraform init \
+                    -backend-config="environment=public" \
+                    -backend-config="subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}" \
+                    -backend-config="resource_group_name=${{ secrets.AZURE_TF_STATE_RESOURCE_GROUP_NAME }}" \
+                    -backend-config="storage_account_name=${{ secrets.AZURE_TF_STATE_STORAGE_ACCOUNT_NAME }}" \
+                    -backend-config="container_name=${{ secrets.AZURE_TF_STATE_CONTAINER_NAME_PREFIX }}-runner" \
+                    -backend-config="key=runner.tfstate"
 
             # Terraform Apply
             - name: Terraform Apply Runner
