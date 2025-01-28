@@ -52,14 +52,6 @@ jobs:
         id: checkout_repository
         uses: actions/checkout@v4
 
-      # Install cosign
-      - name: Install cosign
-        id: install_cosign
-        uses: sigstore/cosign-installer@v3.7.0
-        if: github.event_name != 'pull_request'
-        with:
-          cosign-release: 'v2.2.0'
-
       # Install QEMU
       - name: Set up QEMU
         id: install_qemu
@@ -101,19 +93,8 @@ jobs:
         with:
           context: ${{ inputs.working_directory }}
           file: ${{ inputs.working_directory }}/Dockerfile
-          push: ${{ github.event_name != 'pull_request' }}
+          push: true
           tags: ${{ steps.metadata.outputs.tags }}
           labels: ${{ steps.metadata.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-
-      # Sign container image
-      # This step uses the identity token to provision an ephemeral certificate against the sigstore community Fulcio instance.
-      - name: Sign container image
-        id: sign
-        if: github.event_name == 'release'
-        run: |
-          cosign sign --yes "${TAGS}@${DIGEST}"
-        env:
-          TAGS: ${{ steps.metadata.outputs.tags }}
-          DIGEST: ${{ steps.build_push.outputs.digest }}

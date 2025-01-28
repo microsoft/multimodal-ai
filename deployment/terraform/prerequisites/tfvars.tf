@@ -10,6 +10,7 @@ nsg_id                        = "${azurerm_network_security_group.network_securi
 route_table_id                = "${azurerm_route_table.route_table.id}"
 subnet_cidr_web               = "10.0.0.0/26"
 subnet_cidr_private_endpoints = "10.0.0.64/26"
+subnet_cidr_container_app     = "10.0.0.128/26"
 
 # DNS variables
 private_dns_zone_id_blob               = "${azurerm_private_dns_zone.private_dns_zone["blob"].id}"

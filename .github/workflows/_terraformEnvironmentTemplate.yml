@@ -89,3 +89,69 @@ jobs:
               working-directory: ${{ inputs.prereqs_working_directory }}
               run: |
                 terraform apply -var-file=vars.tfvars -auto-approve -input=false
+
+            - name: Upload prereqs tfvars
+              id: upload_prereqs_tfvars
+              uses: actions/upload-artifact@v4
+              with:
+                name: prereqs-tfvars
+                path: ./deployment/terraform/infra/prereqs.tfvars
+
+    deploy-runner:
+        name: Terraform Deploy Runner
+        runs-on: [ubuntu-latest]
+        continue-on-error: false
+        #environment: ${{ inputs.environment }}
+        concurrency:
+            group: terraform-${{ inputs.environment }}
+            cancel-in-progress: false
+
+        env:
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          ARM_CLIENT_ID: "${{ secrets.AZURE_CLIENT_ID }}"
+          ARM_USE_OIDC: true
+
+        steps:
+            # Setup Node
+            - name: Setup Node
+              id: node_setup
+              uses: actions/setup-node@v4
+              with:
+                node-version: ${{ inputs.node_version }}
+
+            # Setup Terraform
+            - name: Setup Terraform
+              id: terraform_setup
+              uses: hashicorp/setup-terraform@v3
+              with:
+                terraform_version: ${{ inputs.terraform_version }}
+                terraform_wrapper: true
+
+            # Check Out Repository
+            - name: Check Out Repository
+              id: checkout_repository
+              uses: actions/checkout@v4
+
+            - name: Download prereqs tfvars
+              id: upload_prereqs_tfvars
+              uses: actions/download-artifact@v4
+              with:
+                name: prereqs-tfvars
+                path: ./deployment/terraform/runner/prereqs.tfvars
+
+            # Terraform Init
+            - name: Terraform Init Runner
+              working-directory: ${{ inputs.runner_working_directory }}
+              run: |
+                terraform init
+
+            # Terraform Apply
+            - name: Terraform Apply Runner
+              working-directory: ${{ inputs.runner_working_directory }}
+              run: |
+                terraform apply -var-file=vars.tfvars -auto-approve -input=false
+              env:
+                TF_VAR_github_personal_access_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+                TF_VAR_github_org_name: ${{ github.actor }}
+                TF_VAR_container_image_reference: ghcr.io/${{ github.actor }}/githubagentazure:latest
