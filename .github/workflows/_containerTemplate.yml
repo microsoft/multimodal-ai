@@ -39,7 +39,7 @@ jobs:
     name: Container Build & Push
     runs-on: [ubuntu-latest]
     continue-on-error: false
-    environment: ${{ inputs.environment }}
+    # environment: ${{ inputs.environment }}
 
     permissions:
       contents: read
