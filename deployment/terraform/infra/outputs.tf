@@ -42,5 +42,6 @@ locals {
 }
 
 output "cleanup_command" {
+  sensitive = true
   value = "${local.rg_delete_command}${local.adapp_delete_command_function}${local.adapp_delete_command_webapp_client}${local.adapp_delete_command_webapp_server}"
 }
