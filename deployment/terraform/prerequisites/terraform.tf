@@ -30,11 +30,6 @@ terraform {
     storage_account_name = "<provided-via-config>"
     container_name       = "<provided-via-config>"
     key                  = "<provided-via-config>"
-    use_oidc             = true
-    use_azuread_auth     = true
-    client_id            = "<provided-via-config>"
-    subscription_id      = "<provided-via-config>"
-    tenant_id            = "<provided-via-config>"
   }
 }
 
