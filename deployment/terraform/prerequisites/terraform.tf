@@ -31,6 +31,10 @@ terraform {
     container_name       = "<provided-via-config>"
     key                  = "<provided-via-config>"
     use_azuread_auth     = true
+    tenant_id            = "<provided-via-config>"
+    subscription_id     = "<provided-via-config>"
+    client_id            = "<provided-via-config>"
+    client_secret        = "<provided-via-config>"
   }
 }
 
