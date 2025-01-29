@@ -30,13 +30,13 @@ terraform {
     storage_account_name = "<provided-via-config>"
     container_name       = "<provided-via-config>"
     key                  = "<provided-via-config>"
+    use_azuread_auth     = true
   }
 }
 
 provider "azurerm" {
   environment         = "public"
   storage_use_azuread = true
-  use_oidc            = true
 
   features {
     key_vault {
