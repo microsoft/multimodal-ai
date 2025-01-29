@@ -129,12 +129,12 @@ variable "subnet_cidr_container_app" {
   }
 }
 
-variable "subnet_cidr_private_endpoints" {
+variable "subnet_cidr_container_app_private_endpoint" {
   description = "Specifies the subnet cidr range for private endpoints."
   type        = string
   sensitive   = false
   validation {
-    condition     = length(split("/", var.subnet_cidr_private_endpoints)) == 2
+    condition     = length(split("/", var.subnet_cidr_container_app_private_endpoint)) == 2
     error_message = "Please specify a valid subnet cidr range."
   }
 }

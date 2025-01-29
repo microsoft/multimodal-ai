@@ -36,7 +36,7 @@ resource "azapi_resource" "subnet_private_endpoints" {
 
   body = {
     properties = {
-      addressPrefix = var.subnet_cidr_private_endpoints
+      addressPrefix = var.subnet_cidr_container_app_private_endpoint
       delegations   = []
       ipAllocations = []
       networkSecurityGroup = {
