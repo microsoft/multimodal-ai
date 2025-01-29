@@ -160,7 +160,7 @@ jobs:
               uses: actions/download-artifact@v4
               with:
                 name: prereqs-tfvars
-                path: ./deployment/terraform/runner/prereqs.tfvars
+                path: ./deployment/terraform/runner
 
             # Terraform Init
             - name: Terraform Init Runner
