@@ -9,7 +9,7 @@ module "key_vault" {
   subnet_id                     = azapi_resource.subnet_private_endpoints.id
   private_dns_zone_id_key_vault = var.private_dns_zone_id_vault
   vnet_location                 = data.azurerm_virtual_network.virtual_network.location
-  public_network_access_enabled = false
+  public_network_access_enabled = true
 }
 
 resource "azurerm_key_vault_secret" "key_vault_secret_github_pat" {
