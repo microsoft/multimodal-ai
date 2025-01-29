@@ -36,6 +36,9 @@ on:
       AZURE_CLIENT_ID:
         required: true
         description: "Specifies the Azure App Client ID."
+      AZURE_CLIENT_SECRET:
+        required: true
+        description: "Specifies the client secret."
       AZURE_TF_STATE_RESOURCE_GROUP_NAME:
         required: true
         description: "Specifies the Azure Resource Group Name for TF state."
@@ -64,8 +67,9 @@ jobs:
           ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
           ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           ARM_CLIENT_ID: "${{ secrets.AZURE_CLIENT_ID }}"
-          #ARM_USE_AZUREAD: true
-          ARM_USE_OIDC: true
+          ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          ARM_USE_AZUREAD: true
+          ARM_USE_OIDC: false
 
         steps:
             # Setup Node
