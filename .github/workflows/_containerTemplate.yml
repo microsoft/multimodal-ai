@@ -84,6 +84,7 @@ jobs:
             type=ref,event=pr
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
+            type=raw,value=latest
 
       # Build and Push Docker Image with Buildx
       - name: Build and push Docker image

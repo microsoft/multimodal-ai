@@ -14,7 +14,7 @@ jobs:
       environment: "dev"
       working_directory: "./deployment/container"
       registry_uri: "ghcr.io"
-      image_namespace_name: ${{ github.actor }}
+      image_namespace_name: ${{ github.repository }}
       image_name: "GitHubAgentAzure"
     secrets:
       USER_NAME: ${{ github.actor }}
