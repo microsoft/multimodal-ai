@@ -130,7 +130,9 @@ jobs:
           ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
           ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           ARM_CLIENT_ID: "${{ secrets.AZURE_CLIENT_ID }}"
-          ARM_USE_OIDC: true
+          ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          ARM_USE_AZUREAD: true
+          ARM_USE_OIDC: false
 
         steps:
             # Setup Node
@@ -175,7 +177,7 @@ jobs:
             - name: Terraform Apply Runner
               working-directory: ${{ inputs.runner_working_directory }}
               run: |
-                terraform apply -var-file=vars.tfvars -auto-approve -input=false
+                terraform apply -var-file=vars.tfvars -var-file=prereqs.tfvars -auto-approve -input=false
               env:
                 TF_VAR_github_personal_access_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
                 TF_VAR_github_org_name: ${{ github.actor }}
