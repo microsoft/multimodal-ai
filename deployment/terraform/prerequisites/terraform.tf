@@ -32,12 +32,16 @@ terraform {
     key                  = "<provided-via-config>"
     use_oidc             = true
     use_azuread_auth     = true
+    client_id            = "<provided-via-config>"
+    subscription_id      = "<provided-via-config>"
+    tenant_id            = "<provided-via-config>"
   }
 }
 
 provider "azurerm" {
   environment         = "public"
   storage_use_azuread = true
+  use_oidc            = true
 
   features {
     key_vault {
