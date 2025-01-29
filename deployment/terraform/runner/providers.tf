@@ -4,7 +4,7 @@ provider "azurerm" {
   resource_provider_registrations = "none"
   resource_providers_to_register  = local.resource_providers_to_register
   storage_use_azuread             = true
-  #   use_oidc                        = true
+  use_oidc                        = true
 
   features {
     key_vault {
@@ -25,5 +25,5 @@ provider "azapi" {
   disable_correlation_request_id = false
   environment                    = "public"
   skip_provider_registration     = false
-  # use_oidc                       = true
+  use_oidc                       = true
 }

@@ -165,6 +165,7 @@ jobs:
                     -backend-config="storage_account_name=${{ secrets.AZURE_TF_STATE_STORAGE_ACCOUNT_NAME }}" \
                     -backend-config="container_name=${{ secrets.AZURE_TF_STATE_CONTAINER_NAME}}" \
                     -backend-config="key=runner.tfstate"
+                    
             # Terraform Apply
             - name: Terraform Apply Runner
               working-directory: ${{ inputs.runner_working_directory }}
