@@ -3,7 +3,7 @@ provider "azurerm" {
   environment                     = "public"
   resource_provider_registrations = "none"
   resource_providers_to_register  = local.resource_providers_to_register
-  storage_use_azuread             = true
+  # storage_use_azuread             = true
   use_oidc                        = true
 
   features {
