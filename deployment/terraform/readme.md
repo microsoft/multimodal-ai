@@ -145,6 +145,36 @@ terraform apply -var-file .\terraform.tfvars -var-file .\prereqs.tfvars
 
 ## Handling Errors During Deployment
 
+### "Authorization_RequestDenied: Insufficient privileges to complete the operation." error
+
+You may get the following error during deployment because you do not have privilages on msgraph
+
+```
+null_resource.update_function_app_allowed_applications: Creation complete after 4s [id=5497719827822337587]
+╷
+│ Error: Updating Service Principal (Service Principal: "****************")
+│ 
+│   with module.backend_webapp.azuread_service_principal.msgraph,
+│   on modules/webapp/appregistration.tf line 168, in resource "azuread_service_principal" "msgraph":
+│  168: resource "azuread_service_principal" "msgraph" {
+│ 
+│ unexpected status 403 (403 Forbidden) with error: Authorization_RequestDenied: Insufficient privileges to complete the operation.
+╵
+vscode ➜ .../multimodal-ai-1/deployment/terraform/infra (main) $ terraform apply -var-file ./terraform.tfvars -var-file ./prereqs.tfvars 
+```
+
+To resolve this:
+- Grant your account the required permissions in Entra Id
+- Use an account that has the required permissions in Entra Id
+- Deploy the solution in a different subscription in which you do have the requried permissions in Entra Id
+- Disable authentication and access control for the web app by setting the following variables to false in /deployment/terraform/infra/terraform.tfvars
+```
+webapp_auth_settings = {
+  enable_auth           = false
+  enable_access_control = false
+```
+  
+
 ### "Failed to connect to MSI" error
 
 You may get following error during deployment because you have not logged in or your token has expired.
