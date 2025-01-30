@@ -107,10 +107,6 @@ resource "azapi_resource" "container_apps_job" {
               {
                 name  = "GH_URL"
                 value = "https://github.com/${var.github_repo_owner}/${var.github_repo_name}"
-              },
-              {
-                name  = "LABELS"
-                value = local.github_labels
               }
             ]
             image = var.container_image_reference
