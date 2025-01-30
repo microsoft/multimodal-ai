@@ -198,3 +198,5 @@ jobs:
               working-directory: ${{ inputs.infra_working_directory }}
               run: |
                 terraform apply -var-file=terraform.tfvars -var-file=prereqs.tfvars -auto-approve -input=false
+              env:
+                TF_VAR_subscription_id:  ${{ secrets.AZURE_SUBSCRIPTION_ID }}
