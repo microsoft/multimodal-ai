@@ -72,13 +72,6 @@ jobs:
           ARM_USE_OIDC: false
 
         steps:
-            # Setup Node
-            - name: Setup Node
-              id: node_setup
-              uses: actions/setup-node@v4
-              with:
-                node-version: ${{ inputs.node_version }}
-
             # Setup Terraform
             - name: Setup Terraform
               id: terraform_setup
@@ -135,13 +128,6 @@ jobs:
           ARM_USE_OIDC: false
 
         steps:
-            # Setup Node
-            - name: Setup Node
-              id: node_setup
-              uses: actions/setup-node@v4
-              with:
-                node-version: ${{ inputs.node_version }}
-
             # Setup Terraform
             - name: Setup Terraform
               id: terraform_setup

@@ -15,7 +15,6 @@ jobs:
     with:
         environment: "dev"
         terraform_version: "1.10.5"
-        node_version: 20
         prereqs_working_directory: "./deployment/terraform/prerequisites"
         runner_working_directory: "./deployment/terraform/runner"
     secrets:
