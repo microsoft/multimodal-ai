@@ -195,6 +195,6 @@ jobs:
 
             # Terraform Apply
             - name: Terraform Apply Runner
-              working-directory: ${{ inputs.runner_working_directory }}
+              working-directory: ${{ inputs.infra_working_directory }}
               run: |
                 terraform apply -var-file=terraform.tfvars -var-file=prereqs.tfvars -auto-approve -input=false
