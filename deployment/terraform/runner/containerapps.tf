@@ -72,10 +72,10 @@ resource "azapi_resource" "container_apps_job" {
                 ]
                 metadata = {
                   github-runner             = "https://api.github.com"
-                  owner                     = var.github_org_name
-                  runnerScope               = "org"
+                  owner                     = var.github_repo_owner
+                  runnerScope               = "repo"
+                  repos                     = var.github_repo_name
                   targetWorkflowQueueLength = "1"
-                  # labels = local.github_labels
                 }
               }
             ]
@@ -95,60 +95,22 @@ resource "azapi_resource" "container_apps_job" {
         containers = [
           {
             name = "github-runner"
-            # args = []
-            # command = []
             env = [
               {
-                name  = "RUN_AS_ROOT"
-                value = "true"
-              },
-              {
-                name  = "RUNNER_NAME_PREFIX"
-                value = "aca"
-              },
-              {
-                name  = "RANDOM_RUNNER_SUFFIX"
-                value = "true"
-              },
-              {
-                name      = "ACCESS_TOKEN"
+                name      = "PERSONAL_ACCESS_TOKEN"
                 secretRef = "personal-access-token"
               },
               {
-                name  = "RUNNER_SCOPE"
-                value = "org"
+                name  = "REGISTRATION_TOKEN_API_URL"
+                value = "https://api.github.com/repos/${var.github_repo_owner}/${var.github_repo_name}/actions/runners/registration-token"
               },
               {
-                name  = "ORG_NAME"
-                value = var.github_org_name
+                name  = "GH_URL"
+                value = "https://github.com/${var.github_repo_owner}/${var.github_repo_name}"
               },
               {
                 name  = "LABELS"
                 value = local.github_labels
-              },
-              {
-                name  = "RUNNER_WORKDIR"
-                value = "/_work"
-              },
-              {
-                name  = "RUNNER_GROUP"
-                value = "default"
-              },
-              {
-                name  = "DISABLE_AUTOMATIC_DEREGISTRATION"
-                value = "false"
-              },
-              {
-                name  = "EPHEMERAL"
-                value = "1"
-              },
-              {
-                name  = "DISABLE_AUTO_UPDATE"
-                value = "1"
-              },
-              {
-                name  = "START_DOCKER_SERVICE"
-                value = "false"
               }
             ]
             image = var.container_image_reference

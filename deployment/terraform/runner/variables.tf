@@ -34,12 +34,22 @@ variable "tags" {
 }
 
 # Github variables
-variable "github_org_name" {
-  description = "Specifies the name of the GitHub org."
+variable "github_repo_owner" {
+  description = "Specifies the name of the GitHub repo owner."
   type        = string
   sensitive   = false
   validation {
-    condition     = length(var.github_org_name) > 2
+    condition     = length(var.github_repo_owner) > 2
+    error_message = "Please specify a valid name."
+  }
+}
+
+variable "github_repo_name" {
+  description = "Specifies the name of the GitHub repo."
+  type        = string
+  sensitive   = false
+  validation {
+    condition     = length(var.github_repo_name) > 2
     error_message = "Please specify a valid name."
   }
 }

@@ -180,5 +180,6 @@ jobs:
                 terraform apply -var-file=vars.tfvars -var-file=prereqs.tfvars -auto-approve -input=false
               env:
                 TF_VAR_github_personal_access_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-                TF_VAR_github_org_name: ${{ github.actor }}
+                TF_VAR_github_repo_owner: ${{ github.actor }}
+                TF_VAR_github_repo_name:  ${{ github.event.repository.name }}
                 TF_VAR_container_image_reference: ghcr.io/${{ github.repository }}/githubagentazure:latest
