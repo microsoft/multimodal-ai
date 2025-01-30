@@ -138,7 +138,7 @@ jobs:
     deploy-infra:
         name: Terraform Deploy MMAI Infrastructure
         runs-on:
-          labels: self-hosted
+          labels: self-hosted,mmai
         continue-on-error: false
         needs: [deploy-prereqs, deploy-runner]
         #environment: ${{ inputs.environment }}
