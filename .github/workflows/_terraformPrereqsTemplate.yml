@@ -11,18 +11,11 @@ on:
         required: true
         type: string
         description: "Specifies the terraform version."
-      prereqs_working_directory:
+      working_directory:
         required: true
         type: string
         description: "Specifies the working directory for prereqs."
-      runner_working_directory:
-        required: true
-        type: string
-        description: "Specifies the working directory for the runner."
     secrets:
-      PERSONAL_ACCESS_TOKEN:
-        required: true
-        description: "Specifies a GitHub PAT."
       AZURE_TENANT_ID:
         required: true
         description: "Specifies the Azure Tenant ID."
@@ -51,26 +44,9 @@ permissions:
 
 jobs:
     deploy-prereqs:
-        uses: ./.github/workflows/_terraformPrereqsTemplate.yml
         name: Terraform Deploy Prereqs
-        with:
-            environment: ${{ inputs.environment }}
-            terraform_version: ${{ inputs.terraform_version }}
-            working_directory: ${{ inputs.prereqs_working_directory }}
-        secrets:
-            AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-            AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-            AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-            AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-            AZURE_TF_STATE_RESOURCE_GROUP_NAME: ${{ secrets.AZURE_TF_STATE_RESOURCE_GROUP_NAME }}
-            AZURE_TF_STATE_STORAGE_ACCOUNT_NAME: ${{ secrets.AZURE_TF_STATE_STORAGE_ACCOUNT_NAME }}
-            AZURE_TF_STATE_CONTAINER_NAME: ${{ secrets.AZURE_TF_STATE_CONTAINER_NAME }}
-
-    deploy-runner:
-        name: Terraform Deploy Runner
         runs-on: [ubuntu-latest]
         continue-on-error: false
-        needs: [deploy-prereqs]
         #environment: ${{ inputs.environment }}
         concurrency:
             group: terraform-${{ inputs.environment }}
@@ -98,31 +74,26 @@ jobs:
               id: checkout_repository
               uses: actions/checkout@v4
 
-            - name: Download prereqs tfvars
-              id: upload_prereqs_tfvars
-              uses: actions/download-artifact@v4
-              with:
-                name: prereqs-tfvars
-                path: ./deployment/terraform/runner
-
             # Terraform Init
-            - name: Terraform Init Runner
-              working-directory: ${{ inputs.runner_working_directory }}
+            - name: Terraform Init Prereqs
+              working-directory: ${{ inputs.working_directory }}
               run: |
                 terraform init \
                     -backend-config="environment=public" \
                     -backend-config="resource_group_name=${{ secrets.AZURE_TF_STATE_RESOURCE_GROUP_NAME }}" \
                     -backend-config="storage_account_name=${{ secrets.AZURE_TF_STATE_STORAGE_ACCOUNT_NAME }}" \
                     -backend-config="container_name=${{ secrets.AZURE_TF_STATE_CONTAINER_NAME}}" \
-                    -backend-config="key=runner.tfstate"
+                    -backend-config="key=prereqs.tfstate"
 
             # Terraform Apply
-            - name: Terraform Apply Runner
-              working-directory: ${{ inputs.runner_working_directory }}
+            - name: Terraform Apply Prereqs
+              working-directory: ${{ inputs.working_directory }}
               run: |
-                terraform apply -var-file=vars.tfvars -var-file=prereqs.tfvars -auto-approve -input=false
-              env:
-                TF_VAR_github_personal_access_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-                TF_VAR_github_repo_owner: ${{ github.actor }}
-                TF_VAR_github_repo_name:  ${{ github.event.repository.name }}
-                TF_VAR_container_image_reference: ghcr.io/${{ github.repository }}/githubagentazure:latest
+                terraform apply -var-file=vars.tfvars -auto-approve -input=false
+
+            - name: Upload prereqs tfvars
+              id: upload_prereqs_tfvars
+              uses: actions/upload-artifact@v4
+              with:
+                name: prereqs-tfvars
+                path: ./deployment/terraform/infra/prereqs.tfvars
