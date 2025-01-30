@@ -1,5 +1,4 @@
-subscription_id  = ""
-environment_name = "mmai"
+environment_name = "mmai6789"
 
 location                         = "eastus2"
 openai_service_location          = "eastus2"
