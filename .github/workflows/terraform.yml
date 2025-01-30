@@ -17,6 +17,7 @@ jobs:
         terraform_version: "1.10.5"
         prereqs_working_directory: "./deployment/terraform/prerequisites"
         runner_working_directory: "./deployment/terraform/runner"
+        infra_working_directory: "./deployment/terraform/infra"
     secrets:
         PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
         AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
