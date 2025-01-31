@@ -45,7 +45,7 @@ permissions:
 jobs:
     deploy-prereqs:
         name: Terraform Deploy Prereqs
-        runs-on: [self-hosted]
+        runs-on: [ubuntu-latest]
         continue-on-error: false
         #environment: ${{ inputs.environment }}
         concurrency:
