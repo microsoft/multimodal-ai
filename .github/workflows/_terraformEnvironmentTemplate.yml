@@ -139,8 +139,7 @@ jobs:
         name: Terraform Deploy MMAI Infrastructure
         runs-on: [self-hosted]
         continue-on-error: false
-        # needs: [deploy-prereqs, deploy-runner]
-        needs: [deploy-prereqs]
+        needs: [deploy-prereqs, deploy-runner]
         #environment: ${{ inputs.environment }}
         concurrency:
             group: terraform-${{ inputs.environment }}

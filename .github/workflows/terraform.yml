@@ -13,7 +13,7 @@ jobs:
     uses: ./.github/workflows/_terraformEnvironmentTemplate.yml
     name: "Dev"
     with:
-        environment: "dev1"
+        environment: "dev"
         terraform_version: "1.10.5"
         node_version: 20
         prereqs_working_directory: "./deployment/terraform/prerequisites"
