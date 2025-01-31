@@ -5,7 +5,6 @@ USER root
 
 # install curl and jq
 RUN apt-get update && apt-get install -y curl jq && \
-    apt-get install -y azure-cli && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
