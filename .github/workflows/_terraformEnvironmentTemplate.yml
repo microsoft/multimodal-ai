@@ -199,6 +199,12 @@ jobs:
               with:
                 creds: '{"clientId":"${{ secrets.AZURE_CLIENT_ID }}","clientSecret":"${{ secrets.AZURE_CLIENT_SECRET }}","subscriptionId":"${{ secrets.AZURE_SUBSCRIPTION_ID }}","tenantId":"${{ secrets.AZURE_TENANT_ID }}"}'
 
+            # Install and update authV2 extension
+            - name: Terraform Apply Runner
+              run: |
+                az extension add --name authV2 -y
+                az extension update --name authV2
+
             # Terraform Apply
             - name: Terraform Apply Runner
               working-directory: ${{ inputs.infra_working_directory }}
