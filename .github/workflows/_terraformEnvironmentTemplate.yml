@@ -58,21 +58,21 @@ permissions:
   contents: read
 
 jobs:
-    # deploy-prereqs:
-    #     uses: ./.github/workflows/_terraformPrereqsTemplate.yml
-    #     name: Terraform Deploy Prereqs
-    #     with:
-    #         environment: ${{ inputs.environment }}
-    #         terraform_version: ${{ inputs.terraform_version }}
-    #         working_directory: ${{ inputs.prereqs_working_directory }}
-    #     secrets:
-    #         AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-    #         AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-    #         AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-    #         AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-    #         AZURE_TF_STATE_RESOURCE_GROUP_NAME: ${{ secrets.AZURE_TF_STATE_RESOURCE_GROUP_NAME }}
-    #         AZURE_TF_STATE_STORAGE_ACCOUNT_NAME: ${{ secrets.AZURE_TF_STATE_STORAGE_ACCOUNT_NAME }}
-    #         AZURE_TF_STATE_CONTAINER_NAME: ${{ secrets.AZURE_TF_STATE_CONTAINER_NAME }}
+    deploy-prereqs:
+        uses: ./.github/workflows/_terraformPrereqsTemplate.yml
+        name: Terraform Deploy Prereqs
+        with:
+            environment: ${{ inputs.environment }}
+            terraform_version: ${{ inputs.terraform_version }}
+            working_directory: ${{ inputs.prereqs_working_directory }}
+        secrets:
+            AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+            AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+            AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+            AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+            AZURE_TF_STATE_RESOURCE_GROUP_NAME: ${{ secrets.AZURE_TF_STATE_RESOURCE_GROUP_NAME }}
+            AZURE_TF_STATE_STORAGE_ACCOUNT_NAME: ${{ secrets.AZURE_TF_STATE_STORAGE_ACCOUNT_NAME }}
+            AZURE_TF_STATE_CONTAINER_NAME: ${{ secrets.AZURE_TF_STATE_CONTAINER_NAME }}
 
     # deploy-runner:
     #     name: Terraform Deploy Runner
@@ -140,6 +140,7 @@ jobs:
         runs-on: [ubuntu-latest]
         continue-on-error: false
         # needs: [deploy-prereqs, deploy-runner]
+        needs: [deploy-prereqs]
         #environment: ${{ inputs.environment }}
         concurrency:
             group: terraform-${{ inputs.environment }}
