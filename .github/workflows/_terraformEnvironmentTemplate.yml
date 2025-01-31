@@ -193,6 +193,12 @@ jobs:
                     -backend-config="container_name=${{ secrets.AZURE_TF_STATE_CONTAINER_NAME}}" \
                     -backend-config="key=infra.tfstate"
 
+            - name: Login to Azure
+              id: login_azure
+              uses: azure/login@v2
+              with:
+                creds: '{"clientId":"${{ secrets.AZURE_CLIENT_ID }}","clientSecret":"${{ secrets.AZURE_CLIENT_SECRET }}","subscriptionId":"${{ secrets.AZURE_SUBSCRIPTION_ID }}","tenantId":"${{ secrets.AZURE_TENANT_ID }}"}'
+
             # Terraform Apply
             - name: Terraform Apply Runner
               working-directory: ${{ inputs.infra_working_directory }}

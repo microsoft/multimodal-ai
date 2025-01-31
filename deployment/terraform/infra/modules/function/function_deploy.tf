@@ -18,8 +18,8 @@ resource "null_resource" "linux_function_app_deployment" {
 
   provisioner "local-exec" {
     interpreter = local.is_windows ? ["PowerShell", "-Command"] : []
-    # ${var.subscription_id != "" ? "az account set -s ${var.subscription_id}" : ""}
     command     = <<EOT
+      ${var.subscription_id != "" ? "az account set -s ${var.subscription_id}" : ""}
       az functionapp update --resource-group ${var.resource_group_name} --name ${var.function_name} --set publicNetworkAccess=Enabled
       az functionapp deployment source config-zip --resource-group ${var.resource_group_name} --name ${var.function_name} --src ${one(data.archive_file.file_function[*].output_path)} --build-remote true
       ${format(local.delete_file_command, one(data.archive_file.file_function[*].output_path))}
