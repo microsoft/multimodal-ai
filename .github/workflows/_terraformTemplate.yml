@@ -64,6 +64,7 @@ permissions:
 jobs:
     deploy-infra:
         runs-on: ${{ inputs.runner }}
+        name: Terraform Deploy Infrastructure
         continue-on-error: false
         #environment: ${{ inputs.environment }}
         concurrency:
@@ -138,10 +139,10 @@ jobs:
                     export TF_VAR_subscription_id="${{ secrets.AZURE_SUBSCRIPTION_ID }}"
                     terraform apply -var-file=vars.tfvars -var-file=prereqs.tfvars -auto-approve -input=false
                 elif [[ "${{ inputs.component }}" == "runner" ]]; then
-                    export TF_VAR_github_personal_access_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-                    export TF_VAR_github_repo_owner: ${{ github.actor }}
-                    export TF_VAR_github_repo_name:  ${{ github.event.repository.name }}
-                    export TF_VAR_container_image_reference: ghcr.io/${{ github.repository }}/githubagentazure:latest
+                    export TF_VAR_github_personal_access_token=${{ secrets.PERSONAL_ACCESS_TOKEN }}
+                    export TF_VAR_github_repo_owner=${{ github.actor }}
+                    export TF_VAR_github_repo_name=${{ github.event.repository.name }}
+                    export TF_VAR_container_image_reference=ghcr.io/${{ github.repository }}/githubagentazure:latest
                     terraform apply -var-file=vars.tfvars -var-file=prereqs.tfvars -auto-approve -input=false
                 else 
                     terraform apply -var-file=vars.tfvars -auto-approve -input=false
