@@ -5,6 +5,7 @@ on:
       - main
     paths:
       - "deployment/container/**"
+  workflow_dispatch:
 
 jobs:
   build_and_publish:

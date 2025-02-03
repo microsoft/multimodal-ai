@@ -6,6 +6,7 @@ on:
     paths:
       - "deployment/terraform/infra/**"
       - ".github/workflows/terraformMMAI.yml"
+  workflow_dispatch:
 
 jobs:
   deploy-prereqs:

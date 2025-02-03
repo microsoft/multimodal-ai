@@ -9,16 +9,14 @@ on:
         type: choice
         options:
           - 'prereqs'
-          - 'container'
           - 'runner'
-          - 'mmai'
           - 'all'
 
 jobs:
   build_container:
     uses: ./.github/workflows/_containerTemplate.yml
     name: "Build & Publish Container"
-    if: ${{ github.event.inputs.component == 'container' || github.event.inputs.component == 'all' }}
+    if: ${{ github.event.inputs.component == 'all' }}
     with:
       environment: "dev"
       working_directory: "./deployment/container"
@@ -76,14 +74,14 @@ jobs:
   deploy-mmai:
         uses: ./.github/workflows/_terraformTemplate.yml
         name: Terraform Deploy MMAI Infrastructure
-        if: ${{ github.event.inputs.component == 'mmai' || github.event.inputs.component == 'all' }}
+        if: ${{ github.event.inputs.component == 'all' }}
         needs: [deploy-prereqs, deploy-runner]
         with:
             environment: dev
             terraform_version: "1.10.5"
             working_directory: "./deployment/terraform/infra"
             node_version: 20
-            runner: ubuntu-latest
+            runner: self-hosted
             component: "mmai"
             tf_state_file: "infra.tfstate"
         secrets:
