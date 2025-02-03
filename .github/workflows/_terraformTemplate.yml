@@ -4,17 +4,17 @@ on:
   workflow_call:
     inputs:
       environment:
-        required: true
-        type: string
-        description: "Specifies the environment of the deployment."
+          required: true
+          type: string
+          description: "Specifies the environment of the deployment."
       terraform_version:
-        required: true
-        type: string
-        description: "Specifies the terraform version."
+          required: true
+          type: string
+          description: "Specifies the terraform version."
       node_version:
-        required: true
-        type: number
-        description: "Specifies the node version."
+          required: true
+          type: number
+          description: "Specifies the node version."
       working_directory:
           required: true
           type: string

@@ -1,17 +1,23 @@
-name: Infrastructure Deployment
+name: All Components Deployment
 on:
-  pull_request:
-    branches:
-      - main
-    paths:
-      - "**.tf"
-      - "deployment/terraform/**"
-      - ".github/workflows/terraformAll.yml"
+  workflow_dispatch:
+    inputs:
+      component:
+        description: 'Specifies the component to deploy.'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - 'prereqs'
+          - 'runner'
+          - 'mmai'
+          - 'all'
 
 jobs:
   deploy-prereqs:
     uses: ./.github/workflows/_terraformTemplate.yml
     name: Terraform Deploy Prereqs
+    if: ${{ github.event.inputs.component == 'prereqs' || github.event.inputs.component == 'all' }}
     with:
         environment: dev
         terraform_version: "1.10.5"
@@ -32,6 +38,7 @@ jobs:
   deploy-runner:
         uses: ./.github/workflows/_terraformTemplate.yml
         name: Terraform Deploy Runner
+        if: ${{ github.event.inputs.component == 'runner' || github.event.inputs.component == 'all' }}
         needs: deploy-prereqs
         with:
             environment: dev
@@ -54,6 +61,7 @@ jobs:
   deploy-mmai:
         uses: ./.github/workflows/_terraformTemplate.yml
         name: Terraform Deploy MMAI Infrastructure
+        if: ${{ github.event.inputs.component == 'mmai' || github.event.inputs.component == 'all' }}
         needs: [deploy-prereqs, deploy-runner]
         with:
             environment: dev

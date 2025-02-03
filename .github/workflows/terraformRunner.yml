@@ -1,0 +1,53 @@
+name: Runner Deployment
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "deployment/terraform/runner/**"
+      - ".github/workflows/terraformRunner.yml"
+
+jobs:
+  deploy-prereqs:
+    if:  github.repository != 'microsoft/multimodal-ai'
+    uses: ./.github/workflows/_terraformTemplate.yml
+    name: Terraform Deploy Prereqs
+    with:
+        environment: dev
+        terraform_version: "1.10.5"
+        working_directory: "./deployment/terraform/prerequisites"
+        node_version: 20
+        runner: ubuntu-latest
+        component: "prereqs"
+        tf_state_file: "prereqs.tfstate"
+    secrets:
+        AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+        AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+        AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+        AZURE_TF_STATE_RESOURCE_GROUP_NAME: ${{ secrets.AZURE_TF_STATE_RESOURCE_GROUP_NAME }}
+        AZURE_TF_STATE_STORAGE_ACCOUNT_NAME: ${{ secrets.AZURE_TF_STATE_STORAGE_ACCOUNT_NAME }}
+        AZURE_TF_STATE_CONTAINER_NAME: ${{ secrets.AZURE_TF_STATE_CONTAINER_NAME }}
+
+  deploy-runner:
+    if:  github.repository != 'microsoft/multimodal-ai'
+    uses: ./.github/workflows/_terraformTemplate.yml
+    name: Terraform Deploy Runner
+    needs: deploy-prereqs
+    with:
+        environment: dev
+        terraform_version: "1.10.5"
+        working_directory: "./deployment/terraform/runner"
+        node_version: 20
+        runner: ubuntu-latest
+        component: "runner"
+        tf_state_file: "runner.tfstate"
+    secrets:
+        PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+        AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+        AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+        AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+        AZURE_TF_STATE_RESOURCE_GROUP_NAME: ${{ secrets.AZURE_TF_STATE_RESOURCE_GROUP_NAME }}
+        AZURE_TF_STATE_STORAGE_ACCOUNT_NAME: ${{ secrets.AZURE_TF_STATE_STORAGE_ACCOUNT_NAME }}
+        AZURE_TF_STATE_CONTAINER_NAME: ${{ secrets.AZURE_TF_STATE_CONTAINER_NAME }}
