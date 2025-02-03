@@ -96,17 +96,65 @@ resource "azapi_resource" "container_apps_job" {
           {
             name = "github-runner"
             env = [
+              # {
+              #   name      = "PERSONAL_ACCESS_TOKEN"
+              #   secretRef = "personal-access-token"
+              # },
+              # {
+              #   name  = "REGISTRATION_TOKEN_API_URL"
+              #   value = "https://api.github.com/repos/${var.github_repo_owner}/${var.github_repo_name}/actions/runners/registration-token"
+              # },
+              # {
+              #   name  = "GH_URL"
+              #   value = "https://github.com/${var.github_repo_owner}/${var.github_repo_name}"
+              # }
               {
-                name      = "PERSONAL_ACCESS_TOKEN"
+                name  = "RUN_AS_ROOT"
+                value = "true"
+              },
+              {
+                name  = "RUNNER_NAME_PREFIX"
+                value = "aca"
+              },
+              {
+                name  = "RANDOM_RUNNER_SUFFIX"
+                value = "true"
+              },
+              {
+                name      = "ACCESS_TOKEN"
                 secretRef = "personal-access-token"
               },
               {
-                name  = "REGISTRATION_TOKEN_API_URL"
-                value = "https://api.github.com/repos/${var.github_repo_owner}/${var.github_repo_name}/actions/runners/registration-token"
+                name  = "RUNNER_SCOPE"
+                value = "repo"
               },
               {
-                name  = "GH_URL"
-                value = "https://github.com/${var.github_repo_owner}/${var.github_repo_name}"
+                name  = "LABELS"
+                value = local.github_labels
+              },
+              {
+                name  = "RUNNER_WORKDIR"
+                value = "/_work"
+              },
+              {
+                name  = "RUNNER_GROUP"
+                value = "default"
+              },
+              {
+                name  = "DISABLE_AUTOMATIC_DEREGISTRATION"
+                value = "false"
+              },
+              {
+                name  = "EPHEMERAL"
+                value = "1"
+              },
+              {
+                name  = "DISABLE_AUTO_UPDATE"
+                value = "1"
+              },
+              {
+                name  = "START_DOCKER_SERVICE"
+                value = "false"
               }
             ]
             image = var.container_image_reference

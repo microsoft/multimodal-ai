@@ -131,6 +131,7 @@ jobs:
                 az extension add --name authV2 -y
                 az extension update --name authV2
 
+            # ghcr.io/${{ github.repository }}/githubagentazure:latest
             # Terraform Apply
             - name: Terraform Apply
               working-directory: ${{ inputs.working_directory }}
@@ -142,7 +143,7 @@ jobs:
                     export TF_VAR_github_personal_access_token=${{ secrets.PERSONAL_ACCESS_TOKEN }}
                     export TF_VAR_github_repo_owner=${{ github.actor }}
                     export TF_VAR_github_repo_name=${{ github.event.repository.name }}
-                    export TF_VAR_container_image_reference=ghcr.io/${{ github.repository }}/githubagentazure:latest
+                    export TF_VAR_container_image_reference=ghcr.io/perfectthymetech/githubagentazure:main
                     terraform apply -var-file=vars.tfvars -var-file=prereqs.tfvars -auto-approve -input=false
                 else 
                     terraform apply -var-file=vars.tfvars -auto-approve -input=false
