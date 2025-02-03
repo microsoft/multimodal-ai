@@ -68,7 +68,7 @@ jobs:
         continue-on-error: false
         #environment: ${{ inputs.environment }}
         concurrency:
-            group: terraform-${{ inputs.environment }}
+            group: terraform-${{inputs.component}}-${{ inputs.environment }}
             cancel-in-progress: false
 
         env:
