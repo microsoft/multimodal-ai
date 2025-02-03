@@ -129,6 +129,10 @@ resource "azapi_resource" "container_apps_job" {
                 value = "repo"
               },
               {
+                name  = "REPO_URL"
+                value = "https://github.com/${var.github_repo_owner}/${var.github_repo_name}"
+              },
+              {
                 name  = "LABELS"
                 value = local.github_labels
               },
