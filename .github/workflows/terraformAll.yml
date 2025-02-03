@@ -9,15 +9,30 @@ on:
         type: choice
         options:
           - 'prereqs'
+          - 'container'
           - 'runner'
           - 'mmai'
           - 'all'
 
 jobs:
+  build_container:
+    uses: ./.github/workflows/_containerTemplate.yml
+    name: "Build & Publish Container"
+    if: ${{ github.event.inputs.component == 'container' || github.event.inputs.component == 'all' }}
+    with:
+      environment: "dev"
+      working_directory: "./deployment/container"
+      registry_uri: "ghcr.io"
+      image_namespace_name: ${{ github.repository }}
+      image_name: "GitHubAgentAzure"
+    secrets:
+      USER_NAME: ${{ github.actor }}
+      PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+
   deploy-prereqs:
     uses: ./.github/workflows/_terraformTemplate.yml
     name: Terraform Deploy Prereqs
-    if: ${{ github.event.inputs.component == 'prereqs' || github.event.inputs.component == 'all' }}
+    if: ${{ github.event.inputs.component != 'container' }}
     with:
         environment: dev
         terraform_version: "1.10.5"
