@@ -68,7 +68,7 @@ jobs:
         continue-on-error: false
         #environment: ${{ inputs.environment }}
         concurrency:
-            group: terraform-${{inputs.component}}-${{ inputs.environment }}
+            group: terraform-${{ inputs.component }}-${{ inputs.environment }}
             cancel-in-progress: false
 
         env:
@@ -144,7 +144,7 @@ jobs:
                     export TF_VAR_github_repo_name=${{ github.event.repository.name }}
                     export TF_VAR_container_image_reference=ghcr.io/${{ github.repository }}/githubagentazure:latest
                     terraform apply -var-file=vars.tfvars -var-file=prereqs.tfvars -auto-approve -input=false
-                else 
+                else
                     terraform apply -var-file=vars.tfvars -auto-approve -input=false
                 fi
 
