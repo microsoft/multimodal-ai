@@ -63,7 +63,6 @@ permissions:
 
 jobs:
     deploy-infra:
-        name: Terraform Deploy
         runs-on: ${{ inputs.runner }}
         continue-on-error: false
         #environment: ${{ inputs.environment }}
@@ -100,14 +99,6 @@ jobs:
               id: checkout_repository
               uses: actions/checkout@v4
 
-            - name: Upload prereqs tfvars
-              id: upload_prereqs_tfvars
-              if: ${{ inputs.component == 'prereqs'}}
-              uses: actions/upload-artifact@v4
-              with:
-                name: prereqs-tfvars
-                path: ./deployment/terraform/infra/prereqs.tfvars
-
             - name: Download prereqs tfvars
               id: download_prereqs_tfvars
               if: ${{ inputs.component == 'mmai' || inputs.component == 'runner' }}
@@ -140,7 +131,7 @@ jobs:
                 az extension update --name authV2
 
             # Terraform Apply
-            - name: Terraform Apply Runner
+            - name: Terraform Apply
               working-directory: ${{ inputs.working_directory }}
               run: |
                 if [[ "${{ inputs.component }}" == "mmai" ]]; then
@@ -155,3 +146,11 @@ jobs:
                 else 
                     terraform apply -var-file=vars.tfvars -auto-approve -input=false
                 fi
+
+            - name: Upload prereqs tfvars
+              id: upload_prereqs_tfvars
+              if: ${{ inputs.component == 'prereqs'}}
+              uses: actions/upload-artifact@v4
+              with:
+                  name: prereqs-tfvars
+                  path: ./deployment/terraform/infra/prereqs.tfvars

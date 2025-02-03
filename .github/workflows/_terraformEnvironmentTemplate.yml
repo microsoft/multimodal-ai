@@ -1,122 +1,122 @@
-name: Terraform Template
+# name: Terraform Template
 
-on:
-  workflow_call:
-    inputs:
-      environment:
-        required: true
-        type: string
-        description: "Specifies the environment of the deployment."
-      terraform_version:
-        required: true
-        type: string
-        description: "Specifies the terraform version."
-      node_version:
-        required: true
-        type: number
-        description: "Specifies the node version."
-      prereqs_working_directory:
-        required: true
-        type: string
-        description: "Specifies the working directory for prereqs."
-      runner_working_directory:
-        required: true
-        type: string
-        description: "Specifies the working directory for the runner."
-      infra_working_directory:
-          required: true
-          type: string
-          description: "Specifies the working directory for the infra deployment."
-    secrets:
-      PERSONAL_ACCESS_TOKEN:
-        required: true
-        description: "Specifies a GitHub PAT."
-      AZURE_TENANT_ID:
-        required: true
-        description: "Specifies the Azure Tenant ID."
-      AZURE_SUBSCRIPTION_ID:
-        required: true
-        description: "Specifies the Azure Subscription ID."
-      AZURE_CLIENT_ID:
-        required: true
-        description: "Specifies the Azure App Client ID."
-      AZURE_CLIENT_SECRET:
-        required: true
-        description: "Specifies the client secret."
-      AZURE_TF_STATE_RESOURCE_GROUP_NAME:
-        required: true
-        description: "Specifies the Azure Resource Group Name for TF state."
-      AZURE_TF_STATE_STORAGE_ACCOUNT_NAME:
-        required: true
-        description: "Specifies the Azure Storage Account Name for TF state."
-      AZURE_TF_STATE_CONTAINER_NAME:
-        required: true
-        description: "Specifies the Azure Storage Container Name Prefix for TF state."
+# on:
+#   workflow_call:
+#     inputs:
+#       environment:
+#         required: true
+#         type: string
+#         description: "Specifies the environment of the deployment."
+#       terraform_version:
+#         required: true
+#         type: string
+#         description: "Specifies the terraform version."
+#       node_version:
+#         required: true
+#         type: number
+#         description: "Specifies the node version."
+#       prereqs_working_directory:
+#         required: true
+#         type: string
+#         description: "Specifies the working directory for prereqs."
+#       runner_working_directory:
+#         required: true
+#         type: string
+#         description: "Specifies the working directory for the runner."
+#       infra_working_directory:
+#           required: true
+#           type: string
+#           description: "Specifies the working directory for the infra deployment."
+#     secrets:
+#       PERSONAL_ACCESS_TOKEN:
+#         required: true
+#         description: "Specifies a GitHub PAT."
+#       AZURE_TENANT_ID:
+#         required: true
+#         description: "Specifies the Azure Tenant ID."
+#       AZURE_SUBSCRIPTION_ID:
+#         required: true
+#         description: "Specifies the Azure Subscription ID."
+#       AZURE_CLIENT_ID:
+#         required: true
+#         description: "Specifies the Azure App Client ID."
+#       AZURE_CLIENT_SECRET:
+#         required: true
+#         description: "Specifies the client secret."
+#       AZURE_TF_STATE_RESOURCE_GROUP_NAME:
+#         required: true
+#         description: "Specifies the Azure Resource Group Name for TF state."
+#       AZURE_TF_STATE_STORAGE_ACCOUNT_NAME:
+#         required: true
+#         description: "Specifies the Azure Storage Account Name for TF state."
+#       AZURE_TF_STATE_CONTAINER_NAME:
+#         required: true
+#         description: "Specifies the Azure Storage Container Name Prefix for TF state."
 
-permissions:
-  id-token: write
-  contents: read
+# permissions:
+#   id-token: write
+#   contents: read
 
-jobs:
-    deploy-prereqs:
-        uses: ./.github/workflows/_terraformTemplate.yml
-        name: Terraform Deploy Prereqs
-        with:
-            environment: ${{ inputs.environment }}
-            terraform_version: ${{ inputs.terraform_version }}
-            working_directory: ${{ inputs.prereqs_working_directory }}
-            node_version: ${{ inputs.node_version }}
-            runner: ubuntu-latest
-            component: "prereqs"
-            tf_state_file: "prereqs.tfstate"
-        secrets:
-            AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-            AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-            AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-            AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-            AZURE_TF_STATE_RESOURCE_GROUP_NAME: ${{ secrets.AZURE_TF_STATE_RESOURCE_GROUP_NAME }}
-            AZURE_TF_STATE_STORAGE_ACCOUNT_NAME: ${{ secrets.AZURE_TF_STATE_STORAGE_ACCOUNT_NAME }}
-            AZURE_TF_STATE_CONTAINER_NAME: ${{ secrets.AZURE_TF_STATE_CONTAINER_NAME }}
+# jobs:
+#     deploy-prereqs:
+#         uses: ./.github/workflows/_terraformTemplate.yml
+#         name: Terraform Deploy Prereqs
+#         with:
+#             environment: ${{ inputs.environment }}
+#             terraform_version: ${{ inputs.terraform_version }}
+#             working_directory: ${{ inputs.prereqs_working_directory }}
+#             node_version: ${{ inputs.node_version }}
+#             runner: ubuntu-latest
+#             component: "prereqs"
+#             tf_state_file: "prereqs.tfstate"
+#         secrets:
+#             AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+#             AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+#             AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+#             AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+#             AZURE_TF_STATE_RESOURCE_GROUP_NAME: ${{ secrets.AZURE_TF_STATE_RESOURCE_GROUP_NAME }}
+#             AZURE_TF_STATE_STORAGE_ACCOUNT_NAME: ${{ secrets.AZURE_TF_STATE_STORAGE_ACCOUNT_NAME }}
+#             AZURE_TF_STATE_CONTAINER_NAME: ${{ secrets.AZURE_TF_STATE_CONTAINER_NAME }}
 
-    deploy-runner:
-      uses: ./.github/workflows/_terraformTemplate.yml
-      name: Terraform Deploy Runner
-      needs: deploy-prereqs
-      with:
-          environment: ${{ inputs.environment }}
-          terraform_version: ${{ inputs.terraform_version }}
-          working_directory: ${{ inputs.runner_working_directory }}
-          node_version: ${{ inputs.node_version }}
-          runner: ubuntu-latest
-          component: "runner"
-          tf_state_file: "runner.tfstate"
-      secrets:
-          PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-          AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-          AZURE_TF_STATE_RESOURCE_GROUP_NAME: ${{ secrets.AZURE_TF_STATE_RESOURCE_GROUP_NAME }}
-          AZURE_TF_STATE_STORAGE_ACCOUNT_NAME: ${{ secrets.AZURE_TF_STATE_STORAGE_ACCOUNT_NAME }}
-          AZURE_TF_STATE_CONTAINER_NAME: ${{ secrets.AZURE_TF_STATE_CONTAINER_NAME }}
+#     deploy-runner:
+#       uses: ./.github/workflows/_terraformTemplate.yml
+#       name: Terraform Deploy Runner
+#       needs: deploy-prereqs
+#       with:
+#           environment: ${{ inputs.environment }}
+#           terraform_version: ${{ inputs.terraform_version }}
+#           working_directory: ${{ inputs.runner_working_directory }}
+#           node_version: ${{ inputs.node_version }}
+#           runner: ubuntu-latest
+#           component: "runner"
+#           tf_state_file: "runner.tfstate"
+#       secrets:
+#           PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+#           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+#           AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+#           AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+#           AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+#           AZURE_TF_STATE_RESOURCE_GROUP_NAME: ${{ secrets.AZURE_TF_STATE_RESOURCE_GROUP_NAME }}
+#           AZURE_TF_STATE_STORAGE_ACCOUNT_NAME: ${{ secrets.AZURE_TF_STATE_STORAGE_ACCOUNT_NAME }}
+#           AZURE_TF_STATE_CONTAINER_NAME: ${{ secrets.AZURE_TF_STATE_CONTAINER_NAME }}
 
-    deploy-mmai:
-            uses: ./.github/workflows/_terraformTemplate.yml
-            name: Terraform Deploy MMAI Infrastructure
-            needs: [deploy-prereqs, deploy-runner]
-            with:
-                environment: ${{ inputs.environment }}
-                terraform_version: ${{ inputs.terraform_version }}
-                working_directory: ${{ inputs.infra_working_directory }}
-                node_version: 20
-                runner: ubuntu-latest
-                component: "mmai"
-                tf_state_file: "infra.tfstate"
-            secrets:
-                AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-                AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-                AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-                AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-                AZURE_TF_STATE_RESOURCE_GROUP_NAME: ${{ secrets.AZURE_TF_STATE_RESOURCE_GROUP_NAME }}
-                AZURE_TF_STATE_STORAGE_ACCOUNT_NAME: ${{ secrets.AZURE_TF_STATE_STORAGE_ACCOUNT_NAME }}
-                AZURE_TF_STATE_CONTAINER_NAME: ${{ secrets.AZURE_TF_STATE_CONTAINER_NAME }}
+#     deploy-mmai:
+#             uses: ./.github/workflows/_terraformTemplate.yml
+#             name: Terraform Deploy MMAI Infrastructure
+#             needs: [deploy-prereqs, deploy-runner]
+#             with:
+#                 environment: ${{ inputs.environment }}
+#                 terraform_version: ${{ inputs.terraform_version }}
+#                 working_directory: ${{ inputs.infra_working_directory }}
+#                 node_version: 20
+#                 runner: ubuntu-latest
+#                 component: "mmai"
+#                 tf_state_file: "infra.tfstate"
+#             secrets:
+#                 AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+#                 AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+#                 AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+#                 AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+#                 AZURE_TF_STATE_RESOURCE_GROUP_NAME: ${{ secrets.AZURE_TF_STATE_RESOURCE_GROUP_NAME }}
+#                 AZURE_TF_STATE_STORAGE_ACCOUNT_NAME: ${{ secrets.AZURE_TF_STATE_STORAGE_ACCOUNT_NAME }}
+#                 AZURE_TF_STATE_CONTAINER_NAME: ${{ secrets.AZURE_TF_STATE_CONTAINER_NAME }}
