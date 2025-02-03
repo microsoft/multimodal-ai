@@ -9,6 +9,7 @@ on:
 
 jobs:
   build_and_publish:
+    if:  github.repository != 'microsoft/multimodal-ai'
     uses: ./.github/workflows/_containerTemplate.yml
     name: "Build & Publish"
     with:
