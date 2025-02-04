@@ -26,7 +26,7 @@ on:
       component:
           required: true
           type: string
-          description: "Specifies the runner to use."
+          description: "Specifies the component type to deploy (e.g. 'mmai', 'runner', or 'prereqs')."
       tf_state_file:
           required: true
           type: string
@@ -100,6 +100,20 @@ jobs:
               id: checkout_repository
               uses: actions/checkout@v4
 
+            - name: Login to Azure
+              id: login_azure
+              uses: azure/login@v2
+              with:
+                creds: '{"clientId":"${{ secrets.AZURE_CLIENT_ID }}","clientSecret":"${{ secrets.AZURE_CLIENT_SECRET }}","subscriptionId":"${{ secrets.AZURE_SUBSCRIPTION_ID }}","tenantId":"${{ secrets.AZURE_TENANT_ID }}"}'
+
+            - name: Ensure az cli authV2 Extension
+              run: |
+                if ! az extension show --name authV2; then
+                  az extension add --name authV2 -y
+                else
+                  az extension update --name authV2
+                fi
+  
             - name: Download prereqs tfvars
               id: download_prereqs_tfvars
               if: ${{ inputs.component == 'mmai' || inputs.component == 'runner' }}
@@ -119,34 +133,31 @@ jobs:
                     -backend-config="container_name=${{ secrets.AZURE_TF_STATE_CONTAINER_NAME}}" \
                     -backend-config="key=${{ inputs.tf_state_file }}"
 
-            - name: Login to Azure
-              id: login_azure
-              uses: azure/login@v2
-              with:
-                creds: '{"clientId":"${{ secrets.AZURE_CLIENT_ID }}","clientSecret":"${{ secrets.AZURE_CLIENT_SECRET }}","subscriptionId":"${{ secrets.AZURE_SUBSCRIPTION_ID }}","tenantId":"${{ secrets.AZURE_TENANT_ID }}"}'
+            - name: Terraform Validate
+              working-directory: ${{ inputs.working_directory }}
+              run: terraform validate
 
-            # Install and update az cli extensions
-            - name: Install az cli Extensions
-              run: |
-                az extension add --name authV2 -y
-                az extension update --name authV2
-
-            # Terraform Apply
-            - name: Terraform Apply
+            - name: Terraform Apply for MMAI
+              if: ${{ inputs.component == 'mmai' }}
               working-directory: ${{ inputs.working_directory }}
               run: |
-                if [[ "${{ inputs.component }}" == "mmai" ]]; then
-                    export TF_VAR_subscription_id="${{ secrets.AZURE_SUBSCRIPTION_ID }}"
-                    terraform apply -var-file=vars.tfvars -var-file=prereqs.tfvars -auto-approve -input=false
-                elif [[ "${{ inputs.component }}" == "runner" ]]; then
-                    export TF_VAR_github_personal_access_token=${{ secrets.PERSONAL_ACCESS_TOKEN }}
-                    export TF_VAR_github_repo_owner=${{ github.actor }}
-                    export TF_VAR_github_repo_name=${{ github.event.repository.name }}
-                    export TF_VAR_container_image_reference=ghcr.io/${{ github.repository }}/githubagentazure:latest
-                    terraform apply -var-file=vars.tfvars -var-file=prereqs.tfvars -auto-approve -input=false
-                else
-                    terraform apply -var-file=vars.tfvars -auto-approve -input=false
-                fi
+                export TF_VAR_subscription_id="${{ secrets.AZURE_SUBSCRIPTION_ID }}"
+                terraform apply -var-file=vars.tfvars -var-file=prereqs.tfvars -auto-approve -input=false
+
+            - name: Terraform Apply for Runner
+              if: ${{ inputs.component == 'runner' }}
+              working-directory: ${{ inputs.working_directory }}
+              run: |
+                export TF_VAR_github_personal_access_token="${{ secrets.PERSONAL_ACCESS_TOKEN }}"
+                export TF_VAR_github_repo_owner="${{ github.actor }}"
+                export TF_VAR_github_repo_name="${{ github.event.repository.name }}"
+                export TF_VAR_container_image_reference="ghcr.io/${{ github.repository }}/githubagentazure:latest"
+                terraform apply -var-file=vars.tfvars -var-file=prereqs.tfvars -auto-approve -input=false
+
+            - name: Terraform Apply Default
+              if: ${{ inputs.component != 'mmai' && inputs.component != 'runner' }}
+              working-directory: ${{ inputs.working_directory }}
+              run: terraform apply -var-file=vars.tfvars -auto-approve -input=false
 
             - name: Upload prereqs tfvars
               id: upload_prereqs_tfvars

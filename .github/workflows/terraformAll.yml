@@ -30,7 +30,6 @@ jobs:
   deploy-prereqs:
     uses: ./.github/workflows/_terraformTemplate.yml
     name: Terraform Deploy Prereqs
-    if: ${{ github.event.inputs.component != 'container' }}
     with:
         environment: dev
         terraform_version: "1.10.5"
