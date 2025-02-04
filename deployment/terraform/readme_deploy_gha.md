@@ -77,12 +77,11 @@ Before deploying, ensure you have configured the following:
 
 The project includes several GitHub Actions workflows:
 
-- **All Components Deployment (`terraformAll.yml`)**
+- **GitHub Build Agent (Runner) Deployment (`terraformBuildAgent.yml`)**
   - **What it does:**
     - Builds and pushes the Docker container image for the self-hosted GitHub runner.
     - Deploys prerequisites (e.g., virtual networks, private DNS zones).
     - Deploys the Azure Container App for the runner.
-    - Deploys the full MMAI infrastructure.
   - **Trigger:** Manual execution.
 
 - **MMAI Deployment (`terraformMMAI.yml`)**
@@ -102,7 +101,7 @@ The project includes several GitHub Actions workflows:
 
 ### Quick Start: Deploy Everything
 
-If starting with a freshly forked repository, run the **All Components Deployment (`terraformAll.yml`)** workflow manually. This will deploy the entire MMAI platform, including the private self-hosted CI/CD system.
+If starting with a freshly forked repository, run the **GitHub Build Agent (Runner) Deployment (`terraformBuildAgent.yml`)** workflow manually. This will deploy the private self-hosted CI/CD system. Once this process completes, manually trigger the deplyoment workflow **MMAI Deployment (`terraformMMAI.yml`)** to deploy the MMAI infrastructure and code.
 
 > **Important Note:**
 > In a private repository, GitHub Packages (such as the GitHub runner container image) may not be accessible by default.
@@ -114,39 +113,25 @@ If starting with a freshly forked repository, run the **All Components Deploymen
 > ![Package Visibility](../../docs/images/deployment/gh_package_visibility.png)
 > Refer to [GitHub Packages access control](https://docs.github.com/en/packages/learn-github-packages/configuring-a-packages-access-control-and-visibility#configuring-access-to-packages-for-your-personal-account).
 
-### Sample Usage Scenario #1
+### Sample Usage Scenario
 
 1. **Fork the Repository.**
-2. **Configure Prerequisites.**
-3. **Deploy Everything:** Run the **All Components Deployment (`terraformAll.yml`)** workflow manually.
-4. **Develop & Test:**
+2. **Configure Prerequisites (Azure and GitHub).**
+3. **Deploy the Build System:** Run the **GitHub Build Agent (Runner) Deployment (`terraformBuildAgent.yml`)** workflow manually.
+4. **Deploy MMAI:** Run the **MMAI Deployment (`terraformMMAI.yml`)** workflow manually.
+5. **Develop & Test:**
    - Create a new branch.
    - Implement new features or fix bugs.
    - Submit a pull request to either the original repository or your fork’s main branch.
-5. **Automatic Deployment:**
+6. **Automatic Deployment:**
    The **MMAI Deployment (`terraformMMAI.yml`)** workflow triggers automatically for:
    - Terraform template changes.
    - Backend/frontend updates.
    - Workflow configuration updates.
-6. **Validate & Iterate:**
+7. **Validate & Iterate:**
    - Test the deployed platform.
    - Re-run workflows for additional changes if necessary.
-7. **Merge PR.**
-
-### Sample Usage Scenario #2
-
-1. **Fork the Repository.**
-2. **Configure Prerequisites.**
-3. **Disable Automatic Deployment:** (Optional) Disable the **MMAI Deployment (`terraformMMAI.yml`)** workflow auto-trigger on PRs.
-4. **Develop & Test:**
-   - Create a new branch.
-   - Implement new features or fix bugs.
-   - Submit a pull request.
-5. **Selective Deployment:**
-   Manually trigger the **All Components Deployment (`terraformAll.yml`)** workflow for specific components (e.g., excluding the self-hosted runner).
-6. **Validate & Iterate.**
-7. **Merge PR.**
-
+8. **Merge PR.**
 ---
 
 ## Known Issues & Troubleshooting

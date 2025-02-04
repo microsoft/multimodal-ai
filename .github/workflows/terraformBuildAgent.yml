@@ -1,22 +1,11 @@
-name: All Components Deployment
+name: GitHub Build Agent (Runner) Deployment
 on:
   workflow_dispatch:
-    inputs:
-      component:
-        description: 'Specifies the component to deploy.'
-        required: true
-        default: 'all'
-        type: choice
-        options:
-          - 'prereqs'
-          - 'runner'
-          - 'all'
 
 jobs:
   build_container:
     uses: ./.github/workflows/_containerTemplate.yml
     name: "Build & Publish Container"
-    if: ${{ github.event.inputs.component == 'all' }}
     with:
       environment: "dev"
       working_directory: "./deployment/container"
@@ -50,8 +39,7 @@ jobs:
   deploy-runner:
         uses: ./.github/workflows/_terraformTemplate.yml
         name: Terraform Deploy Runner
-        if: ${{ github.event.inputs.component == 'runner' || github.event.inputs.component == 'all' }}
-        needs: deploy-prereqs
+        needs: [deploy-prereqs, build_container]
         with:
             environment: dev
             terraform_version: "1.10.5"
@@ -62,28 +50,6 @@ jobs:
             tf_state_file: "runner.tfstate"
         secrets:
             PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-            AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-            AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-            AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-            AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-            AZURE_TF_STATE_RESOURCE_GROUP_NAME: ${{ secrets.AZURE_TF_STATE_RESOURCE_GROUP_NAME }}
-            AZURE_TF_STATE_STORAGE_ACCOUNT_NAME: ${{ secrets.AZURE_TF_STATE_STORAGE_ACCOUNT_NAME }}
-            AZURE_TF_STATE_CONTAINER_NAME: ${{ secrets.AZURE_TF_STATE_CONTAINER_NAME }}
-
-  deploy-mmai:
-        uses: ./.github/workflows/_terraformTemplate.yml
-        name: Terraform Deploy MMAI Infrastructure
-        if: ${{ github.event.inputs.component == 'all' }}
-        needs: [deploy-prereqs, deploy-runner]
-        with:
-            environment: dev
-            terraform_version: "1.10.5"
-            working_directory: "./deployment/terraform/infra"
-            node_version: 20
-            runner: self-hosted
-            component: "mmai"
-            tf_state_file: "infra.tfstate"
-        secrets:
             AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
             AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
             AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
