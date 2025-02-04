@@ -1,0 +1,58 @@
+name: MMAI Deployment
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "deployment/terraform/infra/**"
+      - "deployment/terraform/prerequisites/**"
+      - "deployment/library/**"
+      - "backend/**"
+      - "frontend/**"
+      - "custom_skills/**"
+      - ".github/workflows/terraformMMAI.yml"
+  workflow_dispatch:
+
+jobs:
+  deploy-prereqs:
+    if: ${{ github.event.pull_request.head.repo.full_name != 'microsoft/multimodal-ai' }}
+    uses: ./.github/workflows/_terraformTemplate.yml
+    name: Terraform Deploy Prereqs
+    with:
+        environment: dev
+        terraform_version: "1.10.5"
+        working_directory: "./deployment/terraform/prerequisites"
+        node_version: 20
+        runner: ubuntu-latest
+        component: "prereqs"
+        tf_state_file: "prereqs.tfstate"
+    secrets:
+        AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+        AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+        AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+        AZURE_TF_STATE_RESOURCE_GROUP_NAME: ${{ secrets.AZURE_TF_STATE_RESOURCE_GROUP_NAME }}
+        AZURE_TF_STATE_STORAGE_ACCOUNT_NAME: ${{ secrets.AZURE_TF_STATE_STORAGE_ACCOUNT_NAME }}
+        AZURE_TF_STATE_CONTAINER_NAME: ${{ secrets.AZURE_TF_STATE_CONTAINER_NAME }}
+
+  deploy-mmai:
+    if: ${{ github.event.pull_request.head.repo.full_name != 'microsoft/multimodal-ai' }}
+    uses: ./.github/workflows/_terraformTemplate.yml
+    name: Terraform Deploy MMAI Infrastructure
+    needs: [deploy-prereqs]
+    with:
+        environment: dev
+        terraform_version: "1.10.5"
+        working_directory: "./deployment/terraform/infra"
+        node_version: 20
+        runner: self-hosted
+        component: "mmai"
+        tf_state_file: "infra.tfstate"
+    secrets:
+        AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+        AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+        AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+        AZURE_TF_STATE_RESOURCE_GROUP_NAME: ${{ secrets.AZURE_TF_STATE_RESOURCE_GROUP_NAME }}
+        AZURE_TF_STATE_STORAGE_ACCOUNT_NAME: ${{ secrets.AZURE_TF_STATE_STORAGE_ACCOUNT_NAME }}
+        AZURE_TF_STATE_CONTAINER_NAME: ${{ secrets.AZURE_TF_STATE_CONTAINER_NAME }}

@@ -1,0 +1,168 @@
+name: Terraform Template
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+          required: true
+          type: string
+          description: "Specifies the environment of the deployment."
+      terraform_version:
+          required: true
+          type: string
+          description: "Specifies the terraform version."
+      node_version:
+          required: true
+          type: number
+          description: "Specifies the node version."
+      working_directory:
+          required: true
+          type: string
+          description: "Specifies the working directory for the deployment."
+      runner:
+          required: true
+          type: string
+          description: "Specifies the runner to use."
+      component:
+          required: true
+          type: string
+          description: "Specifies the component type to deploy (e.g. 'mmai', 'runner', or 'prereqs')."
+      tf_state_file:
+          required: true
+          type: string
+          description: "Specifies the terraform state file."
+    secrets:
+      PERSONAL_ACCESS_TOKEN:
+        required: false
+        description: "Specifies a GitHub PAT."
+      AZURE_TENANT_ID:
+        required: true
+        description: "Specifies the Azure Tenant ID."
+      AZURE_SUBSCRIPTION_ID:
+        required: true
+        description: "Specifies the Azure Subscription ID."
+      AZURE_CLIENT_ID:
+        required: true
+        description: "Specifies the Azure App Client ID."
+      AZURE_CLIENT_SECRET:
+        required: true
+        description: "Specifies the client secret."
+      AZURE_TF_STATE_RESOURCE_GROUP_NAME:
+        required: true
+        description: "Specifies the Azure Resource Group Name for TF state."
+      AZURE_TF_STATE_STORAGE_ACCOUNT_NAME:
+        required: true
+        description: "Specifies the Azure Storage Account Name for TF state."
+      AZURE_TF_STATE_CONTAINER_NAME:
+        required: true
+        description: "Specifies the Azure Storage Container Name Prefix for TF state."
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+    deploy-infra:
+        runs-on: ${{ inputs.runner }}
+        name: Terraform Deploy Infrastructure
+        continue-on-error: false
+        #environment: ${{ inputs.environment }}
+        concurrency:
+            group: terraform-${{ inputs.component }}-${{ inputs.environment }}
+            cancel-in-progress: false
+
+        env:
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          ARM_CLIENT_ID: "${{ secrets.AZURE_CLIENT_ID }}"
+          ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          ARM_USE_AZUREAD: true
+          ARM_USE_OIDC: false
+
+        steps:
+            # Setup Node
+            - name: Setup Node
+              id: node_setup
+              uses: actions/setup-node@v4
+              with:
+                node-version: ${{ inputs.node_version }}
+
+            # Setup Terraform
+            - name: Setup Terraform
+              id: terraform_setup
+              uses: hashicorp/setup-terraform@v3
+              with:
+                terraform_version: ${{ inputs.terraform_version }}
+                terraform_wrapper: true
+
+            # Check Out Repository
+            - name: Check Out Repository
+              id: checkout_repository
+              uses: actions/checkout@v4
+
+            - name: Login to Azure
+              id: login_azure
+              uses: azure/login@v2
+              with:
+                creds: '{"clientId":"${{ secrets.AZURE_CLIENT_ID }}","clientSecret":"${{ secrets.AZURE_CLIENT_SECRET }}","subscriptionId":"${{ secrets.AZURE_SUBSCRIPTION_ID }}","tenantId":"${{ secrets.AZURE_TENANT_ID }}"}'
+
+            - name: Ensure az cli authV2 Extension
+              run: |
+                if ! az extension show --name authV2; then
+                  az extension add --name authV2 -y
+                else
+                  az extension update --name authV2
+                fi
+
+            - name: Download prereqs tfvars
+              id: download_prereqs_tfvars
+              if: ${{ inputs.component == 'mmai' || inputs.component == 'runner' }}
+              uses: actions/download-artifact@v4
+              with:
+                name: prereqs-tfvars
+                path: ${{ inputs.working_directory }}
+
+            # Terraform Init
+            - name: Terraform Init Runner
+              working-directory: ${{ inputs.working_directory }}
+              run: |
+                terraform init \
+                    -backend-config="environment=public" \
+                    -backend-config="resource_group_name=${{ secrets.AZURE_TF_STATE_RESOURCE_GROUP_NAME }}" \
+                    -backend-config="storage_account_name=${{ secrets.AZURE_TF_STATE_STORAGE_ACCOUNT_NAME }}" \
+                    -backend-config="container_name=${{ secrets.AZURE_TF_STATE_CONTAINER_NAME}}" \
+                    -backend-config="key=${{ inputs.tf_state_file }}"
+
+            - name: Terraform Validate
+              working-directory: ${{ inputs.working_directory }}
+              run: terraform validate
+
+            - name: Terraform Apply for MMAI
+              if: ${{ inputs.component == 'mmai' }}
+              working-directory: ${{ inputs.working_directory }}
+              run: |
+                export TF_VAR_subscription_id="${{ secrets.AZURE_SUBSCRIPTION_ID }}"
+                terraform apply -var-file=vars.tfvars -var-file=prereqs.tfvars -auto-approve -input=false
+
+            - name: Terraform Apply for Runner
+              if: ${{ inputs.component == 'runner' }}
+              working-directory: ${{ inputs.working_directory }}
+              run: |
+                export TF_VAR_github_personal_access_token="${{ secrets.PERSONAL_ACCESS_TOKEN }}"
+                export TF_VAR_github_repo_owner="${{ github.actor }}"
+                export TF_VAR_github_repo_name="${{ github.event.repository.name }}"
+                export TF_VAR_container_image_reference="ghcr.io/${{ github.repository }}/githubagentazure:latest"
+                terraform apply -var-file=vars.tfvars -var-file=prereqs.tfvars -auto-approve -input=false
+
+            - name: Terraform Apply Default
+              if: ${{ inputs.component != 'mmai' && inputs.component != 'runner' }}
+              working-directory: ${{ inputs.working_directory }}
+              run: terraform apply -var-file=vars.tfvars -auto-approve -input=false
+
+            - name: Upload prereqs tfvars
+              id: upload_prereqs_tfvars
+              if: ${{ inputs.component == 'prereqs'}}
+              uses: actions/upload-artifact@v4
+              with:
+                  name: prereqs-tfvars
+                  path: ./deployment/terraform/infra/prereqs.tfvars

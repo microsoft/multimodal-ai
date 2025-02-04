@@ -1,0 +1,23 @@
+name: Container
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "deployment/container/**"
+  workflow_dispatch:
+
+jobs:
+  build_and_publish:
+    if: ${{ github.event.pull_request.head.repo.full_name != 'microsoft/multimodal-ai' }}
+    uses: ./.github/workflows/_containerTemplate.yml
+    name: "Build & Publish"
+    with:
+      environment: "dev"
+      working_directory: "./deployment/container"
+      registry_uri: "ghcr.io"
+      image_namespace_name: ${{ github.repository }}
+      image_name: "GitHubAgentAzure"
+    secrets:
+      USER_NAME: ${{ github.actor }}
+      PASSWORD: ${{ secrets.GITHUB_TOKEN }}
