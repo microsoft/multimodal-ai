@@ -113,7 +113,7 @@ jobs:
                 else
                   az extension update --name authV2
                 fi
-  
+
             - name: Download prereqs tfvars
               id: download_prereqs_tfvars
               if: ${{ inputs.component == 'mmai' || inputs.component == 'runner' }}

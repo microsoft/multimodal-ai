@@ -5,6 +5,11 @@ on:
       - main
     paths:
       - "deployment/terraform/infra/**"
+      - "deployment/terraform/prerequisites/**"
+      - "deployment/library/**"
+      - "backend/**"
+      - "frontend/**"
+      - "custom_skills/**"
       - ".github/workflows/terraformMMAI.yml"
   workflow_dispatch:
 
