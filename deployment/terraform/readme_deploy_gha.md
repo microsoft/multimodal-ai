@@ -21,10 +21,8 @@ This README provides step-by-step instructions for configuring your environment,
 - [Workflows](#workflows)
 - [Usage](#usage)
   - [Quick Start: Deploy Everything](#quick-start-deploy-everything)
-  - [Sample Usage Scenario #1](#sample-usage-scenario-1)
-  - [Sample Usage Scenario #2](#sample-usage-scenario-2)
+  - [Sample Usage Scenario](#sample-usage-scenario)
 - [Known Issues & Troubleshooting](#known-issues--troubleshooting)
-- [Contribution & License](#contribution--license)
 
 ---
 
