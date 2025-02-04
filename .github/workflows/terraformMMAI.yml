@@ -15,7 +15,7 @@ on:
 
 jobs:
   deploy-prereqs:
-    if:  github.repository != 'microsoft/multimodal-ai'
+    if: ${{ github.event.pull_request.head.repo.full_name != 'microsoft/multimodal-ai' }}
     uses: ./.github/workflows/_terraformTemplate.yml
     name: Terraform Deploy Prereqs
     with:
@@ -36,7 +36,7 @@ jobs:
         AZURE_TF_STATE_CONTAINER_NAME: ${{ secrets.AZURE_TF_STATE_CONTAINER_NAME }}
 
   deploy-mmai:
-    if:  github.repository != 'microsoft/multimodal-ai'
+    if: ${{ github.event.pull_request.head.repo.full_name != 'microsoft/multimodal-ai' }}
     uses: ./.github/workflows/_terraformTemplate.yml
     name: Terraform Deploy MMAI Infrastructure
     needs: [deploy-prereqs]
