@@ -34,13 +34,23 @@
     az extension add --name authV2
     ```
 
-- Contributor role in the subscription specified in the **terraform.tfvars** file
+- Contributor role in the target subscription.
 - When authenticated with a user principal, you need one of the following directory roles to be able to create application registration : Application Administrator or Global Administrator
 - When authenticated with a service principal, it needs  one of the following application roles: Application.ReadWrite.OwnedBy or Application.ReadWrite.All. Additionally, you may need the User.Read.All application role when including user principals in the owners property.
 
 ## Terraform prerequisites deployment (optional)
 
 In case you don't already have a vnet, network security group, route table and private DNS zones already deployed in your subscription, then first navigate to the directory [`/deployment/terraform/prerequisites`](/deployment/terraform/prerequisites). Edit the file called `vars.tfvars` providing your values.
+
+The default terraform configuration uses remote backend to store terraform state (see `terraform.tf`). You either need to provide corresponding values or you may want to override the backend configuration by creating a `backend_override.tf` file with e.g., following content if you want to manage state locally:
+
+```
+terraform {
+  backend "local" {
+    path = "./.local-state"
+  }
+}
+```
 
 Next, open the terminal/command line and navigate to the folder [`/deployment/terraform/prerequisites`](/deployment/terraform/prerequisites). Now type the following in the command line:
 
@@ -93,30 +103,58 @@ Now you will see that Terraform creates a resource group with a virtual network,
 
   ```
 
-- Edit and set mandatory variables in **terraform.tfvars** file
-  - subscription_id
+- Edit and set mandatory variables in **vars.tfvars** file
   - location
   - environment_name
 
-- You can also change any of the default values provided in **terraform.tfvars** file. If a value is not provided for resource names, a value will be created automatically. One special note about **appservice_plan_sku** variable is that if you set this to "B1" or "B2", terraform code will automatically upgrade the SKU to B3 for the duration of code deployment and revert it back when deployment is complete. This is in order to avoid possible 504 Gateway Timeout errors during deployment.
+- You can also change any of the default values provided in **vars.tfvars** file. If a value is not provided for resource names, a value will be created automatically. One special note about **appservice_plan_sku** variable is that if you set this to "B1" or "B2", terraform code will automatically upgrade the SKU to B3 for the duration of code deployment and revert it back when deployment is complete. This is in order to avoid possible 504 Gateway Timeout errors during deployment.
 
 - Login to CLI, note that this step is required if you are using Azure Cloud Shell
-```bash
-az login
-```
+  ```bash
+  az login
+  ```
 
 - Ensure that you are logged on to the correct tenant. Following command should succeed without any errors.
-```bash
-az account set --subscription <subscription_name_or_id>
-```
+  ```bash
+  az account set --subscription <subscription_name_or_id>
+  ```
+
+  Next, set the Azure context to define in which subscription you want to deploy the solution. Replace the `<subscription_id>` placeholder with the ID of the subscription you want to use and type the following into your terminal:
+
+  For bash/shell:
+
+  ```sh
+  export ARM_SUBSCRIPTION_ID="<subscription_id>"
+  az account set --subscription $ARM_SUBSCRIPTION_ID
+  ```
+
+  For pwsh:
+
+  ```pwsh
+  $env:ARM_SUBSCRIPTION_ID="<subscription_id>"
+  az account set --subscription $env:ARM_SUBSCRIPTION_ID
+  ```
 
 - Run Terraform command line
 
-```bash
-cd deployment/terraform/infra
-terraform init
-terraform apply -var-file .\terraform.tfvars -var-file .\prereqs.tfvars
-```
+  ```bash
+  cd deployment/terraform/infra
+  ```
+
+  The default terraform configuration uses remote backend to store terraform state (see `terraform.tf`). You either need to provide corresponding values or you may want to override the backend configuration by creating a `backend_override.tf` file with e.g., following content if you want to manage state locally:
+
+  ```
+  terraform {
+    backend "local" {
+      path = "./.local-state"
+    }
+  }
+  ```
+
+  ```bash
+  terraform init
+  terraform apply -var-file .\vars.tfvars -var-file .\prereqs.tfvars
+  ```
 
 - When terraform configuration finishes, it will output the following information:
   - tenant_id : Tenant ID where deployment is done.

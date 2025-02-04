@@ -1,4 +1,4 @@
-environment_name = "mmai6789"
+environment_name = "mmai678"
 
 location                         = "eastus2"
 openai_service_location          = "eastus2"
