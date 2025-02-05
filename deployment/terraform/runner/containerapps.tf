@@ -46,6 +46,7 @@ resource "azapi_resource" "container_apps_job" {
   identity {
     type = "SystemAssigned"
   }
+  depends_on = [ azurerm_key_vault_secret.key_vault_secret_github_pat ]
 
   body = {
     properties = {
@@ -86,7 +87,6 @@ resource "azapi_resource" "container_apps_job" {
             identity    = "System"
             keyVaultUrl = azurerm_key_vault_secret.key_vault_secret_github_pat.versionless_id
             name        = "personal-access-token"
-            value       = var.github_personal_access_token
           }
         ]
       }
