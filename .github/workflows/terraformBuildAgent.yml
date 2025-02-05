@@ -21,7 +21,7 @@ jobs:
     name: Terraform Deploy Prereqs
     with:
         environment: dev
-        prefix: ${{ vars.AZURE_DEPLOYMENT_PREREQS_PREFIX}}
+        prefix: ${{ vars.AZURE_DEPLOYMENT_PREREQS_PREFIX }}
         terraform_version: "1.10.5"
         working_directory: "./deployment/terraform/prerequisites"
         node_version: 20
@@ -43,7 +43,7 @@ jobs:
         needs: [deploy-prereqs, build_container]
         with:
             environment: dev
-            prefix: ${{ vars.AZURE_DEPLOYMENT_RUNNER_PREFIX}}
+            prefix: ${{ vars.AZURE_DEPLOYMENT_RUNNER_PREFIX }}
             terraform_version: "1.10.5"
             working_directory: "./deployment/terraform/runner"
             node_version: 20
