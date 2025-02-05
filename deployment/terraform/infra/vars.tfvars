@@ -1,5 +1,3 @@
-environment_name = "mmai678"
-
 location                         = "eastus2"
 openai_service_location          = "eastus2"
 search_service_location          = "eastus"

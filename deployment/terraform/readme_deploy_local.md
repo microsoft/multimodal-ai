@@ -42,15 +42,15 @@
 
 In case you don't already have a vnet, network security group, route table and private DNS zones already deployed in your subscription, then first navigate to the directory [`/deployment/terraform/prerequisites`](/deployment/terraform/prerequisites). Edit the file called `vars.tfvars` providing your values.
 
-The default terraform configuration uses remote backend to store terraform state (see `terraform.tf`). You either need to provide corresponding values or you may want to override the backend configuration by creating a `backend_override.tf` file with e.g., following content if you want to manage state locally:
-
-```
-terraform {
-  backend "local" {
-    path = "./.local-state"
-  }
-}
-```
+> **Important Note:**
+> The default terraform configuration uses remote backend to store terraform state (see `terraform.tf`). You either need to provide corresponding values or you may want to override the backend configuration by creating a `backend_override.tf` file with e.g., following content if you want to manage state locally:
+>  ```
+>   terraform {
+>      backend "local" {
+>        path = "./.local-state"
+>      }
+>   }
+>   ```
 
 Next, open the terminal/command line and navigate to the folder [`/deployment/terraform/prerequisites`](/deployment/terraform/prerequisites). Now type the following in the command line:
 
@@ -141,15 +141,15 @@ Now you will see that Terraform creates a resource group with a virtual network,
   cd deployment/terraform/infra
   ```
 
-  The default terraform configuration uses remote backend to store terraform state (see `terraform.tf`). You either need to provide corresponding values or you may want to override the backend configuration by creating a `backend_override.tf` file with e.g., following content if you want to manage state locally:
-
-  ```
-  terraform {
-    backend "local" {
-      path = "./.local-state"
-    }
-  }
-  ```
+> **Important Note:**
+> The default terraform configuration uses remote backend to store terraform state (see `terraform.tf`). You either need to provide corresponding values or you may want to override the backend configuration by creating a `backend_override.tf` file with e.g., following content if you want to manage state locally:
+>  ```
+>   terraform {
+>      backend "local" {
+>        path = "./.local-state"
+>      }
+>   }
+>   ```
 
   ```bash
   terraform init

@@ -7,6 +7,10 @@ on:
           required: true
           type: string
           description: "Specifies the environment of the deployment."
+      prefix:
+          required: true
+          type: string
+          description: "Specifies the prefix for resources to deploy."
       terraform_version:
           required: true
           type: string
@@ -139,12 +143,14 @@ jobs:
               working-directory: ${{ inputs.working_directory }}
               run: |
                 export TF_VAR_subscription_id="${{ secrets.AZURE_SUBSCRIPTION_ID }}"
+                export TF_VAR_environment_name="${{ inputs.prefix }}"
                 terraform apply -var-file=vars.tfvars -var-file=prereqs.tfvars -auto-approve -input=false
 
             - name: Terraform Apply for Runner
               if: ${{ inputs.component == 'runner' }}
               working-directory: ${{ inputs.working_directory }}
               run: |
+                export TF_VAR_prefix="${{ inputs.prefix }}"
                 export TF_VAR_github_personal_access_token="${{ secrets.PERSONAL_ACCESS_TOKEN }}"
                 export TF_VAR_github_repo_owner="${{ github.actor }}"
                 export TF_VAR_github_repo_name="${{ github.event.repository.name }}"
@@ -154,7 +160,9 @@ jobs:
             - name: Terraform Apply Default
               if: ${{ inputs.component != 'mmai' && inputs.component != 'runner' }}
               working-directory: ${{ inputs.working_directory }}
-              run: terraform apply -var-file=vars.tfvars -auto-approve -input=false
+              run: |
+                export TF_VAR_environment_name="${{ inputs.prefix }}"
+                terraform apply -var-file=vars.tfvars -auto-approve -input=false
 
             - name: Upload prereqs tfvars
               id: upload_prereqs_tfvars

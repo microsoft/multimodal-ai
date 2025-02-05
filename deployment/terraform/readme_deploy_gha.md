@@ -69,6 +69,12 @@ Before deploying, ensure you have configured the following:
 
    ![GitHub Secrets](../../docs/images/deployment/gh_secrets.png)
 
+3. **Configure Repository Variables:**
+   Navigate to **Settings** → **Secrets and variables** → **Actions** and create the following variables:
+
+   | Variable Name                           | Description                                               |
+   | --------------------------------------- | --------------------------------------------------------- |
+   | `AZURE_DEPLOYMENT_PREFIX`               | Prefix to use for Resource Groups and Resource Names      |
 ---
 
 ## Workflows
