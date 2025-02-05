@@ -42,8 +42,13 @@ Before deploying, ensure you have configured the following:
    ```bash
    az ad sp create-for-rbac --name <NAME_OF_THE_SP> --role owner --scopes /subscriptions/<SUBSCRIPTION_ID>
    ```
+   > **Important Note:**
+   > This command will also grant the "Owner" role to this Service Principal at the subscription level.
+
+   In case you want to deploy MMAI with authentication enabled, you will also need to grant this Service Principal the [Application Administrator](https://learn.microsoft.com/en-us/entra/identity/role-based-access-control/permissions-reference?utm_source=chatgpt.com#application-administrator) or [Cloud Application Administrator](https://learn.microsoft.com/en-us/entra/identity/role-based-access-control/permissions-reference?utm_source=chatgpt.com#cloud-application-administrator) [privileged](https://learn.microsoft.com/en-us/entra/identity/role-based-access-control/privileged-roles-permissions?tabs=admin-center#which-roles-and-permissions-are-privileged) role in Microsoft Entra ID.
 
 2. **Create Storage Account & Blob Container:**
+   
    - Create an Azure Storage Account.
    - Create a Blob Container to store your Terraform state.
    - Assign the **Storage Blob Data Contributor** role to the Service Principal.
