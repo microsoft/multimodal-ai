@@ -72,9 +72,13 @@ Before deploying, ensure you have configured the following:
 3. **Configure Repository Variables:**
    Navigate to **Settings** → **Secrets and variables** → **Actions** and create the following variables:
 
-   | Variable Name                           | Description                                               |
-   | --------------------------------------- | --------------------------------------------------------- |
-   | `AZURE_DEPLOYMENT_PREFIX`               | Prefix to use for Resource Groups and Resource Names      |
+   | Variable Name                           | Description                                                |
+   | --------------------------------------- | -----------------------------------------------------------|
+   | `AZURE_DEPLOYMENT_PREREQS_PREFIX`       | Prefix to use for the Prereqs Resource Group and Resources |
+   | `AZURE_DEPLOYMENT_MMAI_PREFIX`          | Prefix to use for the MMAI Resource Group and Resources    |
+   | `AZURE_DEPLOYMENT_RUNNER_PREFIX`        | Prefix to use for the Runner Resource Group and Resources  |
+
+   ![GitHub Variables](../../docs/images/deployment/gh_variables.png)
 ---
 
 ## Workflows
