@@ -108,11 +108,8 @@ jobs:
 
             - name: Ensure az cli authV2 Extension
               run: |
-                if ! az extension show --name authV2; then
-                  az extension add --name authV2 -y
-                else
-                  az extension update --name authV2
-                fi
+                az extension add --name authV2 -y
+                az extension update --name authV2
 
             - name: Download prereqs tfvars
               id: download_prereqs_tfvars
