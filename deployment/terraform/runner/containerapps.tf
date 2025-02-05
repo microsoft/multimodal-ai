@@ -44,7 +44,10 @@ resource "azapi_resource" "container_apps_job" {
   location  = var.location
   tags      = var.tags
   identity {
-    type = "SystemAssigned"
+    type = "UserAssigned"
+    identity_ids = [
+      azurerm_user_assigned_identity.user_assigned_identity.id
+    ]
   }
 
   body = {
@@ -83,7 +86,7 @@ resource "azapi_resource" "container_apps_job" {
         }
         secrets = [
           {
-            identity    = "System"
+            identity    = azurerm_user_assigned_identity.user_assigned_identity.id
             keyVaultUrl = azurerm_key_vault_secret.key_vault_secret_github_pat.versionless_id
             name        = "personal-access-token"
           }
