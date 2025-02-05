@@ -56,7 +56,7 @@ resource "azapi_resource" "container_apps_job" {
     properties = {
       configuration = {
         replicaRetryLimit = 1
-        replicaTimeout    = 1800
+        replicaTimeout    = 5400
         triggerType       = "Event"
         eventTriggerConfig = {
           parallelism            = 1
