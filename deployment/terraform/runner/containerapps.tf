@@ -50,6 +50,8 @@ resource "azapi_resource" "container_apps_job" {
     ]
   }
 
+  depends_on = [azurerm_role_assignment.uai_role_assignment_key_vault_secrets_user]
+
   body = {
     properties = {
       configuration = {
