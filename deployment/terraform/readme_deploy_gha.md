@@ -38,7 +38,7 @@ Before deploying, ensure you have configured the following:
 
 1. **Create a Service Principal:**
    Run the following command to setup [federated identity](https://docs.github.com/en/actions/security-for-github-actions/security-hardening-your-deployments/configuring-openid-connect-in-azure) and save the output values (`AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, `AZURE_SUBSCRIPTION_ID`):
-   
+
    ```bash
    .\Initialize-Prerequisites.ps1 -Prefix "<YOUR_PREFIX_FOR_THE_APP_REGISTRATION>"
    ```
