@@ -1,3 +1,12 @@
+module "ampls" {
+  source = "./modules/ampls"
+
+  location            = var.location
+  tags                = local.tags
+  resource_group_name = azurerm_resource_group.resource_group.name
+  ampls_name          = var.azure_monitor_private_link_scope_name != "" ? var.azure_monitor_private_link_scope_name : "${local.abbrs.azureMonitorPrivateLinksScope}${local.resourceToken}"
+}
+
 module "applicationinsights" {
   source = "./modules/applicationinsights"
 
@@ -6,6 +15,26 @@ module "applicationinsights" {
   resource_group_name        = azurerm_resource_group.resource_group.name
   application_insights_name  = var.application_insights_name != "" ? var.application_insights_name : "${local.abbrs.insightsComponents}${local.resourceToken}"
   log_analytics_workspace_id = var.log_analytics_workspace_id
+}
+
+module "ampls_scopedservice_appinsights" {
+  source = "./modules/ampls_scoped_service"
+
+  location                  = var.location
+  resource_group_name       = azurerm_resource_group.resource_group.name
+  ampls_scoped_service_name = var.ampls_scoped_service_appinsights != "" ? var.ampls_scoped_service_appinsights : "${local.abbrs.azureMonitorPrivateLinksScope}appinsights"
+  ampls_scope_name          = module.ampls.azurerm_monitor_private_link_scope_name
+  azure_monitor_resource_id = var.log_analytics_workspace_id
+}
+
+module "ampls_scopedservice_law" {
+  source = "./modules/ampls_scoped_service"
+
+  location                  = var.location
+  resource_group_name       = azurerm_resource_group.resource_group.name
+  ampls_scoped_service_name = var.ampls_scoped_service_law != "" ? var.ampls_scoped_service_law : "${local.abbrs.azureMonitorPrivateLinksScope}law"
+  ampls_scope_name          = module.ampls.azurerm_monitor_private_link_scope_name
+  azure_monitor_resource_id = module.applicationinsights.application_insights_id
 }
 
 module "keyvault" {

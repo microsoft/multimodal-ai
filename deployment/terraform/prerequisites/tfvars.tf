@@ -2,7 +2,6 @@ locals {
   infra_tfvars = <<-EOT
 # Logging variables
 log_analytics_workspace_id          = "${module.loganalytics.log_analytics_workspace_id}"
-azure_monitor_private_link_scope_id = "${module.ampls.azure_monitor_private_link_scope_resource_id}"
 
 # Network variables
 connectivity_delay_in_seconds = 0

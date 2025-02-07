@@ -71,7 +71,6 @@ Now you will see that Terraform creates a resource group with a virtual network,
   ```hcl
   # Logging variables
   log_analytics_workspace_id = "</subscriptions/<subscription-id>/resourceGroups/<resource-group-name>/providers/Microsoft.OperationalInsights/workspaces/<log-analytics-workspace-name>"
-  azure_monitor_private_link_scope_id = "/subscriptions/<subscription-id>/resourceGroups/<resource-group-name>/providers/Microsoft.Insights/privateLinkScopes/<azure-monitor-private-link-scope-name>"
 
   # Network variables
   connectivity_delay_in_seconds = 0
