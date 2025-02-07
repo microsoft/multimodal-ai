@@ -37,20 +37,18 @@ Before deploying, ensure you have configured the following:
 ### Azure Setup
 
 1. **Create a Service Principal:**
-   Run the following command and save the output values (`appId`, `password`, `tenant`):
+   Run the following command to setup [federated identity](https://docs.github.com/en/actions/security-for-github-actions/security-hardening-your-deployments/configuring-openid-connect-in-azure) and save the output values (`AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, `AZURE_SUBSCRIPTION_ID`):
+   
    ```bash
-   az ad sp create-for-rbac --name <NAME_OF_THE_SP> --role owner --scopes /subscriptions/<SUBSCRIPTION_ID>
+   .\Initialize-Prerequisites.ps1 -Prefix "<YOUR_PREFIX_FOR_THE_APP_REGISTRATION>"
    ```
-   > **Important Note:**
-   > This command will also grant the "Owner" role to this Service Principal at the subscription level.
-
    In case you want to deploy MMAI with authentication enabled, you will also need to grant this Service Principal the [Application Administrator](https://learn.microsoft.com/en-us/entra/identity/role-based-access-control/permissions-reference?utm_source=chatgpt.com#application-administrator) or [Cloud Application Administrator](https://learn.microsoft.com/en-us/entra/identity/role-based-access-control/permissions-reference?utm_source=chatgpt.com#cloud-application-administrator) [privileged](https://learn.microsoft.com/en-us/entra/identity/role-based-access-control/privileged-roles-permissions?tabs=admin-center#which-roles-and-permissions-are-privileged) role in Microsoft Entra ID.
 
 2. **Create Storage Account & Blob Container:**
 
    - Create an Azure Storage Account.
    - Create a Blob Container to store your Terraform state.
-   - Assign the **Storage Blob Data Contributor** role to the Service Principal.
+   - Assign the **Storage Blob Data Contributor** role to the identity created in step 1.
 
 ### GitHub Setup
 
@@ -63,7 +61,6 @@ Before deploying, ensure you have configured the following:
    | Secret Name                             | Description                                               |
    | --------------------------------------- | --------------------------------------------------------- |
    | `AZURE_CLIENT_ID`                       | Client Id of the Service Principal                        |
-   | `AZURE_CLIENT_SECRET`                   | Client Secret of the Service Principal                    |
    | `AZURE_SUBSCRIPTION_ID`                 | Azure Subscription to deploy to                           |
    | `AZURE_TENANT_ID`                       | Azure Tenant for deployment                               |
    | `AZURE_TF_STATE_CONTAINER_NAME`         | Blob container name for Terraform state                   |
