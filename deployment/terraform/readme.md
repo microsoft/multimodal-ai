@@ -66,11 +66,12 @@ Now you will see that Terraform creates a resource group with a virtual network,
 
 ## Deployment
 
-- Next, create a file called `prereqs.tfvars` and paste the following content and replace the placeholders. If you have run prerequisites config, you can skip this step as the ``prereqs.tfvars` file will already be created and and populated with all the required parameters.
+- Next, create a file called `prereqs.tfvars` and paste the following content and replace the placeholders. If you have run prerequisites config, you can skip this step as the `prereqs.tfvars` file will already be created and and populated with all the required parameters.
 
   ```hcl
   # Logging variables
   log_analytics_workspace_id = "</subscriptions/<subscription-id>/resourceGroups/<resource-group-name>/providers/Microsoft.OperationalInsights/workspaces/<log-analytics-workspace-name>"
+  azure_monitor_private_link_scope_id = "/subscriptions/<subscription-id>/resourceGroups/<resource-group-name>/providers/Microsoft.Insights/privateLinkScopes/<azure-monitor-private-link-scope-name>"
 
   # Network variables
   connectivity_delay_in_seconds = 0
@@ -89,7 +90,11 @@ Now you will see that Terraform creates a resource group with a virtual network,
   private_dns_zone_id_sites              = "/subscriptions/<subscription-id>/resourceGroups/<resource-group-name>/providers/Microsoft.Network/privateDnsZones/privatelink.azurewebsites.net"
   private_dns_zone_id_open_ai            = "/subscriptions/<subscription-id>/resourceGroups/<resource-group-name>/providers/Microsoft.Network/privateDnsZones/privatelink.openai.azure.com"
   private_dns_zone_id_cognitive_services = "/subscriptions/<subscription-id>/resourceGroups/<resource-group-name>/providers/Microsoft.Network/privateDnsZones/privatelink.cognitiveservices.azure.com"
-   private_dns_zone_id_ai_search         = "/subscriptions/<subscription-id>/resourceGroups/<resource-group-name>/providers/Microsoft.Network/privateDnsZones/privatelink.search.windows.net"
+  private_dns_zone_id_ai_search          = "/subscriptions/<subscription-id>/resourceGroups/<resource-group-name>/providers/Microsoft.Network/privateDnsZones/privatelink.search.windows.net"
+  private_dns_zone_id_monitor            = "/subscriptions/<subscription-id>/resourceGroups/<resource-group-name>/providers/Microsoft.Network/privateDnsZones/privatelink.monitor.azure.com"
+  private_dns_zone_id_oms_opsinsights    = "/subscriptions/<subscription-id>/resourceGroups/<resource-group-name>/providers/Microsoft.Network/privateDnsZones/privatelink.oms.opinsights.azure.com"
+  private_dns_zone_id_ods_opsinsights    = "/subscriptions/<subscription-id>/resourceGroups/<resource-group-name>/providers/Microsoft.Network/privateDnsZones/privatelink.ods.opinsights.azure.com"
+  private_dns_zone_id_automation         = "/subscriptions/<subscription-id>/resourceGroups/<resource-group-name>/providers/Microsoft.Network/privateDnsZones/privatelink.agentsvc.azure-automation.net"
 
   ```
 
