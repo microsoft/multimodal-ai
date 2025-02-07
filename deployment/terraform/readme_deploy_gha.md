@@ -1,4 +1,3 @@
-Here is the improved README in actual Markdown format, ready to be copied and used in your repository:
 # Deploying Multimodal AI Platform Using Terraform and GitHub Actions
 
 ## Overview
