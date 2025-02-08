@@ -1,12 +1,3 @@
-module "ampls" {
-  source = "./modules/ampls"
-
-  location            = var.location
-  tags                = local.tags
-  resource_group_name = azurerm_resource_group.resource_group.name
-  ampls_name          = var.azure_monitor_private_link_scope_name != "" ? var.azure_monitor_private_link_scope_name : "${local.abbrs.azureMonitorPrivateLinksScope}${local.resourceToken}"
-}
-
 module "applicationinsights" {
   source = "./modules/applicationinsights"
 
@@ -17,6 +8,27 @@ module "applicationinsights" {
   log_analytics_workspace_id = var.log_analytics_workspace_id
 }
 
+module "ampls" {
+  source = "./modules/ampls"
+
+  location                      = var.location
+  tags                          = local.tags
+  resource_group_name           = azurerm_resource_group.resource_group.name
+  ampls_name                    = var.azure_monitor_private_link_scope_name != "" ? var.azure_monitor_private_link_scope_name : "${local.abbrs.azureMonitorPrivateLinksScope}${local.resourceToken}"
+  ampls_ingestion_access_mode   = "PrivateOnly"
+  ampls_query_access_mode       = "PrivateOnly"
+  connectivity_delay_in_seconds = var.connectivity_delay_in_seconds
+  vnet_location                 = data.azurerm_virtual_network.virtual_network.location
+  subnet_id                     = azapi_resource.subnet_private_endpoints.id
+  private_dns_zone_list_ampls = toset([
+    var.private_dns_zone_id_monitor,
+    var.private_dns_zone_id_oms_opsinsights,
+    var.private_dns_zone_id_ods_opsinsights,
+    var.private_dns_zone_id_automation,
+    var.private_dns_zone_id_blob
+  ])
+
+}
 module "ampls_scopedservice_appinsights" {
   source = "./modules/ampls_scoped_service"
 
