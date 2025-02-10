@@ -6,6 +6,10 @@ module "applicationinsights" {
   resource_group_name        = azurerm_resource_group.resource_group.name
   application_insights_name  = var.application_insights_name != "" ? var.application_insights_name : "${local.abbrs.insightsComponents}${local.resourceToken}"
   log_analytics_workspace_id = var.log_analytics_workspace_id
+
+  app_insights_internet_ingestion_enabled    = false
+  app_insights_internet_query_enabled        = false
+  app_insights_local_authentication_disabled = true
 }
 
 module "ampls" {
