@@ -42,5 +42,5 @@ locals {
 }
 
 output "cleanup_command" {
-  value = "${local.rg_delete_command}${local.adapp_delete_command_function}${local.adapp_delete_command_webapp_client}${local.adapp_delete_command_webapp_server}"
+  value = nonsensitive(sensitive("${local.rg_delete_command}${local.adapp_delete_command_function}${local.adapp_delete_command_webapp_client}${local.adapp_delete_command_webapp_server}"))
 }
