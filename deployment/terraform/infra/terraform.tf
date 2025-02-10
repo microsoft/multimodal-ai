@@ -16,6 +16,14 @@ terraform {
       version = "2.5.1"
     }
   }
+
+  backend "azurerm" {
+    environment          = "public"
+    resource_group_name  = "<provided-via-config>"
+    storage_account_name = "<provided-via-config>"
+    container_name       = "<provided-via-config>"
+    key                  = "<provided-via-config>"
+  }
 }
 
 # Define provider for Azure
