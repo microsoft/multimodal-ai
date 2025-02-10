@@ -9,9 +9,8 @@ on:
         default: "dev"
         description: "Specifies the environment of the deployment."
       working_directory:
-        required: false
+        required: true
         type: string
-        default: ./code/function
         description: "Specifies the uri of the container registry."
       registry_uri:
         required: false

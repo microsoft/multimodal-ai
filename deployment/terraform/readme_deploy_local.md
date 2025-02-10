@@ -185,7 +185,7 @@ You may get following error during deployment because you have not logged in or 
 │    1: resource "azurerm_storage_account" "storage" {
 ```
 
-Run "az login" command and try again. Note that you have toi run az login if you are running deployment from Azure Cloud Shell
+Run "az login" command and try again. Note that you have to run az login if you are running deployment from Azure Cloud Shell
 
 ```bash
 az login
