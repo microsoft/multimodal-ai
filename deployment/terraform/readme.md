@@ -1,6 +1,5 @@
 # Deploying Multimodal AI Platform Using Terraform
 
-
 There are two ways to deploy the solution:
 
 - [Run deployment from your local machine](./readme_deploy_local.md)
