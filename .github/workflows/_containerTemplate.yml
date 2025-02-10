@@ -11,7 +11,7 @@ on:
       working_directory:
         required: true
         type: string
-        description: "Specifies the uri of the container registry."
+        description: "Specifies the working directory for the workflow."
       registry_uri:
         required: false
         type: string
