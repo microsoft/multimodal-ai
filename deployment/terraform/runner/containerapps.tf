@@ -52,7 +52,7 @@ resource "azapi_resource" "container_apps_job" {
 
   depends_on = [
     azurerm_role_assignment.uai_role_assignment_key_vault_secrets_user,
-    azurerm_azurerm_role_assignment.current_role_assignment_key_vault_secrets_officer
+    azurerm_role_assignment.current_role_assignment_key_vault_secrets_officer
   ]
 
   body = {
