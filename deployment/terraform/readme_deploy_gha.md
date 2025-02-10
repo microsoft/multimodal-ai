@@ -118,7 +118,7 @@ When starting with a freshly forked repository, run the **GitHub Build Agent (Ru
 
 Once this process completes, manually trigger the deployment workflow **MMAI Deployment (`terraformMMAI.yml`)** to deploy the MMAI infrastructure and code:
 
-![GitHub Build Agent Workflow](../../docs/images/deployment/gh_run_mmai_wf.png)
+![GitHub MMAI Workflow](../../docs/images/deployment/gh_run_mmai_wf.png)
 
 > **Important Note:**
 > In a private repository, GitHub Packages (such as the GitHub runner container image) may not be accessible by default.
@@ -159,16 +159,24 @@ Once this process completes, manually trigger the deployment workflow **MMAI Dep
   
   - **Workaround:**
   
-    If an idle runner is present with pending jobs, cancel the job and manually restart it:
-  
+    If an idle runner is present with pending jobs, cancel the job and manually restart it.
+    
+    
     ![Pending Job](../../docs/images/deployment/gh_pending_job.png)
-  
     
-  
+    
+    
     ![Restart Job 1](../../docs/images/deployment/gh_restart_job_1.png)
-  
     
-  
+    
+    
     ![Restart Job 2](../../docs/images/deployment/gh_restart_job_2.png)
-  
+    
+    
+    
+    > **Important Note:**
+    > You can view the available self-hosted runners under **Settings** → **Actions** → **Runners**
+    >
+    > ![GitHub Runners](../../docs/images/deployment/gh_runners.png)
+    
     
