@@ -108,29 +108,6 @@ The project includes several GitHub Actions workflows:
 
 ---
 
-## Usage
-
-### Quick Start: Deploy Everything
-
-When starting with a freshly forked repository, run the **GitHub Build Agent (Runner) Deployment (`terraformBuildAgent.yml`)** workflow manually. This will deploy the private self-hosted CI/CD system:
-
-![GitHub Build Agent Workflow](../../docs/images/deployment/gh_run_build_agent_wf.png)
-
-Once this process completes, manually trigger the deployment workflow **MMAI Deployment (`terraformMMAI.yml`)** to deploy the MMAI infrastructure and code:
-
-![GitHub MMAI Workflow](../../docs/images/deployment/gh_run_mmai_wf.png)
-
-> **Important Note:**
-> In a private repository, GitHub Packages (such as the GitHub runner container image) may not be accessible by default.
-> To resolve this:
->
-> 1. After building the container image, locate it in the repository’s **Packages** section.
-> 2. Click on the package name, navigate to **Package settings**, and change its visibility to **public**.
-
-> ![GitHub Package](../../docs/images/deployment/gh_package.png)
-> ![Package Visibility](../../docs/images/deployment/gh_package_visibility.png)
-> Refer to [GitHub Packages access control](https://docs.github.com/en/packages/learn-github-packages/configuring-a-packages-access-control-and-visibility#configuring-access-to-packages-for-your-personal-account).
-
 ### Sample Usage Scenario
 
 1. **Fork the Repository.**
@@ -150,6 +127,34 @@ Once this process completes, manually trigger the deployment workflow **MMAI Dep
    - Test the deployed platform.
    - Re-run workflows for additional changes if necessary.
 8. **Merge PR.**
+
+---
+
+## Usage
+
+### Quick Start: Deploy Everything
+
+1. When starting with a freshly forked repository, run the **GitHub Build Agent (Runner) Deployment (`terraformBuildAgent.yml`)** workflow manually. This will deploy the private self-hosted CI/CD system:
+
+    ![GitHub Build Agent Workflow](../../docs/images/deployment/gh_run_build_agent_wf.png)
+
+    When the job completes successfully (indicated by a green checkmark) you can move on to the next step. It takes approximately 5-6 minutes for the job to finish.  Subsequent job runs are significantly faster due to Terraform state management, though their duration depends on the changes made.
+
+2. **(Optional)** Skip if you are using a public GitHub repository. In a private repository, GitHub Packages (such as e.g., container images) may not be accessible by default. To resolve this:
+
+    - After building the container image, locate it in the repository’s **Packages** section.
+    - Click on the package name, navigate to **Package settings**, and change its visibility to **public**.
+
+    ![GitHub Package](../../docs/images/deployment/gh_package.png)
+    ![Package Visibility](../../docs/images/deployment/gh_package_visibility.png)
+    Refer to [GitHub Packages access control](https://docs.github.com/en/packages/learn-github-packages/configuring-a-packages-access-control-and-visibility#configuring-access-to-packages-for-your-personal-account).
+
+3. Once this process completes, manually trigger the deployment workflow **MMAI Deployment (`terraformMMAI.yml`)** to deploy the MMAI infrastructure and code:
+
+    ![GitHub MMAI Workflow](../../docs/images/deployment/gh_run_mmai_wf.png)
+
+    When the job completes successfully (indicated by a green checkmark) your MMAI instance is deployed. The initial deployment takes approximately 40-45 minutes. Subsequent job runs are significantly faster due to Terraform state management, though their duration depends on the changes made.
+
 ---
 
 ## Known Issues & Troubleshooting
