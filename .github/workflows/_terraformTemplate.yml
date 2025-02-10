@@ -48,9 +48,6 @@ on:
       AZURE_CLIENT_ID:
         required: true
         description: "Specifies the Azure App Client ID."
-      AZURE_CLIENT_SECRET:
-        required: true
-        description: "Specifies the client secret."
       AZURE_TF_STATE_RESOURCE_GROUP_NAME:
         required: true
         description: "Specifies the Azure Resource Group Name for TF state."
