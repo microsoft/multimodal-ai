@@ -45,25 +45,23 @@ resource "azurerm_search_shared_private_link_service" "shared_private_link_searc
   search_service_id   = azurerm_search_service.search_service.id
   subresource_name    = "openai_account"
   target_resource_id  = var.openai_account_id  
-  request_message     = "Auto approved"
-  depends_on = [ null_resource.ai_search_disable_public_network_access ]
+  request_message     = "Auto-Approved"
 }
 
-resource "azurerm_search_shared_private_link_service" "shared_private_link_search_service_storage" {
-  name                = "${var.search_service_name}-spa-strg"
+resource "azurerm_search_shared_private_link_service" "shared_private_link_search_service_blob" {
+  name                = "${var.search_service_name}-spa-blob"
   search_service_id   = azurerm_search_service.search_service.id
   subresource_name    = "blob"
   target_resource_id  = var.storage_account_id
-  request_message     = "Auto approved"
-  depends_on = [ null_resource.ai_search_disable_public_network_access ]
+  request_message     = "Auto-Approved"
 }
 
 resource "null_resource" "ai_search_approve_shared_private_link" {
   provisioner "local-exec" {
     interpreter = local.is_windows ? ["PowerShell", "-Command"] : []
     command     = <<-EOT
-      $aoai_id = $(az network private-endpoint-connection list --id ${var.openai_account_id} --query "[?contains(properties.privateEndpoint.id, 'vnet')].id" -o json) | ConvertFrom-Json
-      $strg_id = $(az network private-endpoint-connection list --id ${var.storage_account_id} --query "[?contains(properties.privateEndpoint.id, 'vnet')].id" -o json) | ConvertFrom-Json
+      $aoai_id = $(az network private-endpoint-connection list --id ${var.openai_account_id} --query "[?contains(properties.privateEndpoint.id, '-spa-aoai')].id" -o json) | ConvertFrom-Json
+      $strg_id = $(az network private-endpoint-connection list --id ${var.storage_account_id} --query "[?contains(properties.privateEndpoint.id, '-spa-blob')].id" -o json) | ConvertFrom-Json
       az network private-endpoint-connection approve --id $aoai_id --description "Auto-Approved"
       az network private-endpoint-connection approve --id $strg_id --description "Auto-Approved"
     EOT
@@ -73,7 +71,7 @@ resource "null_resource" "ai_search_approve_shared_private_link" {
   }
   depends_on = [ 
     azurerm_search_shared_private_link_service.shared_private_link_search_service_aoai,
-    azurerm_search_shared_private_link_service.shared_private_link_search_service_storage 
+    azurerm_search_shared_private_link_service.shared_private_link_search_service_blob
     ]
 }
 
