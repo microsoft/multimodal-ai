@@ -178,5 +178,3 @@ Once this process completes, manually trigger the deployment workflow **MMAI Dep
     > You can view the available self-hosted runners under **Settings** → **Actions** → **Runners**
     >
     > ![GitHub Runners](../../docs/images/deployment/gh_runners.png)
-
-
