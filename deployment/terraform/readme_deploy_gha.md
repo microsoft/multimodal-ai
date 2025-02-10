@@ -50,6 +50,8 @@ Before deploying, ensure you have configured the following:
    - Create a Blob Container to store your Terraform state.
    - Assign the **Storage Blob Data Contributor** role to the identity created in step 1.
 
+   Refer to this [guide](https://learn.microsoft.com/en-us/azure/developer/terraform/store-state-in-azure-storage?tabs=azure-cli#2-configure-remote-state-storage-account) for more details.
+
 ### GitHub Setup
 
 1. **Personal Access Token (PAT):**
@@ -110,11 +112,18 @@ The project includes several GitHub Actions workflows:
 
 ### Quick Start: Deploy Everything
 
-If starting with a freshly forked repository, run the **GitHub Build Agent (Runner) Deployment (`terraformBuildAgent.yml`)** workflow manually. This will deploy the private self-hosted CI/CD system. Once this process completes, manually trigger the deplyoment workflow **MMAI Deployment (`terraformMMAI.yml`)** to deploy the MMAI infrastructure and code.
+When starting with a freshly forked repository, run the **GitHub Build Agent (Runner) Deployment (`terraformBuildAgent.yml`)** workflow manually. This will deploy the private self-hosted CI/CD system:
+
+![GitHub Build Agent Workflow](../../docs/images/deployment/gh_run_build_agent_wf.png)
+
+Once this process completes, manually trigger the deployment workflow **MMAI Deployment (`terraformMMAI.yml`)** to deploy the MMAI infrastructure and code:
+
+![GitHub Build Agent Workflow](../../docs/images/deployment/gh_run_mmai_wf.png)
 
 > **Important Note:**
 > In a private repository, GitHub Packages (such as the GitHub runner container image) may not be accessible by default.
 > To resolve this:
+>
 > 1. After building the container image, locate it in the repository’s **Packages** section.
 > 2. Click on the package name, navigate to **Package settings**, and change its visibility to **public**.
 
@@ -146,7 +155,20 @@ If starting with a freshly forked repository, run the **GitHub Build Agent (Runn
 ## Known Issues & Troubleshooting
 
 - **GitHub Runner Job Pickup Issue:**
-  There is a known issue where the GitHub runner connects to GitHub but does not pick up jobs if the job is queued before the runner starts.
+  There is a [known issue](https://github.com/orgs/community/discussions/120813) where the GitHub runner connects to GitHub but does not pick up jobs if the job is queued before the runner starts.
+  
   - **Workaround:**
-    - If an idle runner is present with pending jobs, cancel the job and manually restart it.
-  - More details: [GitHub Community Discussion](https://github.com/orgs/community/discussions/120813).
+  
+    If an idle runner is present with pending jobs, cancel the job and manually restart it:
+  
+    ![Pending Job](../../docs/images/deployment/gh_pending_job.png)
+  
+    
+  
+    ![Restart Job 1](../../docs/images/deployment/gh_restart_job_1.png)
+  
+    
+  
+    ![Restart Job 2](../../docs/images/deployment/gh_restart_job_2.png)
+  
+    
