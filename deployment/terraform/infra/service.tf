@@ -9,7 +9,7 @@ module "applicationinsights" {
 
   app_insights_internet_ingestion_enabled    = false
   app_insights_internet_query_enabled        = false
-  app_insights_local_authentication_disabled = true
+  app_insights_local_authentication_disabled = false
 }
 
 module "ampls" {
