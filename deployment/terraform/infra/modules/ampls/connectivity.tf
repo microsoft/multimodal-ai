@@ -1,4 +1,5 @@
 resource "azurerm_private_endpoint" "private_endpoint_ampls" {
+  depends_on          = [azurerm_monitor_private_link_scope.ampls]
   name                = "${var.ampls_name}-pe"
   location            = var.vnet_location
   resource_group_name = var.resource_group_name

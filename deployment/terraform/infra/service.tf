@@ -34,7 +34,8 @@ module "ampls" {
 
 }
 module "ampls_scopedservice_appinsights" {
-  source = "./modules/ampls_scoped_service"
+  source     = "./modules/ampls_scoped_service"
+  depends_on = [module.ampls]
 
   location                  = var.location
   resource_group_name       = azurerm_resource_group.resource_group.name
@@ -44,7 +45,8 @@ module "ampls_scopedservice_appinsights" {
 }
 
 module "ampls_scopedservice_law" {
-  source = "./modules/ampls_scoped_service"
+  source     = "./modules/ampls_scoped_service"
+  depends_on = [module.ampls_scopedservice_appinsights]
 
   location                  = var.location
   resource_group_name       = azurerm_resource_group.resource_group.name
