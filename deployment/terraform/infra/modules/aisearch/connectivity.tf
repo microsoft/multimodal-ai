@@ -41,19 +41,19 @@ resource "azurerm_private_endpoint" "private_endpoint_search_service" {
 }
 
 resource "azurerm_search_shared_private_link_service" "shared_private_link_search_service_aoai" {
-  name                = "${var.search_service_name}-spa-aoai"
-  search_service_id   = azurerm_search_service.search_service.id
-  subresource_name    = "openai_account"
-  target_resource_id  = var.openai_account_id  
-  request_message     = "Auto-Approved"
+  name               = "${var.search_service_name}-spa-aoai"
+  search_service_id  = azurerm_search_service.search_service.id
+  subresource_name   = "openai_account"
+  target_resource_id = var.openai_account_id
+  request_message    = "Auto-Approved"
 }
 
 resource "azurerm_search_shared_private_link_service" "shared_private_link_search_service_blob" {
-  name                = "${var.search_service_name}-spa-blob"
-  search_service_id   = azurerm_search_service.search_service.id
-  subresource_name    = "blob"
-  target_resource_id  = var.storage_account_id
-  request_message     = "Auto-Approved"
+  name               = "${var.search_service_name}-spa-blob"
+  search_service_id  = azurerm_search_service.search_service.id
+  subresource_name   = "blob"
+  target_resource_id = var.storage_account_id
+  request_message    = "Auto-Approved"
 }
 
 resource "null_resource" "ai_search_approve_shared_private_link" {
@@ -69,10 +69,10 @@ resource "null_resource" "ai_search_approve_shared_private_link" {
   triggers = {
     always_run = "${timestamp()}"
   }
-  depends_on = [ 
+  depends_on = [
     azurerm_search_shared_private_link_service.shared_private_link_search_service_aoai,
     azurerm_search_shared_private_link_service.shared_private_link_search_service_blob
-    ]
+  ]
 }
 
 resource "time_sleep" "sleep_connectivity" {
