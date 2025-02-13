@@ -6,6 +6,53 @@ module "applicationinsights" {
   resource_group_name        = azurerm_resource_group.resource_group.name
   application_insights_name  = var.application_insights_name != "" ? var.application_insights_name : "${local.abbrs.insightsComponents}${local.resourceToken}"
   log_analytics_workspace_id = var.log_analytics_workspace_id
+
+  app_insights_internet_ingestion_enabled    = false
+  app_insights_internet_query_enabled        = false
+  app_insights_local_authentication_disabled = false
+}
+
+module "ampls" {
+  source = "./modules/ampls"
+
+  location                      = var.location
+  tags                          = local.tags
+  resource_group_name           = azurerm_resource_group.resource_group.name
+  ampls_name                    = var.azure_monitor_private_link_scope_name != "" ? var.azure_monitor_private_link_scope_name : "${local.abbrs.azureMonitorPrivateLinksScope}${local.resourceToken}"
+  ampls_ingestion_access_mode   = "PrivateOnly"
+  ampls_query_access_mode       = "PrivateOnly"
+  connectivity_delay_in_seconds = var.connectivity_delay_in_seconds
+  vnet_location                 = data.azurerm_virtual_network.virtual_network.location
+  subnet_id                     = azapi_resource.subnet_private_endpoints.id
+  private_dns_zone_list_ampls = toset([
+    var.private_dns_zone_id_monitor,
+    var.private_dns_zone_id_oms_opsinsights,
+    var.private_dns_zone_id_ods_opsinsights,
+    var.private_dns_zone_id_automation,
+    var.private_dns_zone_id_blob
+  ])
+
+}
+module "ampls_scopedservice_appinsights" {
+  source     = "./modules/ampls_scoped_service"
+  depends_on = [module.ampls]
+
+  location                  = var.location
+  resource_group_name       = azurerm_resource_group.resource_group.name
+  ampls_scoped_service_name = var.ampls_scoped_service_appinsights != "" ? var.ampls_scoped_service_appinsights : "${local.abbrs.azureMonitorPrivateLinksScope}appinsights"
+  ampls_scope_name          = module.ampls.azurerm_monitor_private_link_scope_name
+  azure_monitor_resource_id = var.log_analytics_workspace_id
+}
+
+module "ampls_scopedservice_law" {
+  source     = "./modules/ampls_scoped_service"
+  depends_on = [module.ampls_scopedservice_appinsights]
+
+  location                  = var.location
+  resource_group_name       = azurerm_resource_group.resource_group.name
+  ampls_scoped_service_name = var.ampls_scoped_service_law != "" ? var.ampls_scoped_service_law : "${local.abbrs.azureMonitorPrivateLinksScope}law"
+  ampls_scope_name          = module.ampls.azurerm_monitor_private_link_scope_name
+  azure_monitor_resource_id = module.applicationinsights.application_insights_id
 }
 
 module "keyvault" {

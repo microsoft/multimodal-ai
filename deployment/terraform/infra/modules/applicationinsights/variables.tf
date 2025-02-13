@@ -19,9 +19,30 @@ variable "tags" {
 }
 
 variable "application_insights_name" {
-  description = "Specifies the name of the log analytics workspace"
+  description = "Specifies the name of the log app insights component"
   type        = string
   sensitive   = false
+}
+
+variable "app_insights_internet_ingestion_enabled" {
+  description = "Specifies if internet ingestion is enabled for the app insights component"
+  type        = bool
+  sensitive   = false
+  default     = false
+}
+
+variable "app_insights_internet_query_enabled" {
+  description = "Specifies if internet query is enabled for the app insights component"
+  type        = bool
+  sensitive   = false
+  default     = false
+}
+
+variable "app_insights_local_authentication_disabled" {
+  description = "Specifies if local authentication is disabled for the app insights component"
+  type        = bool
+  sensitive   = false
+  default     = true
 }
 
 # Monitoring variables
