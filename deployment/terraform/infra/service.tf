@@ -182,7 +182,7 @@ module "aisearch" {
   azure_openai_endpoint                 = module.aoai.cognitive_account_endpoint
   azure_openai_text_deployment_id       = var.azure_openai_text_deployment_id
   azure_openai_text_model_name          = var.azure_openai_text_model_name
-  openai_account_id                     = module.aoai.cognitive_account_service_id
+  openai_account_id                     = module.aoai.cognitive_account_id
   cognitive_services_endpoint           = module.cognitive_service.cognitive_account_endpoint
   computer_vision_endpoint              = module.computer_vision.cognitive_account_endpoint
   pdf_merge_customskill_endpoint        = "https://${module.skills.linux_function_app_default_hostname}/api/pdf_text_image_merge_skill"
