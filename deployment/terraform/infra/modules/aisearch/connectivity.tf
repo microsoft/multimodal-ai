@@ -12,7 +12,9 @@ resource "null_resource" "ai_search_disable_public_network_access" {
     null_resource.create_datasource,
     null_resource.create_index,
     null_resource.create_skillset,
-    null_resource.create_indexer
+    null_resource.create_indexer,
+    azapi_update_resource.blob_azure_search_private_endpoint_approver,
+    azapi_update_resource.open_ai_azure_search_private_endpoint_approver
   ]
 }
 
@@ -34,10 +36,6 @@ resource "azurerm_private_endpoint" "private_endpoint_search_service" {
     name                 = "${var.search_service_name}-arecord"
     private_dns_zone_ids = [var.private_dns_zone_id_ai_search]
   }
-
-  depends_on = [
-    null_resource.ai_search_disable_public_network_access
-  ]
 }
 
 resource "azurerm_search_shared_private_link_service" "shared_private_link_search_service_aoai" {
@@ -49,6 +47,9 @@ resource "azurerm_search_shared_private_link_service" "shared_private_link_searc
 }
 
 resource "azurerm_search_shared_private_link_service" "shared_private_link_search_service_blob" {
+  # Looks like only one private link can be created at a time. So, we need to process them sequentially.
+  # Otherwise we may get 409 Conflict error.
+  depends_on = [ azurerm_search_shared_private_link_service.shared_private_link_search_service_aoai ]
   name               = "${var.search_service_name}-spa-blob"
   search_service_id  = azurerm_search_service.search_service.id
   subresource_name   = "blob"
@@ -56,24 +57,66 @@ resource "azurerm_search_shared_private_link_service" "shared_private_link_searc
   request_message    = "Auto-Approved"
 }
 
-resource "null_resource" "ai_search_approve_shared_private_link" {
-  provisioner "local-exec" {
-    interpreter = local.is_windows ? ["PowerShell", "-Command"] : []
-    command     = <<-EOT
-      $aoai_id = $(az network private-endpoint-connection list --id ${var.openai_account_id} --query "[?contains(properties.privateEndpoint.id, '-spa-aoai')].id" -o json) | ConvertFrom-Json
-      $strg_id = $(az network private-endpoint-connection list --id ${var.storage_account_id} --query "[?contains(properties.privateEndpoint.id, '-spa-blob')].id" -o json) | ConvertFrom-Json
-      az network private-endpoint-connection approve --id $aoai_id --description "Auto-Approved"
-      az network private-endpoint-connection approve --id $strg_id --description "Auto-Approved"
-    EOT
-  }
-  triggers = {
-    always_run = "${timestamp()}"
-  }
+resource "azapi_update_resource" "open_ai_azure_search_private_endpoint_approver" {
   depends_on = [
-    azurerm_search_shared_private_link_service.shared_private_link_search_service_aoai,
+    azurerm_search_shared_private_link_service.shared_private_link_search_service_aoai
+  ]
+  type      = "Microsoft.CognitiveServices/accounts/privateEndpointConnections@2024-10-01"
+  resource_id = local.openai_pe_connection_id
+  body = {
+    properties = {
+      privateLinkServiceConnectionState = {
+        status      = "Approved"
+        description = "Auto-Approved"
+      }
+    }
+  }
+}
+
+resource "azapi_update_resource" "blob_azure_search_private_endpoint_approver" {
+  depends_on = [
     azurerm_search_shared_private_link_service.shared_private_link_search_service_blob
   ]
+  type      = "Microsoft.Storage/storageAccounts/privateEndpointConnections@2024-01-01"
+  resource_id = local.blob_pe_connection_id
+  body = {
+    properties = {
+      privateLinkServiceConnectionState = {
+        status      = "Approved"
+        description = "Auto-Approved"
+      }
+    }
+  }
+
+  # This is needed as this PUT operation (https://learn.microsoft.com/rest/api/storagerp/private-endpoint-connections/put?view=rest-storagerp-2023-05-01&tabs=HTTP) 
+  # on the Storage Account is not idempotent and throws a 400 error when resubmitting.
+  # BUG: https://github.com/Azure/azure-rest-api-specs/issues/30308
+  lifecycle {
+    ignore_changes = [
+      resource_id,
+      body
+    ]
+  }
 }
+
+# resource "null_resource" "ai_search_approve_shared_private_link" {
+#   provisioner "local-exec" {
+#     interpreter = local.is_windows ? ["PowerShell", "-Command"] : []
+#     command     = <<-EOT
+#       $aoai_id = $(az network private-endpoint-connection list --id ${var.openai_account_id} --query "[?contains(properties.privateEndpoint.id, '-spa-aoai')].id" -o json) | ConvertFrom-Json
+#       $strg_id = $(az network private-endpoint-connection list --id ${var.storage_account_id} --query "[?contains(properties.privateEndpoint.id, '-spa-blob')].id" -o json) | ConvertFrom-Json
+#       az network private-endpoint-connection approve --id $aoai_id --description "Auto-Approved"
+#       az network private-endpoint-connection approve --id $strg_id --description "Auto-Approved"
+#     EOT
+#   }
+#   triggers = {
+#     always_run = "${timestamp()}"
+#   }
+#   depends_on = [
+#     azurerm_search_shared_private_link_service.shared_private_link_search_service_aoai,
+#     azurerm_search_shared_private_link_service.shared_private_link_search_service_blob
+#   ]
+# }
 
 resource "time_sleep" "sleep_connectivity" {
   create_duration = "${var.connectivity_delay_in_seconds}s"
