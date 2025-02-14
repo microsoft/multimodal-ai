@@ -49,7 +49,7 @@ resource "azurerm_search_shared_private_link_service" "shared_private_link_searc
 resource "azurerm_search_shared_private_link_service" "shared_private_link_search_service_blob" {
   # Looks like only one private link can be created at a time. So, we need to process them sequentially.
   # Otherwise we may get 409 Conflict error.
-  depends_on = [ azurerm_search_shared_private_link_service.shared_private_link_search_service_aoai ]
+  depends_on         = [azurerm_search_shared_private_link_service.shared_private_link_search_service_aoai]
   name               = "${var.search_service_name}-spa-blob"
   search_service_id  = azurerm_search_service.search_service.id
   subresource_name   = "blob"
@@ -61,7 +61,7 @@ resource "azapi_update_resource" "open_ai_azure_search_private_endpoint_approver
   depends_on = [
     azurerm_search_shared_private_link_service.shared_private_link_search_service_aoai
   ]
-  type      = "Microsoft.CognitiveServices/accounts/privateEndpointConnections@2024-10-01"
+  type        = "Microsoft.CognitiveServices/accounts/privateEndpointConnections@2024-10-01"
   resource_id = local.openai_pe_connection_id
   body = {
     properties = {
@@ -77,7 +77,7 @@ resource "azapi_update_resource" "blob_azure_search_private_endpoint_approver" {
   depends_on = [
     azurerm_search_shared_private_link_service.shared_private_link_search_service_blob
   ]
-  type      = "Microsoft.Storage/storageAccounts/privateEndpointConnections@2024-01-01"
+  type        = "Microsoft.Storage/storageAccounts/privateEndpointConnections@2024-01-01"
   resource_id = local.blob_pe_connection_id
   body = {
     properties = {
@@ -88,7 +88,7 @@ resource "azapi_update_resource" "blob_azure_search_private_endpoint_approver" {
     }
   }
 
-  # This is needed as this PUT operation (https://learn.microsoft.com/rest/api/storagerp/private-endpoint-connections/put?view=rest-storagerp-2023-05-01&tabs=HTTP) 
+  # This is needed as this PUT operation (https://learn.microsoft.com/rest/api/storagerp/private-endpoint-connections/put?view=rest-storagerp-2023-05-01&tabs=HTTP)
   # on the Storage Account is not idempotent and throws a 400 error when resubmitting.
   # BUG: https://github.com/Azure/azure-rest-api-specs/issues/30308
   lifecycle {

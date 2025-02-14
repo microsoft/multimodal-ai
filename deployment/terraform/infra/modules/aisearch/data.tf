@@ -4,15 +4,15 @@ data "azurerm_monitor_diagnostic_categories" "diagnostic_categories_search_servi
   resource_id = azurerm_search_service.search_service.id
 }
 data "azapi_resource" "openai_account_pe_connections" {
-  type       = "Microsoft.CognitiveServices/accounts@2024-10-01"
-  depends_on = [ azurerm_search_shared_private_link_service.shared_private_link_search_service_aoai ]
-  resource_id         = var.openai_account_id
+  type                   = "Microsoft.CognitiveServices/accounts@2024-10-01"
+  depends_on             = [azurerm_search_shared_private_link_service.shared_private_link_search_service_aoai]
+  resource_id            = var.openai_account_id
   response_export_values = ["properties.privateEndpointConnections"]
 }
 data "azapi_resource" "storage_account_pe_connections" {
-  type       = "Microsoft.Storage/storageAccounts@2024-01-01"
-  depends_on = [ azurerm_search_shared_private_link_service.shared_private_link_search_service_blob ]
-  resource_id         = var.storage_account_id
+  type                   = "Microsoft.Storage/storageAccounts@2024-01-01"
+  depends_on             = [azurerm_search_shared_private_link_service.shared_private_link_search_service_blob]
+  resource_id            = var.storage_account_id
   response_export_values = ["properties.privateEndpointConnections"]
 }
 
