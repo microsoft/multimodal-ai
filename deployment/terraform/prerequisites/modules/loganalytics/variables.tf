@@ -31,3 +31,24 @@ variable "log_analytics_retention_in_days" {
   sensitive   = false
   default     = 30
 }
+
+variable "log_analytics_internet_ingestion_enabled" {
+  description = "Specifies if internet ingestion is enabled for the log analytics workspace"
+  type        = bool
+  sensitive   = false
+  default     = false
+}
+
+variable "log_analytics_internet_query_enabled" {
+  description = "Specifies if internet query is enabled for the log analytics workspace"
+  type        = bool
+  sensitive   = false
+  default     = false
+}
+
+variable "log_analytics_local_authentication_disabled" {
+  description = "Specifies if local authentication is disabled for the log analytics workspace"
+  type        = bool
+  sensitive   = false
+  default     = true
+}

@@ -15,6 +15,10 @@ semantic_search_sku   = "standard"
 storage_container_name_content        = "docs"
 storage_container_name_knowledgestore = "knowledgestore"
 
+azure_monitor_private_link_scope_name = ""
+ampls_scoped_service_appinsights      = ""
+ampls_scoped_service_law              = ""
+
 backend_service_name      = ""
 skills_service_name       = ""
 application_insights_name = ""
