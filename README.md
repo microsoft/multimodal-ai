@@ -19,27 +19,29 @@
 
 Welcome to the Multimodal AI project!
 
-The goal of the Multimodal AI project is to provide an enterprise-ready solution for customers looking to infuse Generative AI (Gen AI) into their existing applications, or create brand-new applications, that go beyond processing text-based content only. This project leverages the latest advancements in multimodal AI, to implement generative AI solutions such as Retrieval Augmented Generation (RAG), image classification or video analysis, for content based on text, images, audio and video. For images, the goal is to go beyond traditional Object Character Recognition (OCR) and generate embeddings on the actual image content
+The goal of the Multimodal AI project is to provide an enterprise-ready solution for customers looking to infuse Generative AI (Gen AI) into their existing applications, or create brand-new applications, that go beyond processing text-based content only. This project leverages the latest advancements in multimodal AI, to implement generative AI solutions such as Retrieval Augmented Generation (RAG), image classification or video analysis, for content based on text, images, audio and video. For images, the goal is to go beyond traditional Object Character Recognition (OCR) and implement a solution based on multimodal embeddings (text and images).
 
 ## About this project
 
-This project has been created and is maintained by the Strategic Workload Acceleration Team (SWAT) at Microsoft and we aim to provide enterprise-ready GenAI solutions regardless of whether the data is in text, image, audio or video format.
+This project has been created and is maintained by the Strategic Workload Acceleration Team (SWAT) at Microsoft and we aim to provide enterprise-ready GenAI solutions regardless of whether the data is in text, image, audio or video formats.
 
-With the rapid development and introduction of new multimodal AI models, such as [GPT-4o](https://openai.com/index/hello-gpt-4o/), customers are realizing the value of implementing GenAI solutions that go beyond simply using text-based documents within their organizations and instead, they are looking for solutions that leverage other media types that are in use within their organizations, for example, categorize a video and find specific scenes or analyse documents with images embedded that include architectural diagrams or flow charts to provide better answers to technical support personnel.
+With the rapid development and introduction of new multimodal AI models, such as [GPT-4o](https://openai.com/index/hello-gpt-4o/), customers are realizing the value of implementing GenAI solutions that go beyond text-based documents within their organizations and instead, they are looking for solutions that leverage other media types that are in use within their organizations, for example, categorize a video and find specific scenes or analyse documents with images embedded that include architectural diagrams or flow charts which allow to unlock insights from documents that were not possible before with text-based embeddings approaches.
 
-This project aims to provide a GenAI solution that enables customers to interact with their data across various formats—including text, text with images, images, audio, and video using native Azure PaaS services. Through this solution, data can be processed server-side on Azure for activities like chunking, generating images from files, creating embeddings, indexing content, extracting transcripts from videos, and identifying key scenes in videos, among other multimodal AI tasks. This architecture ensures an enterprise-grade, highly scalable solution that can grow with business demands by leveraging Azure's power and scalability, without reliance on client-side processing or local developer workstations.
+The goal of the Multimodal AI project is to provide GenAI solutions to enables customers to interact with their data across various formats—including text, text with images, images, audio, and video using native Azure AI services. Through this solution, data can be processed server-side on Azure for activities like chunking, generating images from files, creating embeddings, indexing content, extracting transcripts from videos, identifying key scenes in videos, among other multimodal AI tasks. This architecture ensures an enterprise-grade, highly scalable solution that can grow with business demands by leveraging Azure's global capacity and scalability, without reliance on client-side processing or local developer workstations.
 
 ## What's included
-In this initial release, the Multimodal AI project includes:
+In release v0.2.0, the Multimodal AI project includes:
 
 - A RAG solution using Azure AI Services that allow users to interact with data contained in text and images (for example, charts or diagrams).
 - A web client (see [references](#references)) that users can interact with to submit prompts, get results and visualize the citations.
    - Authentication via Entra Id can be configured during the initial deployment or afterwards.
-- Reference implementations in Terraform and Bicep.
+- A secure-by-default reference implementation in Terraform.
+   - All network traffic is done by using an Azure virtual network and private endpoints (no public endpoints).
+   - Entra Id authentication. 
 - A simple deployment experience, with a minimal set of prerequistes, that can easily be incorporated into CI/CD deployment pipelines.
 - Data processing activities (like chunking, generating embeddings, converting documents to images, etc.) are executed server-side on Azure via Azure AI Search (using built-in capabilities as well as using custom skills).
 - Usage of AI Search [data sources](https://learn.microsoft.com/en-us/AZURE/search/search-data-sources-gallery) for easier processing and ingestion of documents by simply uploading the documents, images, videos, etc. to Azure Storage (blob).
-   - In this release only PDF file types are supported.
+   - Currently only PDF file types are supported.
 - Multimodal embeddings generated by using [AI Search integrated vectorization](https://learn.microsoft.com/en-us/azure/search/vector-search-integrated-vectorization):
    - Images: Azure AI Vision multimodal embeddings skill (in preview): https://learn.microsoft.com/en-us/azure/search/cognitive-search-skill-vision-vectorize
    - Text: Azure OpenAI Embedding skill : https://learn.microsoft.com/en-us/azure/search/cognitive-search-skill-azure-openai-embedding
@@ -47,7 +49,7 @@ In this initial release, the Multimodal AI project includes:
 - Usage of Azure AI Search [custom skills](https://learn.microsoft.com/en-us/azure/search/cognitive-search-custom-skill-interface) (for activities like interacting with Azure Document Intelligence).
 - Leverage AI Search [knowledge storage](https://learn.microsoft.com/en-us/azure/search/knowledge-store-concept-intro) to persist images generated as part of the indexing process.
 
-Please note that additional capabilities, including support for audio and video content, compatibility with other file types, the enablement of network security features like virtual networks and private endpoints, and deployment options via CI/CD pipelines are on the roadmap and will be incorporated in future releases.
+Please note that additional capabilities, including support for audio and video content and compatibility with other file types are on the roadmap and will be incorporated in future releases.
 
 ## High-level architecture
 
@@ -57,7 +59,15 @@ The following picture depicts the high-level architecture of the Multimodal AI P
 
 ## Azure services required
 
-As the architectural diagram in the previous depicts, this project deploys and configures the following Azure resources:
+Before deploying the solution, certain prerequisites must be in place to ensure a secure-by-default deplyoment. This solution permits the deployment of such prerequisites in case they don't exist in the Azure subscription. The prerequisites include:
+
+- Azure virtual network
+- Log analytics workspace
+- Azure private DNS zones (for private link)
+- Network security group
+- Route table
+
+Once the prerequisites have been deployed, the Multimodal AI project deploys and configures the following Azure resources in a secure-by-default manner, with all Azure services deployed using private endpoints:
 
 - Azure Open AI with the following models
    - GPT-4o
@@ -83,6 +93,8 @@ As the architectural diagram in the previous depicts, this project deploys and c
    - For authenticating users accesing the web application
 - Azure Log Analytics Workspace
 - Azure Application Insights
+- Azure Monitor Private Link Scope
+   - For private access to Log Analytics Workspace and Azure Application Insights
 - Storage Account
    - To provide the documents to be indexed
    - To host the knowledgestore storing the created/extracted images
@@ -90,17 +102,19 @@ As the architectural diagram in the previous depicts, this project deploys and c
 ## Limitations
 Before determining your deployment topology (e.g. where to deploy services), be aware of following restrictions.
 
-- Open AI Service Location: This is the location where the OpenAI service is deployed. This must be a region that supports gpt-35-turbo,0613 models for OpenAI. Valid values at the time this code published are:
+- Open AI Service Location: This is the location where the OpenAI service is deployed. This must be a region that supports gpt-35-turbo,0125 models for OpenAI. Valid values at the time this code published are:
   - australiaeast
   - canadaeast
   - eastus
   - eastus2
-  - francecentral
   - japaneast
   - northcentralus
-  - swedencentral
+  - southcentralus
+  - southindia
   - switzerlandnorth
   - uksouth
+  - westus
+  - westus3
 
   Regions that support gpt-35-turbo,0613 models are published [here](https://learn.microsoft.com/en-us/azure/ai-services/openai/concepts/models#gpt-35-models)
 
