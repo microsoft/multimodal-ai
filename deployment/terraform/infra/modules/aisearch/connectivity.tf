@@ -99,25 +99,6 @@ resource "azapi_update_resource" "blob_azure_search_private_endpoint_approver" {
   }
 }
 
-# resource "null_resource" "ai_search_approve_shared_private_link" {
-#   provisioner "local-exec" {
-#     interpreter = local.is_windows ? ["PowerShell", "-Command"] : []
-#     command     = <<-EOT
-#       $aoai_id = $(az network private-endpoint-connection list --id ${var.openai_account_id} --query "[?contains(properties.privateEndpoint.id, '-spa-aoai')].id" -o json) | ConvertFrom-Json
-#       $strg_id = $(az network private-endpoint-connection list --id ${var.storage_account_id} --query "[?contains(properties.privateEndpoint.id, '-spa-blob')].id" -o json) | ConvertFrom-Json
-#       az network private-endpoint-connection approve --id $aoai_id --description "Auto-Approved"
-#       az network private-endpoint-connection approve --id $strg_id --description "Auto-Approved"
-#     EOT
-#   }
-#   triggers = {
-#     always_run = "${timestamp()}"
-#   }
-#   depends_on = [
-#     azurerm_search_shared_private_link_service.shared_private_link_search_service_aoai,
-#     azurerm_search_shared_private_link_service.shared_private_link_search_service_blob
-#   ]
-# }
-
 resource "time_sleep" "sleep_connectivity" {
   create_duration = "${var.connectivity_delay_in_seconds}s"
 
