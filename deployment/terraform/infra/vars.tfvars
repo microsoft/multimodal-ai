@@ -1,6 +1,3 @@
-subscription_id  = ""
-environment_name = "mmai"
-
 location                         = "eastus2"
 openai_service_location          = "eastus2"
 search_service_location          = "eastus"
@@ -17,6 +14,10 @@ semantic_search_sku   = "standard"
 
 storage_container_name_content        = "docs"
 storage_container_name_knowledgestore = "knowledgestore"
+
+azure_monitor_private_link_scope_name = ""
+ampls_scoped_service_appinsights      = ""
+ampls_scoped_service_law              = ""
 
 backend_service_name      = ""
 skills_service_name       = ""
@@ -49,8 +50,8 @@ azure_openai_gpt4v_deployment_name   = "gpt-4o"
 skills_function_appregistration_client_id = ""
 
 webapp_auth_settings = {
-  enable_auth           = true
-  enable_access_control = true
+  enable_auth           = false
+  enable_access_control = false
   server_app = {
     app_id           = ""
     app_secret_name  = ""

@@ -1,0 +1,59 @@
+name: GitHub Build Agent (Runner) Deployment
+on:
+  workflow_dispatch:
+
+jobs:
+  build_container:
+    uses: ./.github/workflows/_containerTemplate.yml
+    name: "Build & Publish Container"
+    with:
+      environment: "dev"
+      working_directory: "./deployment/container"
+      registry_uri: "ghcr.io"
+      image_namespace_name: ${{ github.repository }}
+      image_name: "GitHubAgentAzure"
+    secrets:
+      USER_NAME: ${{ github.actor }}
+      PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+
+  deploy-prereqs:
+    uses: ./.github/workflows/_terraformTemplate.yml
+    name: Terraform Deploy Prereqs
+    with:
+        environment: dev
+        prefix: ${{ vars.AZURE_DEPLOYMENT_PREREQS_PREFIX }}
+        terraform_version: "1.10.5"
+        working_directory: "./deployment/terraform/prerequisites"
+        node_version: 20
+        runner: ubuntu-latest
+        component: "prereqs"
+        tf_state_file: "prereqs.tfstate"
+    secrets:
+        AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+        AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+        AZURE_TF_STATE_RESOURCE_GROUP_NAME: ${{ secrets.AZURE_TF_STATE_RESOURCE_GROUP_NAME }}
+        AZURE_TF_STATE_STORAGE_ACCOUNT_NAME: ${{ secrets.AZURE_TF_STATE_STORAGE_ACCOUNT_NAME }}
+        AZURE_TF_STATE_CONTAINER_NAME: ${{ secrets.AZURE_TF_STATE_CONTAINER_NAME }}
+
+  deploy-runner:
+        uses: ./.github/workflows/_terraformTemplate.yml
+        name: Terraform Deploy Runner
+        needs: [deploy-prereqs, build_container]
+        with:
+            environment: dev
+            prefix: ${{ vars.AZURE_DEPLOYMENT_RUNNER_PREFIX }}
+            terraform_version: "1.10.5"
+            working_directory: "./deployment/terraform/runner"
+            node_version: 20
+            runner: ubuntu-latest
+            component: "runner"
+            tf_state_file: "runner.tfstate"
+        secrets:
+            PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+            AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+            AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+            AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+            AZURE_TF_STATE_RESOURCE_GROUP_NAME: ${{ secrets.AZURE_TF_STATE_RESOURCE_GROUP_NAME }}
+            AZURE_TF_STATE_STORAGE_ACCOUNT_NAME: ${{ secrets.AZURE_TF_STATE_STORAGE_ACCOUNT_NAME }}
+            AZURE_TF_STATE_CONTAINER_NAME: ${{ secrets.AZURE_TF_STATE_CONTAINER_NAME }}
