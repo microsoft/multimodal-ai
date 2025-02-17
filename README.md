@@ -144,9 +144,8 @@ Before determining your deployment topology (e.g. where to deploy services), be 
 
 ## Deployment
 
-This project is designed to streamline enterprise deployment through CI/CD tooling and pipelines while also allowing easy deployment from developer workstations for evaluation purposes. It can be deployed using either Bicep or Terraform. Please select your preferred deployment solution below:
+This project is designed to streamline enterprise deployment through CI/CD tooling and pipelines while also allowing easy deployment from developer workstations for evaluation purposes. Multimodal AI can be deployed via Terraform (Bicep support is in the roadmap for next releases).
 
-- [Bicep](/deployment/bicep/readme.md)
 - [Terraform](/deployment/terraform/)
 
 ## References
