@@ -356,7 +356,7 @@ variable "aoai_deployments" {
       name = "gpt-35-turbo"
       model = {
         format  = "OpenAI"
-        version = "0613"
+        version = "0125"
       }
       sku = {
         capacity = 60
