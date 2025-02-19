@@ -163,7 +163,9 @@ null_resource.update_function_app_allowed_applications: Creation complete after 
 vscode ➜ .../multimodal-ai-1/deployment/terraform/infra (main) $ terraform apply -var-file ./terraform.tfvars -var-file ./prereqs.tfvars 
 ```
 
-To resolve this:
+To resolve this, perform one of the following:
+- Authenticate Terraform with a Service Principal that has permissions: [Authenticate to Azure with service principal](https://learn.microsoft.com/en-us/azure/developer/terraform/authenticate-to-azure-with-service-principle)
+- [Manually create the app registration](./readme.md#manually-creating-app-registrations)
 - Grant your account the required permissions in Entra Id
 - Use an account that has the required permissions in Entra Id
 - Deploy the solution in a different subscription in which you do have the requried permissions in Entra Id
