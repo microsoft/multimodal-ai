@@ -102,6 +102,12 @@ variable "search_service_indexer_name" {
   sensitive   = false
 }
 
+variable "openai_account_id" {
+  description = "Specifies the id for the AOAI account."
+  type        = string
+  sensitive   = false
+}
+
 variable "search_service_skillset_name" {
   description = "Specifies index name."
   type        = string

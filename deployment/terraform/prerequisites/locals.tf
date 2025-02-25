@@ -15,5 +15,9 @@ locals {
     open_ai            = "privatelink.openai.azure.com",
     cognitive_services = "privatelink.cognitiveservices.azure.com",
     ai_search          = "privatelink.search.windows.net",
+    monitor            = "privatelink.monitor.azure.com",
+    oms_opsinsights    = "privatelink.oms.opinsights.azure.com",
+    ods_opsinsights    = "privatelink.ods.opinsights.azure.com",
+    automation         = "privatelink.agentsvc.azure-automation.net"
   }
 }
