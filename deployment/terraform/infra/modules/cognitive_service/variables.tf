@@ -81,6 +81,18 @@ variable "subnet_id" {
   default     = ""
 }
 
+variable "connectivity_delay_in_seconds" {
+  description = "Specifies the delay in seconds after the private endpoint deployment (required for the DNS automation via Policies)."
+  type        = number
+  sensitive   = false
+  nullable    = false
+  default     = 120
+  validation {
+    condition     = var.connectivity_delay_in_seconds >= 0
+    error_message = "Please specify a valid non-negative number."
+  }
+}
+
 # Customer-managed key variables
 variable "customer_managed_key" {
   description = "Specifies the customer managed key configurations."
