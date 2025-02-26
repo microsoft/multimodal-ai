@@ -135,7 +135,7 @@ module "skills" {
   function_application_settings = {
     FUNCTIONS_WORKER_RUNTIME      = "python"
     PYTHONUNBUFFERED              = "1"
-    DOCUMENT_INTELLIGENCE_SERVICE = module.form_recognizer.cognitive_services_name
+    DOCUMENT_INTELLIGENCE_SERVICE = module.document_intelligence.cognitive_services_name
     FUNCTIONS_EXTENSION_VERSION   = "~4"
   }
 }
@@ -279,37 +279,55 @@ module "aoai" {
 }
 
 module "cognitive_service" {
-  source                     = "./modules/cognitive_service"
-  location                   = var.search_service_location != "" ? var.search_service_location : var.location # must be in the same location as search service
-  tags                       = local.tags
-  resource_group_name        = azurerm_resource_group.resource_group.name
-  log_analytics_workspace_id = var.log_analytics_workspace_id
-  cognitive_service_name     = var.cognitive_service_name != "" ? var.cognitive_service_name : "${local.abbrs.cognitiveServicesAccounts}${local.resourceToken}"
-  cognitive_service_kind     = "CognitiveServices"
-  cognitive_service_sku      = var.cognitive_service_sku
-  local_auth_enabled         = false
+  source                                 = "./modules/cognitive_service"
+  location                               = var.search_service_location != "" ? var.search_service_location : var.location # must be in the same location as search service
+  tags                                   = local.tags
+  resource_group_name                    = azurerm_resource_group.resource_group.name
+  log_analytics_workspace_id             = var.log_analytics_workspace_id
+  cognitive_service_name                 = var.cognitive_service_name != "" ? var.cognitive_service_name : "${local.abbrs.cognitiveServicesAccounts}${local.resourceToken}"
+  cognitive_service_kind                 = "CognitiveServices"
+  cognitive_service_sku                  = var.cognitive_service_sku
+  local_auth_enabled                     = false
+  connectivity_delay_in_seconds          = var.connectivity_delay_in_seconds
+  vnet_location                          = data.azurerm_virtual_network.virtual_network.location
+  subnet_id                              = azapi_resource.subnet_private_endpoints.id
+  public_network_access_enabled          = false
+  outbound_network_access_restricted     = true
+  private_dns_zone_id_cognitive_services = var.private_dns_zone_id_cognitive_services
 }
 
-module "form_recognizer" {
-  source                     = "./modules/cognitive_service"
-  location                   = var.form_recognizer_service_location != "" ? var.form_recognizer_service_location : var.location
-  tags                       = local.tags
-  resource_group_name        = azurerm_resource_group.resource_group.name
-  log_analytics_workspace_id = var.log_analytics_workspace_id
-  cognitive_service_name     = var.form_recognizer_name != "" ? var.form_recognizer_name : "${local.abbrs.cognitiveServicesFormRecognizer}${local.resourceToken}"
-  cognitive_service_kind     = "FormRecognizer"
-  cognitive_service_sku      = var.form_recognizer_sku
-  local_auth_enabled         = true
+module "document_intelligence" {
+  source                                 = "./modules/cognitive_service"
+  location                               = var.form_recognizer_service_location != "" ? var.form_recognizer_service_location : var.location
+  tags                                   = local.tags
+  resource_group_name                    = azurerm_resource_group.resource_group.name
+  log_analytics_workspace_id             = var.log_analytics_workspace_id
+  cognitive_service_name                 = var.form_recognizer_name != "" ? var.form_recognizer_name : "${local.abbrs.cognitiveServicesFormRecognizer}${local.resourceToken}"
+  cognitive_service_kind                 = "FormRecognizer"
+  cognitive_service_sku                  = var.form_recognizer_sku
+  local_auth_enabled                     = true
+  connectivity_delay_in_seconds          = var.connectivity_delay_in_seconds
+  vnet_location                          = data.azurerm_virtual_network.virtual_network.location
+  subnet_id                              = azapi_resource.subnet_private_endpoints.id
+  public_network_access_enabled          = false
+  outbound_network_access_restricted     = true
+  private_dns_zone_id_cognitive_services = var.private_dns_zone_id_cognitive_services
 }
 
 module "computer_vision" {
-  source                     = "./modules/cognitive_service"
-  location                   = var.computer_vision_service_location != "" ? var.computer_vision_service_location : var.location
-  tags                       = local.tags
-  resource_group_name        = azurerm_resource_group.resource_group.name
-  log_analytics_workspace_id = var.log_analytics_workspace_id
-  cognitive_service_name     = var.computer_vision_name != "" ? var.computer_vision_name : "${local.abbrs.cognitiveServicesComputerVision}${local.resourceToken}"
-  cognitive_service_kind     = "ComputerVision"
-  cognitive_service_sku      = var.computer_vision_sku
-  local_auth_enabled         = false
+  source                                 = "./modules/cognitive_service"
+  location                               = var.computer_vision_service_location != "" ? var.computer_vision_service_location : var.location
+  tags                                   = local.tags
+  resource_group_name                    = azurerm_resource_group.resource_group.name
+  log_analytics_workspace_id             = var.log_analytics_workspace_id
+  cognitive_service_name                 = var.computer_vision_name != "" ? var.computer_vision_name : "${local.abbrs.cognitiveServicesComputerVision}${local.resourceToken}"
+  cognitive_service_kind                 = "ComputerVision"
+  cognitive_service_sku                  = var.computer_vision_sku
+  local_auth_enabled                     = false
+  connectivity_delay_in_seconds          = var.connectivity_delay_in_seconds
+  vnet_location                          = data.azurerm_virtual_network.virtual_network.location
+  subnet_id                              = azapi_resource.subnet_private_endpoints.id
+  public_network_access_enabled          = false
+  outbound_network_access_restricted     = true
+  private_dns_zone_id_cognitive_services = var.private_dns_zone_id_cognitive_services
 }
