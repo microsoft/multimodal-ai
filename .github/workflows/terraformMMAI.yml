@@ -46,7 +46,7 @@ jobs:
       terraform_version: "1.10.5"
       working_directory: "./deployment/terraform/infra"
       node_version: 20
-      runner: self-hosted
+      runner: ubuntu-latest
       component: "mmai"
       tf_state_file: "infra.tfstate"
     secrets:

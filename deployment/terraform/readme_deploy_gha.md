@@ -1,4 +1,5 @@
-# Deploying Multimodal AI Platform Using Terraform and GitHub Actions
+- # Deploying Multimodal AI Platform Using Terraform and GitHub Actions
+
 
 ## Overview
 
@@ -37,12 +38,14 @@ Before deploying, ensure you have configured the following:
 ### Azure Setup
 
 1. **Create a Service Principal:**
-   Run the following command to setup [federated identity](https://docs.github.com/en/actions/security-for-github-actions/security-hardening-your-deployments/configuring-openid-connect-in-azure) and save the output values (`AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, `AZURE_SUBSCRIPTION_ID`):
 
-   ```bash
-   .\Initialize-Prerequisites.ps1 -Prefix "<YOUR_PREFIX_FOR_THE_APP_REGISTRATION>"
-   ```
-   In case you want to deploy MMAI with authentication enabled, you will also need to grant this Service Principal the [Application Administrator](https://learn.microsoft.com/en-us/entra/identity/role-based-access-control/permissions-reference?utm_source=chatgpt.com#application-administrator) or [Cloud Application Administrator](https://learn.microsoft.com/en-us/entra/identity/role-based-access-control/permissions-reference?utm_source=chatgpt.com#cloud-application-administrator) [privileged](https://learn.microsoft.com/en-us/entra/identity/role-based-access-control/privileged-roles-permissions?tabs=admin-center#which-roles-and-permissions-are-privileged) role in Microsoft Entra ID.
+   - `Connect-AzAccount -Tenant <YOUR_TENANT_ID>`
+   - Run the following command to setup [federated identity](https://docs.github.com/en/actions/security-for-github-actions/security-hardening-your-deployments/configuring-openid-connect-in-azure) and save the output values (`AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, `AZURE_SUBSCRIPTION_ID`):
+      ```bash
+      .\Initialize-Prerequisites.ps1 -Prefix "<YOUR_PREFIX_FOR_THE_APP_REGISTRATION>"
+      ```
+
+   - In case you want to deploy MMAI with authentication enabled, you will also need to grant this Service Principal the [Application Administrator](https://learn.microsoft.com/en-us/entra/identity/role-based-access-control/permissions-reference?utm_source=chatgpt.com#application-administrator) or [Cloud Application Administrator](https://learn.microsoft.com/en-us/entra/identity/role-based-access-control/permissions-reference?utm_source=chatgpt.com#cloud-application-administrator) [privileged](https://learn.microsoft.com/en-us/entra/identity/role-based-access-control/privileged-roles-permissions?tabs=admin-center#which-roles-and-permissions-are-privileged) role in Microsoft Entra ID.
 
 2. **Create Storage Account & Blob Container:**
 
@@ -112,7 +115,7 @@ The project includes several GitHub Actions workflows:
 
 1. **Fork the Repository.**
 2. **Configure Prerequisites (Azure and GitHub).**
-3. **Deploy the Build System:** Run the **GitHub Build Agent (Runner) Deployment (`terraformBuildAgent.yml`)** workflow manually.
+3. **(Optional)** When using **private self-hosted GitHub runner**: run the GitHub Build Agent (Runner) Deployment (`terraformBuildAgent.yml`)** workflow manually.
 4. **Deploy MMAI:** Run the **MMAI Deployment (`terraformMMAI.yml`)** workflow manually.
 5. **Develop & Test:**
    - Create a new branch.
@@ -132,15 +135,37 @@ The project includes several GitHub Actions workflows:
 
 ## Usage
 
-### Quick Start: Deploy Everything
+### Quick Start: Deploy MMAI
 
-1. When starting with a freshly forked repository, run the **GitHub Build Agent (Runner) Deployment (`terraformBuildAgent.yml`)** workflow manually. This will deploy the private self-hosted CI/CD system:
+Manually trigger the deployment workflow **MMAI Deployment (`terraformMMAI.yml`)** to deploy the MMAI infrastructure and code:
+
+![GitHub MMAI Workflow](../../docs/images/deployment/gh_run_mmai_wf.png)
+
+When the job completes successfully (indicated by a green checkmark) your MMAI instance is deployed. The initial deployment takes approximately 40-45 minutes. Subsequent job runs are significantly faster due to Terraform state management, though their duration depends on the changes made.
+
+### Quick Start: Deploy MMAI Using The Private Self-Hosted GitHub Runner
+
+1. In `terraformMMAI.yml` set the value of the input parameter `runner` for the `deploy-mmai` job to `self-hosted`:
+    ```
+      deploy-mmai:
+        ...
+        with:
+        environment: dev
+        ...
+        runner: self-hosted
+        component: "mmai"
+        ...
+        secrets:
+        ...
+    ```
+
+2. Run the **GitHub Build Agent (Runner) Deployment (`terraformBuildAgent.yml`)** workflow manually. This will deploy the private self-hosted CI/CD system:
 
     ![GitHub Build Agent Workflow](../../docs/images/deployment/gh_run_build_agent_wf.png)
 
     When the job completes successfully (indicated by a green checkmark) you can move on to the next step. It takes approximately 5-6 minutes for the job to finish.  Subsequent job runs are significantly faster due to Terraform state management, though their duration depends on the changes made.
 
-2. **(Optional)** Skip if you are using a public GitHub repository. In a private repository, GitHub Packages (such as e.g., container images) may not be accessible by default. To resolve this:
+3. **(Optional)** Skip if you are using a public GitHub repository. In a private repository, GitHub Packages (such as e.g., container images) may not be accessible by default. To resolve this:
 
     - After building the container image, locate it in the repository’s **Packages** section.
     - Click on the package name, navigate to **Package settings**, and change its visibility to **public**.
@@ -149,7 +174,7 @@ The project includes several GitHub Actions workflows:
     ![Package Visibility](../../docs/images/deployment/gh_package_visibility.png)
     Refer to [GitHub Packages access control](https://docs.github.com/en/packages/learn-github-packages/configuring-a-packages-access-control-and-visibility#configuring-access-to-packages-for-your-personal-account).
 
-3. Once this process completes, manually trigger the deployment workflow **MMAI Deployment (`terraformMMAI.yml`)** to deploy the MMAI infrastructure and code:
+4. Once this process completes, manually trigger the deployment workflow **MMAI Deployment (`terraformMMAI.yml`)** to deploy the MMAI infrastructure and code:
 
     ![GitHub MMAI Workflow](../../docs/images/deployment/gh_run_mmai_wf.png)
 
@@ -157,7 +182,7 @@ The project includes several GitHub Actions workflows:
 
 ---
 
-## Known Issues & Troubleshooting
+#### Known Issues & Troubleshooting
 
 - **GitHub Runner Job Pickup Issue:**
   There is a [known issue](https://github.com/orgs/community/discussions/120813) where the GitHub runner connects to GitHub but does not pick up jobs if the job is queued before the runner starts.
