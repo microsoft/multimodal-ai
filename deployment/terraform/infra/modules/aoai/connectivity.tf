@@ -1,7 +1,11 @@
 resource "azurerm_private_endpoint" "private_endpoint_open_ai" {
+  depends_on = [
+    azurerm_cognitive_deployment.aoai_deployments
+  ]
   name                = "${var.cognitive_service_name}-pe"
   location            = var.vnet_location
   resource_group_name = var.resource_group_name
+  tags                = var.tags
 
   custom_network_interface_name = "${var.cognitive_service_name}-nic"
   private_service_connection {
