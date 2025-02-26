@@ -305,7 +305,7 @@ module "document_intelligence" {
   cognitive_service_name                 = var.form_recognizer_name != "" ? var.form_recognizer_name : "${local.abbrs.cognitiveServicesFormRecognizer}${local.resourceToken}"
   cognitive_service_kind                 = "FormRecognizer"
   cognitive_service_sku                  = var.form_recognizer_sku
-  local_auth_enabled                     = true
+  local_auth_enabled                     = false
   connectivity_delay_in_seconds          = var.connectivity_delay_in_seconds
   vnet_location                          = data.azurerm_virtual_network.virtual_network.location
   subnet_id                              = azapi_resource.subnet_private_endpoints.id
