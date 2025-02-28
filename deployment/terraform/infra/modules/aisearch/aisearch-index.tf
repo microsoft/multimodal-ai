@@ -30,10 +30,10 @@ resource "null_resource" "create_index" {
     always_run = "${timestamp()}"
   }
   depends_on = [
-    azurerm_search_service.search_service, 
-    local_file.index_config, 
-    null_resource.create_datasource, 
-    azurerm_role_assignment.storage_blob_data_to_search_service, 
+    azurerm_search_service.search_service,
+    local_file.index_config,
+    null_resource.create_datasource,
+    azurerm_role_assignment.storage_blob_data_to_search_service,
     azurerm_role_assignment.search_index_data_contributor
   ]
 }

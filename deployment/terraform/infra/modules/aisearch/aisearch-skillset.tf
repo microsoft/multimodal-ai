@@ -35,8 +35,8 @@ resource "null_resource" "create_skillset" {
     always_run = "${timestamp()}"
   }
   depends_on = [
-    azurerm_search_service.search_service, 
-    local_file.skillset_config, 
+    azurerm_search_service.search_service,
+    local_file.skillset_config,
     null_resource.create_index,
     null_resource.create_datasource,
     azurerm_role_assignment.knowledgestore_blob_data_to_search_service
