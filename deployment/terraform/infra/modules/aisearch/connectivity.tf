@@ -103,7 +103,7 @@ resource "azapi_update_resource" "function_azure_search_private_endpoint_approve
   depends_on = [
     azurerm_search_shared_private_link_service.shared_private_link_function
   ]
-  type        = "Microsoft.Web/sites@2024-04-01"
+  type        = "Microsoft.Web/sites/privateEndpointConnections@2024-04-01"
   resource_id = local.function_pe_connection_id
   body = {
     properties = {
