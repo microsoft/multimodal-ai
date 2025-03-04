@@ -26,13 +26,7 @@
       "executionEnvironment": "standard"
     }
   },
-  "fieldMappings": [
-    {
-      "sourceFieldName": "metadata_storage_name",
-      "targetFieldName": "title",
-      "mappingFunction": null
-    }
-  ],
+  "fieldMappings": [],
   "outputFieldMappings": [],
   "cache": null,
   "encryptionKey": null
