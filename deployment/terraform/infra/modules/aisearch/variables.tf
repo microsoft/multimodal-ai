@@ -56,19 +56,19 @@ variable "search_service_name" {
 variable "cognitive_account_id" {
   description = "Specifies the id for the cognitive account."
   type        = string
-  sensitive   = false  
+  sensitive   = false
 }
 
 variable "function_id" {
   description = "Specifies the id for the function app."
   type        = string
-  sensitive   = false  
+  sensitive   = false
 }
 
 variable "form_recognizer_id" {
   description = "Specifies the id for the form recognizer account."
   type        = string
-  sensitive   = false  
+  sensitive   = false
 }
 
 variable "vision_id" {
