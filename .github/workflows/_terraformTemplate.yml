@@ -109,6 +109,10 @@ jobs:
                 subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
                 allow-no-subscriptions: true
 
+            - name: Fetch access token for search to cache, to avoid identity token expiry issues
+              run: |
+                az account get-access-token  --scope https://search.azure.com/.default
+
             - name: Ensure az cli authV2 Extension
               run: |
                 az extension add --name authV2 -y
