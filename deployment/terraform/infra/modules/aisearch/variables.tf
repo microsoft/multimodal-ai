@@ -53,6 +53,12 @@ variable "search_service_name" {
   }
 }
 
+variable "vision_id" {
+  description = "Specifies the id for the vision account."
+  type        = string
+  sensitive   = false
+}
+
 variable "search_service_sku" {
   description = "Specifies the SKU for the search service"
   type        = string

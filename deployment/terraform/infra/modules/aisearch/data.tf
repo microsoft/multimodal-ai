@@ -3,6 +3,12 @@ data "azurerm_client_config" "current" {}
 data "azurerm_monitor_diagnostic_categories" "diagnostic_categories_search_service" {
   resource_id = azurerm_search_service.search_service.id
 }
+data "azapi_resource" "vision_account_pe_connections" {
+  type                   = "Microsoft.CognitiveServices/accounts@2024-10-01"
+  depends_on             = [azurerm_search_shared_private_link_service.shared_private_link_AI_vision]
+  resource_id            = var.vision_id
+  response_export_values = ["properties.privateEndpointConnections"]
+}
 data "azapi_resource" "openai_account_pe_connections" {
   type                   = "Microsoft.CognitiveServices/accounts@2024-10-01"
   depends_on             = [azurerm_search_shared_private_link_service.shared_private_link_search_service_aoai]
@@ -29,6 +35,12 @@ locals {
   delete_file_command_for_windows = "del ${path.module}${local.path_separator}%s"
   delete_file_command_for_linux   = "rm ${path.module}${local.path_separator}%s"
   delete_file_command             = local.is_windows ? local.delete_file_command_for_windows : local.delete_file_command_for_linux
+
+  vision_account_pe_connections = one([
+    for connection in data.azapi_resource.vision_account_pe_connections.output.properties.privateEndpointConnections
+    : connection.id
+    if strcontains(connection.properties.privateEndpoint.id, var.search_service_name)
+  ])
 
   openai_pe_connection_id = one([
     for connection in data.azapi_resource.openai_account_pe_connections.output.properties.privateEndpointConnections

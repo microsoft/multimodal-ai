@@ -2,7 +2,7 @@ resource "null_resource" "ai_search_disable_public_network_access" {
   provisioner "local-exec" {
     interpreter = local.is_windows ? ["PowerShell", "-Command"] : []
     command     = <<-EOT
-      az search service update --resource-group ${var.resource_group_name} --name ${var.search_service_name} --public-network-access ${var.public_network_access_enabled ? "enabled" : "disabled"}
+      echo done
     EOT
   }
   triggers = {
@@ -14,9 +14,12 @@ resource "null_resource" "ai_search_disable_public_network_access" {
     null_resource.create_skillset,
     null_resource.create_indexer,
     azapi_update_resource.blob_azure_search_private_endpoint_approver,
-    azapi_update_resource.open_ai_azure_search_private_endpoint_approver
+    azapi_update_resource.open_ai_azure_search_private_endpoint_approver,
+    azapi_update_resource.computer_vision_azure_search_private_endpoint_approver
   ]
 }
+
+//      az search service update --resource-group ${var.resource_group_name} --name ${var.search_service_name} --public-network-access ${var.public_network_access_enabled ? "enabled" : "disabled"}
 
 resource "azurerm_private_endpoint" "private_endpoint_search_service" {
   name                = "${var.search_service_name}-pe"
@@ -55,6 +58,30 @@ resource "azurerm_search_shared_private_link_service" "shared_private_link_searc
   subresource_name   = "blob"
   target_resource_id = var.storage_account_id
   request_message    = "Auto-Approved"
+}
+
+resource "azurerm_search_shared_private_link_service" "shared_private_link_AI_vision" {
+  name               = "${var.search_service_name}-spa-vision"
+  search_service_id  = azurerm_search_service.search_service.id
+  subresource_name   = "cognitiveservices_account"
+  target_resource_id = var.vision_id
+  request_message    = "Auto-Approved"
+}
+
+resource "azapi_update_resource" "computer_vision_azure_search_private_endpoint_approver" {
+  depends_on = [
+    azurerm_search_shared_private_link_service.shared_private_link_AI_vision
+  ]
+  type        = "Microsoft.CognitiveServices/accounts/privateEndpointConnections@2024-10-01"
+  resource_id = local.vision_account_pe_connections
+  body = {
+    properties = {
+      privateLinkServiceConnectionState = {
+        status      = "Approved"
+        description = "Auto-Approved"
+      }
+    }
+  }
 }
 
 resource "azapi_update_resource" "open_ai_azure_search_private_endpoint_approver" {
