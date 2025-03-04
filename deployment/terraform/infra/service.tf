@@ -241,7 +241,7 @@ module "aisearch" {
   subnet_id                             = azapi_resource.subnet_private_endpoints.id
   private_dns_zone_id_ai_search         = var.private_dns_zone_id_ai_search
   vision_id                             = module.computer_vision.cognitive_account_id
-  form_recognizer_id                    = module.form_recognizer.cognitive_account_id
+  form_recognizer_id                    = module.document_intelligence.cognitive_account_id
   cognitive_account_id                  = module.cognitive_service.cognitive_account_id
   function_id                           = module.skills.linux_function_app_id
 
