@@ -61,10 +61,26 @@ resource "azurerm_search_shared_private_link_service" "shared_private_link_searc
 }
 
 resource "azurerm_search_shared_private_link_service" "shared_private_link_AI_vision" {
-  name               = "${var.search_service_name}-spa-vision"
+  name               = "${var.search_service_name}-spa-cog-cv"
   search_service_id  = azurerm_search_service.search_service.id
   subresource_name   = "cognitiveservices_account"
   target_resource_id = var.vision_id
+  request_message    = "Auto-Approved"
+}
+
+resource "azurerm_search_shared_private_link_service" "shared_private_link_Form_recognition" {
+  name               = "${var.search_service_name}-spa-cog-fr"
+  search_service_id  = azurerm_search_service.search_service.id
+  subresource_name   = "cognitiveservices_account"
+  target_resource_id = var.form_recognizer_id
+  request_message    = "Auto-Approved"
+}
+
+resource "azurerm_search_shared_private_link_service" "shared_private_link_AI_multi-service" {
+  name               = "${var.search_service_name}-spa-cog-multi"
+  search_service_id  = azurerm_search_service.search_service.id
+  subresource_name   = "cognitiveservices_account"
+  target_resource_id = var.cognitive_account_id
   request_message    = "Auto-Approved"
 }
 
@@ -73,7 +89,39 @@ resource "azapi_update_resource" "computer_vision_azure_search_private_endpoint_
     azurerm_search_shared_private_link_service.shared_private_link_AI_vision
   ]
   type        = "Microsoft.CognitiveServices/accounts/privateEndpointConnections@2024-10-01"
-  resource_id = local.vision_account_pe_connections
+  resource_id = local.vision_pe_connection_id
+  body = {
+    properties = {
+      privateLinkServiceConnectionState = {
+        status      = "Approved"
+        description = "Auto-Approved"
+      }
+    }
+  }
+}
+
+resource "azapi_update_resource" "form_recognition_azure_search_private_endpoint_approver" {
+  depends_on = [
+    azurerm_search_shared_private_link_service.shared_private_link_Form_recognition
+  ]
+  type        = "Microsoft.CognitiveServices/accounts/privateEndpointConnections@2024-10-01"
+  resource_id = local.form_recognizer_pe_connection_id
+  body = {
+    properties = {
+      privateLinkServiceConnectionState = {
+        status      = "Approved"
+        description = "Auto-Approved"
+      }
+    }
+  }
+}
+
+resource "azapi_update_resource" "AI_multi-service_azure_search_private_endpoint_approver" {
+  depends_on = [
+    azurerm_search_shared_private_link_service.shared_private_link_AI_multi-service
+  ]
+  type        = "Microsoft.CognitiveServices/accounts/privateEndpointConnections@2024-10-01"
+  resource_id = local.ai_multi_account_pe_connection_id
   body = {
     properties = {
       privateLinkServiceConnectionState = {
