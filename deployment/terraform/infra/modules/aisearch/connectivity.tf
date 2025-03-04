@@ -2,7 +2,7 @@ resource "null_resource" "ai_search_disable_public_network_access" {
   provisioner "local-exec" {
     interpreter = local.is_windows ? ["PowerShell", "-Command"] : []
     command     = <<-EOT
-      echo done
+      az search service update --resource-group ${var.resource_group_name} --name ${var.search_service_name} --public-network-access ${var.public_network_access_enabled ? "enabled" : "disabled"}
     EOT
   }
   triggers = {
@@ -21,8 +21,6 @@ resource "null_resource" "ai_search_disable_public_network_access" {
     azapi_update_resource.function_azure_search_private_endpoint_approver
   ]
 }
-
-//      az search service update --resource-group ${var.resource_group_name} --name ${var.search_service_name} --public-network-access ${var.public_network_access_enabled ? "enabled" : "disabled"}
 
 resource "azurerm_private_endpoint" "private_endpoint_search_service" {
   name                = "${var.search_service_name}-pe"
