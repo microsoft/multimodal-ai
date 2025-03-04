@@ -11,20 +11,26 @@ data "azapi_resource" "openai_account_pe_connections" {
 }
 data "azapi_resource" "vision_account_pe_connections" {
   type                   = "Microsoft.CognitiveServices/accounts@2024-10-01"
-  depends_on             = [azurerm_search_shared_private_link_service.shared_private_link_AI_vision]
+  depends_on             = [azurerm_search_shared_private_link_service.shared_private_link_ai_vision]
   resource_id            = var.vision_id
   response_export_values = ["properties.privateEndpointConnections"]
 }
 data "azapi_resource" "form_recognizer_account_pe_connections" {
   type                   = "Microsoft.CognitiveServices/accounts@2024-10-01"
-  depends_on             = [azurerm_search_shared_private_link_service.shared_private_link_Form_recognition]
+  depends_on             = [azurerm_search_shared_private_link_service.shared_private_link_form_recognition]
   resource_id            = var.form_recognizer_id
   response_export_values = ["properties.privateEndpointConnections"]
 }
 data "azapi_resource" "ai_multi_account_pe_connections" {
   type                   = "Microsoft.CognitiveServices/accounts@2024-10-01"
-  depends_on             = [azurerm_search_shared_private_link_service.shared_private_link_AI_multi-service]
-  resource_id            = var.openai_account_id
+  depends_on             = [azurerm_search_shared_private_link_service.shared_private_link_ai_multi-service]
+  resource_id            = var.cognitive_account_id
+  response_export_values = ["properties.privateEndpointConnections"]
+}
+data "azapi_resource" "function_pe_connections" {
+  type                   = "Microsoft.Web/sites@2024-10-01"
+  depends_on             = [azurerm_search_shared_private_link_service.shared_private_link_search_service_aoai]
+  resource_id            = var.function_id
   response_export_values = ["properties.privateEndpointConnections"]
 }
 data "azapi_resource" "storage_account_pe_connections" {
@@ -62,6 +68,12 @@ locals {
 
   ai_multi_account_pe_connection_id = one([
     for connection in data.azapi_resource.ai_multi_account_pe_connections.output.properties.privateEndpointConnections
+    : connection.id
+    if strcontains(connection.properties.privateEndpoint.id, var.search_service_name)
+  ])
+
+  function_pe_connection_id = one([
+    for connection in data.azapi_resource.function_pe_connections.output.properties.privateEndpointConnections
     : connection.id
     if strcontains(connection.properties.privateEndpoint.id, var.search_service_name)
   ])
