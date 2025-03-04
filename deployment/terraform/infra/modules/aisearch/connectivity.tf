@@ -94,7 +94,7 @@ resource "azurerm_search_shared_private_link_service" "shared_private_link_funct
   depends_on         = [azurerm_search_shared_private_link_service.shared_private_link_ai_multi-service] # can only add one at a time
   name               = "${var.search_service_name}-spa-func"
   search_service_id  = azurerm_search_service.search_service.id
-  subresource_name   = "cognitiveservices_account"
+  subresource_name   = "sites"
   target_resource_id = var.function_id
   request_message    = "Auto-Approved"
 }

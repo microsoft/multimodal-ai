@@ -29,7 +29,7 @@ data "azapi_resource" "ai_multi_account_pe_connections" {
 }
 data "azapi_resource" "function_pe_connections" {
   type                   = "Microsoft.Web/sites@2024-04-01"
-  depends_on             = [azurerm_search_shared_private_link_service.shared_private_link_search_service_aoai]
+  depends_on             = [azurerm_search_shared_private_link_service.shared_private_link_function]
   resource_id            = var.function_id
   response_export_values = ["properties.privateEndpointConnections"]
 }
