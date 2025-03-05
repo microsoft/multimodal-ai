@@ -15,12 +15,12 @@ data "azapi_resource" "vision_account_pe_connections" {
   resource_id            = var.vision_id
   response_export_values = ["properties.privateEndpointConnections"]
 }
-data "azapi_resource" "form_recognizer_account_pe_connections" {
+/*data "azapi_resource" "form_recognizer_account_pe_connections" {
   type                   = "Microsoft.CognitiveServices/accounts@2024-10-01"
   depends_on             = [azurerm_search_shared_private_link_service.shared_private_link_form_recognition]
   resource_id            = var.form_recognizer_id
   response_export_values = ["properties.privateEndpointConnections"]
-}
+}*/
 data "azapi_resource" "ai_multi_account_pe_connections" {
   type                   = "Microsoft.CognitiveServices/accounts@2024-10-01"
   depends_on             = [azurerm_search_shared_private_link_service.shared_private_link_ai_multi-service]
@@ -60,11 +60,11 @@ locals {
     if strcontains(connection.properties.privateEndpoint.id, var.search_service_name)
   ])
 
-  form_recognizer_pe_connection_id = one([
+  /*form_recognizer_pe_connection_id = one([
     for connection in data.azapi_resource.form_recognizer_account_pe_connections.output.properties.privateEndpointConnections
     : connection.id
     if strcontains(connection.properties.privateEndpoint.id, var.search_service_name)
-  ])
+  ])*/
 
   ai_multi_account_pe_connection_id = one([
     for connection in data.azapi_resource.ai_multi_account_pe_connections.output.properties.privateEndpointConnections
