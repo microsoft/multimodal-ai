@@ -23,12 +23,12 @@ resource "null_resource" "ai_search_disable_public_network_access" {
 }
 
 resource "azurerm_private_endpoint" "private_endpoint_search_service" {
-  depends_on = [
+/*  depends_on = [
     null_resource.create_datasource,
     null_resource.create_index,
     null_resource.create_skillset,
     null_resource.create_indexer,
-  ] # race / conflict conditions if too many updates are happening to AI Search
+  ] # race / conflict conditions if too many updates are happening to AI Search*/
   name                = "${var.search_service_name}-pe"
   location            = var.vnet_location
   resource_group_name = var.resource_group_name

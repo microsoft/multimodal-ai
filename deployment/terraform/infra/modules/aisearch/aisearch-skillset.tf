@@ -39,6 +39,7 @@ resource "null_resource" "create_skillset" {
     local_file.skillset_config,
     null_resource.create_index,
     null_resource.create_datasource,
-    azurerm_role_assignment.knowledgestore_blob_data_to_search_service
+    azurerm_role_assignment.knowledgestore_blob_data_to_search_service,
+    azapi_update_resource.function_azure_search_private_endpoint_approver
   ]
 }
