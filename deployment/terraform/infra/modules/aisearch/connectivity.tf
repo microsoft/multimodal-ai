@@ -17,18 +17,11 @@ resource "null_resource" "ai_search_disable_public_network_access" {
     azapi_update_resource.open_ai_azure_search_private_endpoint_approver,
     azapi_update_resource.computer_vision_azure_search_private_endpoint_approver,
     azapi_update_resource.ai_multi-service_azure_search_private_endpoint_approver,
-    //    azapi_update_resource.form_recognition_azure_search_private_endpoint_approver,
     azapi_update_resource.function_azure_search_private_endpoint_approver
   ]
 }
 
 resource "azurerm_private_endpoint" "private_endpoint_search_service" {
-  /*  depends_on = [
-    null_resource.create_datasource,
-    null_resource.create_index,
-    null_resource.create_skillset,
-    null_resource.create_indexer,
-  ] # race / conflict conditions if too many updates are happening to AI Search*/
   name                = "${var.search_service_name}-pe"
   location            = var.vnet_location
   resource_group_name = var.resource_group_name
@@ -60,7 +53,7 @@ resource "azurerm_search_shared_private_link_service" "shared_private_link_searc
 resource "azurerm_search_shared_private_link_service" "shared_private_link_search_service_blob" {
   # Looks like only one private link can be created at a time. So, we need to process them sequentially.
   # Otherwise we may get 409 Conflict error.
-  depends_on         = [azurerm_search_shared_private_link_service.shared_private_link_search_service_aoai] # can only add one at a time
+  depends_on         = [azurerm_search_shared_private_link_service.shared_private_link_search_service_aoai]
   name               = "${var.search_service_name}-spa-blob"
   search_service_id  = azurerm_search_service.search_service.id
   subresource_name   = "blob"
@@ -69,7 +62,7 @@ resource "azurerm_search_shared_private_link_service" "shared_private_link_searc
 }
 
 resource "azurerm_search_shared_private_link_service" "shared_private_link_ai_vision" {
-  depends_on         = [azurerm_search_shared_private_link_service.shared_private_link_search_service_blob] # can only add one at a time
+  depends_on         = [azurerm_search_shared_private_link_service.shared_private_link_search_service_blob]
   name               = "${var.search_service_name}-spa-cog-cv"
   search_service_id  = azurerm_search_service.search_service.id
   subresource_name   = "cognitiveservices_account"
@@ -77,18 +70,8 @@ resource "azurerm_search_shared_private_link_service" "shared_private_link_ai_vi
   request_message    = "Auto-Approved"
 }
 
-/*resource "azurerm_search_shared_private_link_service" "shared_private_link_form_recognition" {
-  depends_on         = [azurerm_search_shared_private_link_service.shared_private_link_ai_vision] # can only add one at a time
-  name               = "${var.search_service_name}-spa-cog-fr"
-  search_service_id  = azurerm_search_service.search_service.id
-  subresource_name   = "cognitiveservices_account"
-  target_resource_id = var.form_recognizer_id
-  request_message    = "Auto-Approved"
-}*/
-
 resource "azurerm_search_shared_private_link_service" "shared_private_link_ai_multi-service" {
-  depends_on = [azurerm_search_shared_private_link_service.shared_private_link_ai_vision] # can only add one at a time
-  //depends_on         = [azurerm_search_shared_private_link_service.shared_private_link_form_recognition] # can only add one at a time
+  depends_on         = [azurerm_search_shared_private_link_service.shared_private_link_ai_vision]
   name               = "${var.search_service_name}-spa-cog-multi"
   search_service_id  = azurerm_search_service.search_service.id
   subresource_name   = "cognitiveservices_account"
@@ -97,7 +80,7 @@ resource "azurerm_search_shared_private_link_service" "shared_private_link_ai_mu
 }
 
 resource "azurerm_search_shared_private_link_service" "shared_private_link_function" {
-  depends_on         = [azurerm_search_shared_private_link_service.shared_private_link_ai_multi-service] # can only add one at a time
+  depends_on         = [azurerm_search_shared_private_link_service.shared_private_link_ai_multi-service]
   name               = "${var.search_service_name}-spa-func"
   search_service_id  = azurerm_search_service.search_service.id
   subresource_name   = "sites"
@@ -136,22 +119,6 @@ resource "azapi_update_resource" "computer_vision_azure_search_private_endpoint_
     }
   }
 }
-
-/*resource "azapi_update_resource" "form_recognition_azure_search_private_endpoint_approver" {
-  depends_on = [
-    azurerm_search_shared_private_link_service.shared_private_link_form_recognition
-  ]
-  type        = "Microsoft.CognitiveServices/accounts/privateEndpointConnections@2024-10-01"
-  resource_id = local.form_recognizer_pe_connection_id
-  body = {
-    properties = {
-      privateLinkServiceConnectionState = {
-        status      = "Approved"
-        description = "Auto-Approved"
-      }
-    }
-  }
-}*/
 
 resource "azapi_update_resource" "ai_multi-service_azure_search_private_endpoint_approver" {
   depends_on = [
