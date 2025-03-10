@@ -240,8 +240,12 @@ module "aisearch" {
   vnet_location                         = data.azurerm_virtual_network.virtual_network.location
   subnet_id                             = azapi_resource.subnet_private_endpoints.id
   private_dns_zone_id_ai_search         = var.private_dns_zone_id_ai_search
+  vision_id                             = module.computer_vision.cognitive_account_id
+  form_recognizer_id                    = module.document_intelligence.cognitive_account_id
+  cognitive_account_id                  = module.cognitive_service.cognitive_account_id
+  function_id                           = module.skills.linux_function_app_id
 
-  depends_on = [module.aoai, module.cognitive_service, module.storage, module.skills]
+  depends_on = [module.aoai, module.cognitive_service, module.storage, module.skills, module.computer_vision]
 }
 
 
