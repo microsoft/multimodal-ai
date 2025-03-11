@@ -2,7 +2,7 @@ resource "null_resource" "ai_search_disable_public_network_access" {
   provisioner "local-exec" {
     interpreter = local.is_windows ? ["PowerShell", "-Command"] : []
     command     = <<-EOT
-      az search service update --resource-group ${var.resource_group_name} --name ${var.search_service_name} --public-network-access ${var.public_network_access_enabled ? "enabled" : "disabled"}
+      az search service update --resource-group ${var.resource_group_name} --name ${var.search_service_name} --public-network-access ${var.public_network_access_enabled ? "enabled" : "disabled"} --no
     EOT
   }
   triggers = {
@@ -30,7 +30,7 @@ resource "azurerm_private_endpoint" "private_endpoint_search_service" {
   private_service_connection {
     name                           = "${var.search_service_name}-pe"
     is_manual_connection           = false
-    private_connection_resource_id = azurerm_search_service.search_service.id
+    private_connection_resource_id = var.search_service_resource_id
     subresource_names              = ["searchService"]
   }
   subnet_id = var.subnet_id
@@ -41,30 +41,27 @@ resource "azurerm_private_endpoint" "private_endpoint_search_service" {
   }
 }
 
-resource "azurerm_search_shared_private_link_service" "shared_private_link_search_service_aoai" {
-  depends_on         = [azurerm_private_endpoint.private_endpoint_search_service]
-  name               = "${var.search_service_name}-spa-aoai"
-  search_service_id  = azurerm_search_service.search_service.id
-  subresource_name   = "openai_account"
-  target_resource_id = var.openai_account_id
-  request_message    = "Auto-Approved"
-}
-
 resource "azurerm_search_shared_private_link_service" "shared_private_link_search_service_blob" {
-  # Looks like only one private link can be created at a time. So, we need to process them sequentially.
-  # Otherwise we may get 409 Conflict error.
-  depends_on         = [azurerm_search_shared_private_link_service.shared_private_link_search_service_aoai]
   name               = "${var.search_service_name}-spa-blob"
-  search_service_id  = azurerm_search_service.search_service.id
+  search_service_id  = var.search_service_resource_id
   subresource_name   = "blob"
   target_resource_id = var.storage_account_id
   request_message    = "Auto-Approved"
 }
 
+resource "azurerm_search_shared_private_link_service" "shared_private_link_search_service_aoai" {
+  depends_on         = [azurerm_private_endpoint.private_endpoint_search_service]
+  name               = "${var.search_service_name}-spa-aoai"
+  search_service_id  = var.search_service_resource_id
+  subresource_name   = "openai_account"
+  target_resource_id = var.openai_account_id
+  request_message    = "Auto-Approved"
+}
+
 resource "azurerm_search_shared_private_link_service" "shared_private_link_ai_vision" {
-  depends_on         = [azurerm_search_shared_private_link_service.shared_private_link_search_service_blob]
+  depends_on         = [azurerm_search_shared_private_link_service.shared_private_link_search_service_aoai]
   name               = "${var.search_service_name}-spa-cog-cv"
-  search_service_id  = azurerm_search_service.search_service.id
+  search_service_id  = var.search_service_resource_id
   subresource_name   = "cognitiveservices_account"
   target_resource_id = var.vision_id
   request_message    = "Auto-Approved"
@@ -73,16 +70,15 @@ resource "azurerm_search_shared_private_link_service" "shared_private_link_ai_vi
 resource "azurerm_search_shared_private_link_service" "shared_private_link_ai_multi-service" {
   depends_on         = [azurerm_search_shared_private_link_service.shared_private_link_ai_vision]
   name               = "${var.search_service_name}-spa-cog-multi"
-  search_service_id  = azurerm_search_service.search_service.id
+  search_service_id  = var.search_service_resource_id
   subresource_name   = "cognitiveservices_account"
   target_resource_id = var.cognitive_account_id
   request_message    = "Auto-Approved"
 }
 
 resource "azurerm_search_shared_private_link_service" "shared_private_link_function" {
-  depends_on         = [azurerm_search_shared_private_link_service.shared_private_link_ai_multi-service]
   name               = "${var.search_service_name}-spa-func"
-  search_service_id  = azurerm_search_service.search_service.id
+  search_service_id  = var.search_service_resource_id
   subresource_name   = "sites"
   target_resource_id = var.function_id
   request_message    = "Auto-Approved"
