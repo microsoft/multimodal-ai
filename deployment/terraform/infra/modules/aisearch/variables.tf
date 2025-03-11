@@ -45,7 +45,7 @@ variable "search_service_name" {
 variable "search_service_identity" {
   description = "Specifies the system managed identity principalid of the search service account precrated to save time."
   type        = string
-  sensitive   = false  
+  sensitive   = false
 }
 
 variable "search_service_resource_id" {

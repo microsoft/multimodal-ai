@@ -209,16 +209,16 @@ module "backend_webapp" {
   EOT
 }
 
-module "aisearchonly"  {
-  source                                = "./modules/aisearch/searchonly"
-  location                              = var.search_service_location != "" ? var.search_service_location : var.location
-  tags                                  = local.tags
-  resource_group_name                   = azurerm_resource_group.resource_group.name
-  search_service_name                   = var.search_service_name != "" ? var.search_service_name : "${local.abbrs.searchServices}${local.resourceToken}"
-  search_service_sku                    = var.search_service_sku
-  semantic_search_sku                   = var.semantic_search_sku
-  search_service_partition_count        = var.search_service_partition_count
-  search_service_replica_count          = var.search_service_replica_count
+module "aisearchonly" {
+  source                         = "./modules/aisearch/searchonly"
+  location                       = var.search_service_location != "" ? var.search_service_location : var.location
+  tags                           = local.tags
+  resource_group_name            = azurerm_resource_group.resource_group.name
+  search_service_name            = var.search_service_name != "" ? var.search_service_name : "${local.abbrs.searchServices}${local.resourceToken}"
+  search_service_sku             = var.search_service_sku
+  semantic_search_sku            = var.semantic_search_sku
+  search_service_partition_count = var.search_service_partition_count
+  search_service_replica_count   = var.search_service_replica_count
 }
 
 module "aisearch" {
@@ -229,7 +229,7 @@ module "aisearch" {
   log_analytics_workspace_id            = var.log_analytics_workspace_id
   search_service_name                   = module.aisearchonly.search_service_name
   search_service_resource_id            = module.aisearchonly.search_service_resource_id
-  search_service_identity               = module.aisearchonly.search_service_identity  
+  search_service_identity               = module.aisearchonly.search_service_identity
   storage_account_id                    = module.storage.storage_account_id
   storage_container_name_content        = var.storage_container_name_content
   search_service_datasource_name        = var.search_service_datasource_name != "" ? var.search_service_datasource_name : "${local.abbrs.searchServices}ds-${local.resourceToken}"

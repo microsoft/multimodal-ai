@@ -50,7 +50,7 @@ resource "azurerm_search_shared_private_link_service" "shared_private_link_searc
 }
 
 resource "azurerm_search_shared_private_link_service" "shared_private_link_search_service_aoai" {
-  depends_on         = [azurerm_private_endpoint.private_endpoint_search_service]
+  depends_on         = [azurerm_private_endpoint.shared_private_link_search_service_blob]
   name               = "${var.search_service_name}-spa-aoai"
   search_service_id  = var.search_service_resource_id
   subresource_name   = "openai_account"
@@ -77,6 +77,7 @@ resource "azurerm_search_shared_private_link_service" "shared_private_link_ai_mu
 }
 
 resource "azurerm_search_shared_private_link_service" "shared_private_link_function" {
+  depends_on         = [azurerm_search_shared_private_link_service.shared_private_link_ai_multi-service]
   name               = "${var.search_service_name}-spa-func"
   search_service_id  = var.search_service_resource_id
   subresource_name   = "sites"

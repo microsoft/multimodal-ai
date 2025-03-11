@@ -1,0 +1,33 @@
+{
+  "name": "srch-inder-d70a69c1",
+  "description": "Indexer for auto indexing documents with srch-skl-d70a69c1",
+  "dataSourceName": "srch-ds-d70a69c1",
+  "skillsetName": "srch-skl-d70a69c1",
+  "targetIndexName": "srch-ind-d70a69c1",
+  "disabled": false,
+  "schedule": null,
+  "parameters": {
+    "batchSize": 1,
+    "maxFailedItems": 0,
+    "maxFailedItemsPerBatch": 0,
+    "base64EncodeKeys": null,
+    "configuration": {
+      "parsingMode": "default",
+      "excludedFileNameExtensions": ".png, .jpeg, .jpg",
+      "indexedFileNameExtensions": ".pdf",
+      "failOnUnsupportedContentType": false,
+      "failOnUnprocessableDocument": false,
+      "indexStorageMetadataOnlyForOversizedDocuments": false,
+      "firstLineContainsHeaders": true,
+      "dataToExtract": "contentAndMetadata",
+      "imageAction": "generateNormalizedImagePerPage",
+      "allowSkillsetToReadFileData": false,
+      "pdfTextRotationAlgorithm": "none",
+      "executionEnvironment": "standard"
+    }
+  },
+  "fieldMappings": [],
+  "outputFieldMappings": [],
+  "cache": null,
+  "encryptionKey": null
+}
