@@ -2,7 +2,7 @@ resource "null_resource" "ai_search_disable_public_network_access" {
   provisioner "local-exec" {
     interpreter = local.is_windows ? ["PowerShell", "-Command"] : []
     command     = <<-EOT
-      az search service update --resource-group ${var.resource_group_name} --name ${var.search_service_name} --public-network-access ${var.public_network_access_enabled ? "enabled" : "disabled"} --no
+      az search service update --resource-group ${var.resource_group_name} --name ${var.search_service_name} --public-network-access ${var.public_network_access_enabled ? "enabled" : "disabled"} --no-wait
     EOT
   }
   triggers = {
