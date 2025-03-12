@@ -69,8 +69,7 @@ And the following picture depicts the high-level design of the Multimodal AI Pro
 
 ## Azure services required
 
-As the architectural and design diagrama in the previous section depict, this project deploys and configures the following Azure resources:
-
+As the architectural and design diagram in the previous section depict, this project deploys and configures the following Azure resources:
 - Azure OpenAI with the following models
    - gpt-4o
    - gpt-35-turbo
