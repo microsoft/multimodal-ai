@@ -8,7 +8,7 @@ There are two ways to deploy the solution:
 ## Using the solution
 
 - By default the web application that hosts the **multimodal_ai_web_site** is deployed into a private network. In order to access the web site you will need to do one of the following options:
-  - If you VNet is connected to your existing Azure environment (for example, in a hub and spoke topology), you can use your existing network connectivity options (for example, via ExpressRoute or VPN) as they would have line of sight to the **multimodal_ai_web_site** (assuming firewalls and NSGs allow the traffic).
+  - If your VNet is connected to your existing Azure environment (for example, in a hub and spoke topology), you can use your existing network connectivity options (for example, via ExpressRoute or VPN) as they would have line of sight to the **multimodal_ai_web_site** (assuming firewalls and NSGs allow the traffic).
   - If your VNet is not connected to your existing Azure environment:
     - Deploy Azure Bastion in the VNet and deploy a jumpbox VM. The VM will have line of sight to the webapp hosting the **multimodal_ai_web_site**, and you can then interact with the webapp via the web browser in the VM.
     - Alternatively, you could deploy an Azure VPN Gateway and you could connect to the VNet from your existing on-premises network.
