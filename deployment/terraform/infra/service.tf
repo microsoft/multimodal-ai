@@ -314,7 +314,7 @@ module "document_intelligence" {
   vnet_location                          = data.azurerm_virtual_network.virtual_network.location
   subnet_id                              = azapi_resource.subnet_private_endpoints.id
   public_network_access_enabled          = false
-  outbound_network_access_restricted     = true
+  outbound_network_access_restricted     = false
   private_dns_zone_id_cognitive_services = var.private_dns_zone_id_cognitive_services
 }
 
