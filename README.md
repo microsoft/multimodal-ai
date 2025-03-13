@@ -25,18 +25,26 @@ The goal of the Multimodal AI project is to provide an enterprise-ready solution
 
 This project has been created and is maintained by the Strategic Workload Acceleration Team (SWAT) at Microsoft and we aim to provide enterprise-ready GenAI solutions regardless of whether the data is in text, image, audio or video format.
 
-With the rapid development and introduction of new multimodal AI models, such as [GPT-4o](https://openai.com/index/hello-gpt-4o/), customers are realizing the value of implementing GenAI solutions that go beyond simply using text-based documents within their organizations and instead, they are looking for solutions that leverage other media types that are in use within their organizations, for example, categorize a video and find specific scenes or analyse documents with images embedded that include architectural diagrams or flow charts to provide better answers to technical support personnel.
+With the rapid development and introduction of new multimodal AI models, such as [GPT-4o](https://openai.com/index/hello-gpt-4o/), customers are realizing the value of implementing GenAI solutions that go beyond simply using text-based documents within their organizations and instead, they are looking for solutions that leverage other media types that are in use within their organizations, for example, categorize a video and find specific scenes or analyse documents with images embedded that include architectural diagrams or flow charts to provide better answers to users.
 
 This project aims to provide a GenAI solution that enables customers to interact with their data across various formats—including text, text with images, images, audio, and video using native Azure PaaS services. Through this solution, data can be processed server-side on Azure for activities like chunking, generating images from files, creating embeddings, indexing content, extracting transcripts from videos, and identifying key scenes in videos, among other multimodal AI tasks. This architecture ensures an enterprise-grade, highly scalable solution that can grow with business demands by leveraging Azure's power and scalability, without reliance on client-side processing or local developer workstations.
 
 ## What's included
-In this initial release, the Multimodal AI project includes:
+In the current release, the Multimodal AI project includes:
 
 - A RAG solution using Azure AI Services that allow users to interact with data contained in text and images (for example, charts or diagrams).
+- The entire solution is deployed using a secure-by-default architecture, where:
+   - Azure services are deployed with public endpoints disabled.
+   - Communication to and between Azure services is done via private endpoints and VNet network integration options.
+   - Service-to-service authentication via Entra-Id.
+   - No local authentication.
+- Bring-your-own VNet capabilities (so that you can integrate this solution into your existing environment).
+   - We provide an optional Azure pre-requisites deployment experience in case you don't have an existing VNet or Azure DNS Private Zones (for private link).
 - A web client (see [references](#references)) that users can interact with to submit prompts, get results and visualize the citations.
    - Authentication via Entra Id can be configured during the initial deployment or afterwards.
-- Reference implementations in Terraform and Bicep.
-- A simple deployment experience, with a minimal set of prerequistes, that can easily be incorporated into CI/CD deployment pipelines.
+- Reference implementations in Terraform.
+   - Bicep implementation is currently work in progress and not available for usage just yet, but it will be available in subsequent releases.
+- Simple deployment experiences via GitHub actions or via Terraform and  with a minimal set of prerequistes.
 - Data processing activities (like chunking, generating embeddings, converting documents to images, etc.) are executed server-side on Azure via Azure AI Search (using built-in capabilities as well as using custom skills).
 - Usage of AI Search [data sources](https://learn.microsoft.com/en-us/AZURE/search/search-data-sources-gallery) for easier processing and ingestion of documents by simply uploading the documents, images, videos, etc. to Azure Storage (blob).
    - In this release only PDF file types are supported.
@@ -47,7 +55,7 @@ In this initial release, the Multimodal AI project includes:
 - Usage of Azure AI Search [custom skills](https://learn.microsoft.com/en-us/azure/search/cognitive-search-custom-skill-interface) (for activities like interacting with Azure Document Intelligence).
 - Leverage AI Search [knowledge storage](https://learn.microsoft.com/en-us/azure/search/knowledge-store-concept-intro) to persist images generated as part of the indexing process.
 
-Please note that additional capabilities, including support for audio and video content, compatibility with other file types, the enablement of network security features like virtual networks and private endpoints, and deployment options via CI/CD pipelines are on the roadmap and will be incorporated in future releases.
+Please note that additional capabilities, including support for audio and video content, compatibility with other file types are on the roadmap and will be incorporated in future releases.
 
 ## High-level architecture
 
@@ -55,12 +63,16 @@ The following picture depicts the high-level architecture of the Multimodal AI P
 
 ![High-level architecture](docs/images/high-level-architecture.png)
 
+And the following picture depicts the high-level design of the Multimodal AI Project, where you can visualize the different Azure resources deployed as well as the network integration options:
+
+![High-level architecture](docs/images/high-level-design.png)
+
 ## Azure services required
 
-As the architectural diagram in the previous depicts, this project deploys and configures the following Azure resources:
-
-- Azure Open AI with the following models
-   - GPT-4o
+As the architectural and design diagram in the previous section depict, this project deploys and configures the following Azure resources:
+- Azure OpenAI with the following models
+   - gpt-4o
+   - gpt-35-turbo
    - text-embedding-ada-002
 - Azure AI Search with the following features configured
    - Data sources
@@ -83,6 +95,7 @@ As the architectural diagram in the previous depicts, this project deploys and c
    - For authenticating users accesing the web application
 - Azure Log Analytics Workspace
 - Azure Application Insights
+- Azure Monitor Private Link Scope (AMPLS) for private access to Log Analytics Workspace and Application Insights.
 - Storage Account
    - To provide the documents to be indexed
    - To host the knowledgestore storing the created/extracted images
@@ -90,19 +103,21 @@ As the architectural diagram in the previous depicts, this project deploys and c
 ## Limitations
 Before determining your deployment topology (e.g. where to deploy services), be aware of following restrictions.
 
-- Open AI Service Location: This is the location where the OpenAI service is deployed. This must be a region that supports gpt-35-turbo,0613 models for OpenAI. Valid values at the time this code published are:
+- Open AI Service Location: This is the location where the OpenAI service is deployed. This must be a region that supports gpt-35-turbo,0125 models for OpenAI. Valid values at the time this code published are:
   - australiaeast
   - canadaeast
   - eastus
-  - eastus2
-  - francecentral
+  - eastus2  
   - japaneast
   - northcentralus
-  - swedencentral
+  - southcentralus
+  - southindia  
   - switzerlandnorth
   - uksouth
+  - westus
+  - westus3
 
-  Regions that support gpt-35-turbo,0613 models are published [here](https://learn.microsoft.com/en-us/azure/ai-services/openai/concepts/models#gpt-35-models)
+  Regions that support gpt-35-turbo,0125 models are published [here](https://learn.microsoft.com/en-us/azure/ai-services/openai/concepts/models#gpt-35-models)
 
 - Form Recognizer / Document Intelligence Service Location: This is the location where the Form Recognizer cognitive service is deployed. This must be a region that supports API 2024-07-31-preview. Valid values at the time this code published are:
   - eastus
@@ -130,10 +145,10 @@ Before determining your deployment topology (e.g. where to deploy services), be 
 
 ## Deployment
 
-This project is designed to streamline enterprise deployment through CI/CD tooling and pipelines while also allowing easy deployment from developer workstations for evaluation purposes. It can be deployed using either Bicep or Terraform. Please select your preferred deployment solution below:
+This project is designed to streamline enterprise deployment through CI/CD tooling and pipelines while also allowing easy deployment from developer workstations for evaluation purposes. Currently, we only support deployments based on Terraform, but support for Bicep is in our roadmap.
 
-- [Bicep](/deployment/bicep/readme.md)
 - [Terraform](/deployment/terraform/)
+- Bicep (available in future releases)
 
 ## References
 

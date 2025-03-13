@@ -7,14 +7,17 @@ There are two ways to deploy the solution:
 
 ## Using the solution
 
-- By default the web application that hosts the **multimodal_ai_web_site** is deployed into a private network. In order to access the web site you will need to do one of the following:
-  - Enable public network access for the web app. From Azure portal navigate to Web app > Settings > Networking and click on the line where it reads "Public network access      Disabled". Alternatively, you may use the following CLI command to enable public network access
+- By default the web application that hosts the **multimodal_ai_web_site** is deployed into a private network. In order to access the web site you will need to do one of the following options:
+  - If your VNet is connected to your existing Azure environment (for example, in a hub and spoke topology), you can use your existing network connectivity options (for example, via ExpressRoute or VPN) as they would have line of sight to the **multimodal_ai_web_site** (assuming firewalls and NSGs allow the traffic).
+  - If your VNet is not connected to your existing Azure environment:
+    - Deploy Azure Bastion in the VNet and deploy a jumpbox VM. The VM will have line of sight to the webapp hosting the **multimodal_ai_web_site**, and you can then interact with the webapp via the web browser in the VM.
+    - Alternatively, you could deploy an Azure VPN Gateway and you could connect to the VNet from your existing on-premises network.
+  - One last option, which should only be used for non-production environments and for evaluation purposes only, enable public network access for the web app. From Azure portal navigate to Web app > Settings > Networking and click on the line where it reads "Public network access Disabled". Alternatively, you may use the following CLI command to enable public network access
     ```bash
     az webapp update --resource-group <resource_group_name> --name <webapp_name> --set publicNetworkAccess=Enabled
     ```
-  - If you don't want to enable public network access, use a VPN connection to the virtual network where the web app is deployed.
 
-+- Once you have provided the connectivity, navigate to the web site URL provided in the terraform output variable **multimodal_ai_web_site**. Note that if you used a smaller SKU for web app (e.g. B1 or B2), it may take a few minutes for the web app to start. If you see a 504.0 GatewayTimeout error please refresh the web site .
+- Once you have provided the connectivity, navigate to the web site URL provided in the terraform output variable **multimodal_ai_web_site**. Note that if you used a smaller SKU for web app (e.g. B1 or B2), it may take a few minutes for the web app to start. If you see a 504.0 GatewayTimeout error please refresh the web site .
 
 - In order to index and use your own documents for the solution follow instructions provided in section [Indexing Documents](#indexing-documents).
 
