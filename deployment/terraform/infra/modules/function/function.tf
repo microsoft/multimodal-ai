@@ -21,7 +21,7 @@ resource "azurerm_linux_function_app" "linux_function_app" {
   key_vault_reference_identity_id          = var.function_user_assigned_identity_id
   public_network_access_enabled            = false
   service_plan_id                          = azurerm_service_plan.service_plan.id
-  virtual_network_subnet_id                = var.integration_subnet_id 
+  virtual_network_subnet_id                = var.integration_subnet_id
   site_config {
     always_on       = var.function_always_on
     app_scale_limit = 200
