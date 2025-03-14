@@ -103,7 +103,7 @@ module "storage" {
   private_dns_zone_id_file                  = var.private_dns_zone_id_file
   vnet_location                             = data.azurerm_virtual_network.virtual_network.location
   public_network_access_enabled             = false
-  network_bypass                            = ["None"]
+  network_bypass                            = ["AzureServices"]
   private_endpoint_subresource_names        = ["blob", "file"]
   network_private_link_access = [
     "/subscriptions/${data.azurerm_client_config.current.subscription_id}/providers/Microsoft.Security/datascanners/StorageDataScanner"
