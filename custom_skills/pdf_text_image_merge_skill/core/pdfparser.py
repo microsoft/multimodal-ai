@@ -30,7 +30,7 @@ class DocumentAnalysisParser(Parser):
             endpoint=self.endpoint, credential=self.credential
         ) as document_intelligence_client:
             poller = await document_intelligence_client.begin_analyze_document(
-                model_id=self.model_id, analyze_request=AnalyzeDocumentRequest(url_source=url))
+                model_id=self.model_id, body=AnalyzeDocumentRequest(url_source=url))
             form_recognizer_results = await poller.result()
 
             offset = 0
