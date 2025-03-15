@@ -90,12 +90,13 @@ module "keyvault" {
 
 
 module "storage" {
-  source                                    = "./modules/storage"
-  location                                  = var.location
-  tags                                      = local.tags
-  resource_group_name                       = azurerm_resource_group.resource_group.name
-  storage_account_name                      = var.storage_account_name != "" ? var.storage_account_name : substr("${local.abbrs.storageStorageAccounts}${local.resourceToken}", 0, 24)
-  storage_account_container_names           = [var.storage_container_name_content, var.storage_container_name_knowledgestore]
+  source               = "./modules/storage"
+  location             = var.location
+  tags                 = local.tags
+  resource_group_name  = azurerm_resource_group.resource_group.name
+  storage_account_name = var.storage_account_name != "" ? var.storage_account_name : substr("${local.abbrs.storageStorageAccounts}${local.resourceToken}", 0, 24)
+  #storage_account_container_names           = [var.storage_container_name_content, var.storage_container_name_knowledgestore]
+  storage_account_container_names           = [var.storage_container_name_content]
   storage_account_shared_access_key_enabled = false
   log_analytics_workspace_id                = var.log_analytics_workspace_id
   subnet_id                                 = azapi_resource.subnet_private_endpoints.id

@@ -12,8 +12,9 @@ appservice_plan_sku   = "B3"
 search_service_sku    = "standard"
 semantic_search_sku   = "standard"
 
-storage_container_name_content        = "docs"
-storage_container_name_knowledgestore = "knowledgestore"
+storage_container_name_content = "docs"
+#storage_container_name_knowledgestore = "knowledgestore"
+storage_container_name_knowledgestore = "docs"
 
 azure_monitor_private_link_scope_name = ""
 ampls_scoped_service_appinsights      = ""
