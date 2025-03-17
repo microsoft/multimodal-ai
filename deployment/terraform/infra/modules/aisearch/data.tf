@@ -1,7 +1,7 @@
 data "azurerm_client_config" "current" {}
 
 data "azurerm_monitor_diagnostic_categories" "diagnostic_categories_search_service" {
-  resource_id = azurerm_search_service.search_service.id
+  resource_id = var.search_service_resource_id
 }
 data "azapi_resource" "openai_account_pe_connections" {
   type                   = "Microsoft.CognitiveServices/accounts@2024-10-01"

@@ -1,7 +1,7 @@
 
 resource "azurerm_monitor_diagnostic_setting" "diagnostic_setting_search_service" {
   name                       = "logAnalytics"
-  target_resource_id         = azurerm_search_service.search_service.id
+  target_resource_id         = var.search_service_resource_id
   log_analytics_workspace_id = var.log_analytics_workspace_id
 
   dynamic "enabled_log" {
