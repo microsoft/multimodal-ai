@@ -2,8 +2,8 @@
 # The Python Worker is managed by Azure Functions platform
 # Manually managing azure-functions-worker may cause unexpected issues
 
-azure-functions
-azure-identity
-tiktoken
-azure-ai-documentintelligence
-aiohttp
+azure-functions==1.21.3
+azure-identity==1.21.0
+tiktoken==0.9.0
+azure-ai-documentintelligence==1.0.1
+aiohttp==3.11.13

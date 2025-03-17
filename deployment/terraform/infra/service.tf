@@ -90,12 +90,13 @@ module "keyvault" {
 
 
 module "storage" {
-  source                                    = "./modules/storage"
-  location                                  = var.location
-  tags                                      = local.tags
-  resource_group_name                       = azurerm_resource_group.resource_group.name
-  storage_account_name                      = var.storage_account_name != "" ? var.storage_account_name : substr("${local.abbrs.storageStorageAccounts}${local.resourceToken}", 0, 24)
-  storage_account_container_names           = [var.storage_container_name_content, var.storage_container_name_knowledgestore]
+  source               = "./modules/storage"
+  location             = var.location
+  tags                 = local.tags
+  resource_group_name  = azurerm_resource_group.resource_group.name
+  storage_account_name = var.storage_account_name != "" ? var.storage_account_name : substr("${local.abbrs.storageStorageAccounts}${local.resourceToken}", 0, 24)
+  #storage_account_container_names           = [var.storage_container_name_content, var.storage_container_name_knowledgestore]
+  storage_account_container_names           = [var.storage_container_name_content]
   storage_account_shared_access_key_enabled = false
   log_analytics_workspace_id                = var.log_analytics_workspace_id
   subnet_id                                 = azapi_resource.subnet_private_endpoints.id
@@ -103,7 +104,7 @@ module "storage" {
   private_dns_zone_id_file                  = var.private_dns_zone_id_file
   vnet_location                             = data.azurerm_virtual_network.virtual_network.location
   public_network_access_enabled             = false
-  network_bypass                            = ["None"]
+  network_bypass                            = ["AzureServices"]
   private_endpoint_subresource_names        = ["blob", "file"]
   network_private_link_access = [
     "/subscriptions/${data.azurerm_client_config.current.subscription_id}/providers/Microsoft.Security/datascanners/StorageDataScanner"
@@ -364,7 +365,7 @@ module "document_intelligence" {
   vnet_location                          = data.azurerm_virtual_network.virtual_network.location
   subnet_id                              = azapi_resource.subnet_private_endpoints.id
   public_network_access_enabled          = false
-  outbound_network_access_restricted     = true
+  outbound_network_access_restricted     = false
   private_dns_zone_id_cognitive_services = var.private_dns_zone_id_cognitive_services
 }
 
