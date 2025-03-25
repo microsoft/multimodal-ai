@@ -23,7 +23,7 @@
       "imageAction": "generateNormalizedImagePerPage",
       "allowSkillsetToReadFileData": false,
       "pdfTextRotationAlgorithm": "none",
-      "executionEnvironment": "standard"
+      "executionEnvironment": "private"
     }
   },
   "fieldMappings": [],

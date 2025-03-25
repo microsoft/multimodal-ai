@@ -41,6 +41,7 @@ resource "azurerm_linux_web_app" "linux_webapp" {
   key_vault_reference_identity_id          = var.webapp_user_assigned_identity_id
   public_network_access_enabled            = false
   service_plan_id                          = azurerm_service_plan.service_plan.id
+  virtual_network_subnet_id                = var.integration_subnet_id
   site_config {
     app_command_line = "python3 -m gunicorn main:app"
     always_on        = var.webapp_always_on
