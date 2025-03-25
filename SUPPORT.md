@@ -1,7 +1,7 @@
 # Support
 
 ## About this solution
-This solution is provided as a sample for you to evaluate and customise as per your requirements. As such, if you face any problems when deploying or using this solution, please refer to the guidance below on this article.
+This solution is provided as a sample to demonstrate the latest advancements in multimodal AI on Microsoft Azure. If you face any problems when deploying or using this solution, please refer to the guidance below on this article.
 
 ## How to file issues and get help
 
@@ -9,4 +9,4 @@ This project uses GitHub Issues to track bugs and feature requests. Please searc
 issues before filing new issues to avoid duplicates.  For new issues, file your bug or
 feature request as a new Issue.
 
-Project maintainers and community aim to get issues resolved in timely fashion as per community support policy of this repo.
+Project maintainers support this GitHub repository and aim to get issues resolved in timely fashion by using the support mechanisms described above.
