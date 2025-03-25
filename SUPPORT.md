@@ -8,3 +8,5 @@ This solution is provided as a sample for you to evaluate and customise as per y
 This project uses GitHub Issues to track bugs and feature requests. Please search the existing
 issues before filing new issues to avoid duplicates.  For new issues, file your bug or
 feature request as a new Issue.
+
+Project maintainers and community aim to get issues resolved in timely fashion as per community support policy of this repo.
