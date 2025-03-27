@@ -83,7 +83,7 @@ click==8.1.7
     #   flask
     #   quart
     #   uvicorn
-cryptography==43.0.1
+cryptography==44.0.1
     # via
     #   -r requirements.in
     #   azure-identity
@@ -149,7 +149,7 @@ itsdangerous==2.2.0
     # via
     #   flask
     #   quart
-jinja2==3.1.4
+jinja2==3.1.6
     # via
     #   flask
     #   quart
@@ -330,7 +330,7 @@ propcache==0.2.0
     # via yarl
 psutil==5.9.8
     # via azure-monitor-opentelemetry-exporter
-pyasn1==0.6.0
+pyasn1==0.4.8
     # via
     #   python-jose
     #   rsa
@@ -355,9 +355,9 @@ python-dateutil==2.9.0.post0
     #   microsoft-kiota-serialization-text
     #   pendulum
     #   time-machine
-python-jose[cryptography]==3.3.0
+python-jose[cryptography]==3.4.0
     # via -r requirements.in
-quart==0.19.7
+quart==0.20.0
     # via
     #   -r requirements.in
     #   quart-cors
