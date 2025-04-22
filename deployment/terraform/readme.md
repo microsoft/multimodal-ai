@@ -1,5 +1,7 @@
 # Deploying Multimodal AI Platform Using Terraform
 
+> **NOTE:** If the `skills_function_appregistration_client_id` variable is not set in the `vars.tfvars` file, the deployment will attempt to create an app registration in Microsoft Entra ID to secure the Function App hosting the custom skill. If the identity performing the deployment does not have sufficient permissions to create an app registration, the deployment will fail. In this case, you should request an app registration to be created on your behalf and then provide the Client ID using the `skills_function_appregistration_client_id` variable.
+
 There are two ways to deploy the solution:
 
 - [Run deployment from your local machine](./readme_deploy_local.md)

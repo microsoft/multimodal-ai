@@ -11,7 +11,7 @@ azure-search-documents==11.6.0b1
 azure-storage-blob
 azure-storage-file-datalake
 uvicorn
-aiohttp
+aiohttp>=3.10.11
 azure-monitor-opentelemetry
 opentelemetry-instrumentation-asgi
 opentelemetry-instrumentation-httpx
@@ -19,8 +19,8 @@ opentelemetry-instrumentation-requests
 opentelemetry-instrumentation-aiohttp-client
 opentelemetry-instrumentation-openai
 msal
-cryptography
-python-jose[cryptography]
+cryptography>=44.0.1
+python-jose[cryptography]>=3.4.0
 types-python-jose
 Pillow
 types-Pillow
@@ -31,3 +31,5 @@ types-beautifulsoup4
 msgraph-sdk==1.1.0
 openai-messages-token-helper
 azure-functions
+jinja2>=3.1.6
+quart>=0.20.0
