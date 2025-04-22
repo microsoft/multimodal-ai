@@ -35,8 +35,8 @@
     ```
 
 - Contributor role in the target subscription.
-- When authenticated with a user principal, you need one of the following directory roles to be able to create application registration : Application Administrator or Global Administrator
-- When authenticated with a service principal, it needs  one of the following application roles: Application.ReadWrite.OwnedBy or Application.ReadWrite.All. Additionally, you may need the User.Read.All application role when including user principals in the owners property.
+- When authenticated with a user principal, you need one of the following application roles: Application.ReadWrite.OwnedBy or Application.ReadWrite.All. Additionally, you may need the User.Read.All application role when including user principals in the owners property. These application roles are also included in Application Administrator or Global Administrator AAD roles.
+- When authenticated with a service principal, it needs one of the following application roles: Application.ReadWrite.OwnedBy or Application.ReadWrite.All. Additionally, you may need the User.Read.All application role when including user principals in the owners property.
 
 ## Terraform prerequisites deployment (optional)
 
