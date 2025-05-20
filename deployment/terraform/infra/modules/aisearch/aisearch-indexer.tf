@@ -36,7 +36,6 @@ resource "null_resource" "create_indexer" {
     always_run = "${timestamp()}"
   }
   depends_on = [
-    azurerm_search_service.search_service,
     local_file.indexer_config,
     null_resource.create_datasource,
     null_resource.create_index,
