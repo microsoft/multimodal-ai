@@ -50,7 +50,7 @@ resource "azurerm_search_shared_private_link_service" "shared_private_link_searc
 }
 
 resource "azurerm_search_shared_private_link_service" "shared_private_link_search_service_aoai" {
-  depends_on         = [azurerm_private_endpoint.shared_private_link_search_service_blob]
+  depends_on         = [azurerm_search_shared_private_link_service.shared_private_link_search_service_blob]
   name               = "${var.search_service_name}-spa-aoai"
   search_service_id  = var.search_service_resource_id
   subresource_name   = "openai_account"
