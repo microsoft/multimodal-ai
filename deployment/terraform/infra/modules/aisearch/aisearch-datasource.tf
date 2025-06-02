@@ -29,7 +29,6 @@ resource "null_resource" "create_datasource" {
     always_run = "${timestamp()}"
   }
   depends_on = [
-    azurerm_search_service.search_service,
     local_file.datasource_config,
     azurerm_role_assignment.storage_blob_data_to_search_service,
     azurerm_role_assignment.search_service_contributor,

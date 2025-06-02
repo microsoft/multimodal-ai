@@ -36,21 +36,29 @@ variable "resource_group_name" {
   }
 }
 
+variable "search_service_name" {
+  description = "Specifies the name of the search service precreated to save time."
+  type        = string
+  sensitive   = false
+}
+
+variable "search_service_identity" {
+  description = "Specifies the system managed identity principalid of the search service account precrated to save time."
+  type        = string
+  sensitive   = false
+}
+
+variable "search_service_resource_id" {
+  description = "Specifies the resource id for the search service precrated to save time."
+  type        = string
+  sensitive   = false
+}
+
 variable "tags" {
   description = "Specifies the tags that you want to apply to all resources."
   type        = map(string)
   sensitive   = false
   default     = {}
-}
-
-variable "search_service_name" {
-  description = "Specifies the name of the search service."
-  type        = string
-  sensitive   = false
-  validation {
-    condition     = length(var.search_service_name) >= 2
-    error_message = "Please specify a valid name longer than 2 characters."
-  }
 }
 
 variable "cognitive_account_id" {
@@ -75,37 +83,6 @@ variable "vision_id" {
   description = "Specifies the id for the vision account."
   type        = string
   sensitive   = false
-}
-
-variable "search_service_sku" {
-  description = "Specifies the SKU for the search service"
-  type        = string
-  sensitive   = false
-  default     = "standard"
-}
-
-
-variable "semantic_search_sku" {
-  description = "Specifies the SKU for the semantic search"
-  type        = string
-  sensitive   = false
-  default     = "standard"
-}
-
-variable "search_service_partition_count" {
-  description = "Specifies the number of partitions in the search service."
-  type        = number
-  sensitive   = false
-  default     = 1
-
-}
-
-variable "search_service_replica_count" {
-  description = "Specifies the number of replicas in the search service."
-  type        = number
-  sensitive   = false
-  default     = 1
-
 }
 
 variable "search_service_datasource_name" {

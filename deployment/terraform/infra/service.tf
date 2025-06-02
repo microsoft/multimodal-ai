@@ -169,7 +169,7 @@ module "backend_webapp" {
     AZURE_STORAGE_ACCOUNT               = module.storage.storage_account_name
     AZURE_STORAGE_CONTAINER             = var.storage_container_name_content
     AZURE_SEARCH_INDEX                  = module.aisearch.search_service_index_name
-    AZURE_SEARCH_SERVICE                = module.aisearch.search_service_name
+    AZURE_SEARCH_SERVICE                = module.aisearchonly.search_service_name
     AZURE_SEARCH_SEMANTIC_RANKER        = "standard"
     AZURE_VISION_ENDPOINT               = module.computer_vision.cognitive_account_endpoint
     AZURE_SEARCH_QUERY_LANGUAGE         = "en-us"
@@ -210,6 +210,56 @@ module "backend_webapp" {
   EOT
 }
 
+module "aisearchonly" {
+  source                         = "./modules/aisearch/searchonly"
+  location                       = var.search_service_location != "" ? var.search_service_location : var.location
+  tags                           = local.tags
+  resource_group_name            = azurerm_resource_group.resource_group.name
+  search_service_name            = var.search_service_name != "" ? var.search_service_name : "${local.abbrs.searchServices}${local.resourceToken}"
+  search_service_sku             = var.search_service_sku
+  semantic_search_sku            = var.semantic_search_sku
+  search_service_partition_count = var.search_service_partition_count
+  search_service_replica_count   = var.search_service_replica_count
+}
+
+module "aisearch" {
+  source                                = "./modules/aisearch"
+  location                              = var.search_service_location != "" ? var.search_service_location : var.location
+  tags                                  = local.tags
+  resource_group_name                   = azurerm_resource_group.resource_group.name
+  log_analytics_workspace_id            = var.log_analytics_workspace_id
+  search_service_name                   = module.aisearchonly.search_service_name
+  search_service_resource_id            = module.aisearchonly.search_service_resource_id
+  search_service_identity               = module.aisearchonly.search_service_identity
+  storage_account_id                    = module.storage.storage_account_id
+  storage_container_name_content        = var.storage_container_name_content
+  search_service_datasource_name        = var.search_service_datasource_name != "" ? var.search_service_datasource_name : "${local.abbrs.searchServices}ds-${local.resourceToken}"
+  search_service_index_name             = var.search_service_index_name != "" ? var.search_service_index_name : "${local.abbrs.searchServices}ind-${local.resourceToken}"
+  search_service_indexer_name           = var.search_service_indexer_name != "" ? var.search_service_indexer_name : "${local.abbrs.searchServices}inder-${local.resourceToken}"
+  search_service_skillset_name          = var.search_service_skillset_name != "" ? var.search_service_skillset_name : "${local.abbrs.searchServices}skl-${local.resourceToken}"
+  azure_openai_endpoint                 = module.aoai.cognitive_account_endpoint
+  azure_openai_text_deployment_id       = var.azure_openai_text_deployment_id
+  azure_openai_text_model_name          = var.azure_openai_text_model_name
+  openai_account_id                     = module.aoai.cognitive_account_id
+  cognitive_services_endpoint           = module.cognitive_service.cognitive_account_endpoint
+  computer_vision_endpoint              = module.computer_vision.cognitive_account_endpoint
+  pdf_merge_customskill_endpoint        = "https://${module.skills.linux_function_app_default_hostname}/api/pdf_text_image_merge_skill"
+  knowledgestore_storage_account_id     = module.storage.storage_account_id
+  storage_container_name_knowledgestore = var.storage_container_name_knowledgestore
+  function_app_id                       = module.skills.skills_function_appregistration_client_id
+  public_network_access_enabled         = false
+  vnet_location                         = data.azurerm_virtual_network.virtual_network.location
+  subnet_id                             = azapi_resource.subnet_private_endpoints.id
+  private_dns_zone_id_ai_search         = var.private_dns_zone_id_ai_search
+  vision_id                             = module.computer_vision.cognitive_account_id
+  form_recognizer_id                    = module.document_intelligence.cognitive_account_id
+  cognitive_account_id                  = module.cognitive_service.cognitive_account_id
+  function_id                           = module.skills.linux_function_app_id
+
+  depends_on = [module.aisearchonly, module.aoai, module.cognitive_service, module.storage, module.skills, module.computer_vision]
+}
+
+/*
 module "aisearch" {
   source                                = "./modules/aisearch"
   location                              = var.search_service_location != "" ? var.search_service_location : var.location
@@ -248,20 +298,20 @@ module "aisearch" {
 
   depends_on = [module.aoai, module.cognitive_service, module.storage, module.skills, module.computer_vision]
 }
-
+*/
 
 resource "null_resource" "update_function_app_allowed_applications" {
   provisioner "local-exec" {
     interpreter = local.is_windows ? ["PowerShell", "-Command"] : []
     command     = <<EOT
       ${var.subscription_id != "" ? "az account set -s ${var.subscription_id}" : ""}
-      az webapp auth update --resource-group ${azurerm_resource_group.resource_group.name} --name ${module.skills.linux_function_app_name} --set identityProviders.azureActiveDirectory.validation.defaultAuthorizationPolicy.allowedApplications=[${module.aisearch.managed_identity_application_id}]
+      az webapp auth update --resource-group ${azurerm_resource_group.resource_group.name} --name ${module.skills.linux_function_app_name} --set identityProviders.azureActiveDirectory.validation.defaultAuthorizationPolicy.allowedApplications=[${module.aisearchonly.managed_identity_application_id}]
     EOT
   }
   triggers = {
     always_run = "${timestamp()}"
   }
-  depends_on = [module.aisearch]
+  depends_on = [module.aisearchonly]
 }
 
 module "aoai" {
