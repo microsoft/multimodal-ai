@@ -19,9 +19,9 @@
       "failOnUnprocessableDocument": false,
       "indexStorageMetadataOnlyForOversizedDocuments": false,
       "firstLineContainsHeaders": true,
-      "dataToExtract": "contentAndMetadata",      
+      "dataToExtract": "contentAndMetadata",
       "allowSkillsetToReadFileData": false,
-      "executionEnvironment": "private"            
+      "executionEnvironment": "private"
     }
   },
   "fieldMappings": [],
