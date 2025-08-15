@@ -1,0 +1,86 @@
+{
+  "name": "${skillset_name}",
+  "description": "${skillset_name}",
+  "skills": [
+    {
+      "@odata.type": "#Microsoft.Skills.Text.SplitSkill",
+      "name": "microsoft_text_split_skill",
+      "description": "Split skill to chunk documents",
+      "context": "/document",
+      "defaultLanguageCode": "en",
+      "textSplitMode": "pages",
+      "maximumPageLength": 2000,
+      "pageOverlapLength": 500,
+      "maximumPagesToTake": 0,
+      "unit": "characters",
+      "inputs": [
+        {
+          "name": "text",
+          "source": "/document/content",
+          "inputs": []
+        }
+      ],
+      "outputs": [
+        {
+          "name": "textItems",
+          "targetName": "pages"
+        }
+      ]
+    },
+    {
+      "@odata.type": "#Microsoft.Skills.Text.AzureOpenAIEmbeddingSkill",
+      "name": "azure_openai_text_embedding_skill",
+      "description": "Skill to generate embeddings via Azure OpenAI",
+      "context": "/document/pages/*",
+      "resourceUri": "${azureOpenAI_endpoint}",
+      "apiKey": null,
+      "deploymentId": "${azureOpenAI_text_deployment_id}",
+      "dimensions": 1536,
+      "modelName": "${azureOpenAI_text_model_name}",
+      "inputs": [
+        {
+          "name": "text",
+          "source": "/document/pages/*"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "embedding",
+          "targetName": "text_vector"
+        }
+      ],
+      "authIdentity": null
+    }
+  ],
+  "cognitiveServices": {
+    "@odata.type": "#Microsoft.Azure.Search.AIServicesByIdentity",
+    "description": null,
+    "subdomainUrl": "${cognitiveServices_multiService_endpoint}",
+    "identity": null
+  },
+  "indexProjections": {
+    "selectors": [
+      {
+        "targetIndexName": "${index_name}",
+        "parentKeyFieldName": "parent_id",
+        "sourceContext": "/document/pages/*",
+        "mappings": [
+          {
+            "name": "content",
+            "source": "/document/pages/*",
+            "inputs": []
+          },
+          {
+            "name": "embedding",
+            "source": "/document/pages/*/text_vector",
+            "inputs": []
+          }
+        ]
+      }
+    ],
+    "parameters": {
+      "projectionMode": "skipIndexingParentDocuments"
+    }
+  },
+  "encryptionKey": null
+}
