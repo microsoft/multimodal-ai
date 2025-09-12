@@ -13,13 +13,14 @@
     "base64EncodeKeys": null,
     "configuration": {
       "parsingMode": "default",
-      "excludedFileNameExtensions": ".pdf, .png, .jpeg, .jpg",
-      "indexedFileNameExtensions": ".docx, .doc, .docm, .xlsx, .xls, .xlsm, .pptx, .ppt, .pptm, .msg, .txt, .csv, .xml, .json, .html",
+      "excludedFileNameExtensions": ".pdf",
+      "indexedFileNameExtensions": ".docx, .doc, .docm, .xlsx, .xls, .xlsm, .pptx, .ppt, .pptm, .msg, .txt, .csv, .eml, .epub, .gz, .xml, .json, .html, .kml, .odt, .ods, .odp, .rtf, .zip, .jpeg, .png, .bmp, .tif",
       "failOnUnsupportedContentType": false,
       "failOnUnprocessableDocument": false,
       "indexStorageMetadataOnlyForOversizedDocuments": false,
       "firstLineContainsHeaders": true,
       "dataToExtract": "contentAndMetadata",
+      "imageAction": "generateNormalizedImages",
       "allowSkillsetToReadFileData": false,
       "executionEnvironment": "private"
     }
