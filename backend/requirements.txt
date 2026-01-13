@@ -30,7 +30,7 @@ azure-cognitiveservices-speech==1.38.0
     # via -r requirements.in
 azure-common==1.1.28
     # via azure-search-documents
-azure-core==1.30.2
+azure-core==1.38.0
     # via
     #   azure-ai-documentintelligence
     #   azure-core-tracing-opentelemetry
@@ -151,6 +151,7 @@ itsdangerous==2.2.0
     #   quart
 jinja2==3.1.6
     # via
+    #   -r requirements.in
     #   flask
     #   quart
 markupsafe==2.1.5
@@ -346,8 +347,6 @@ pyjwt[crypto]==2.8.0
     #   pyjwt
 pymupdf==1.24.7
     # via -r requirements.in
-pymupdfb==1.24.6
-    # via pymupdf
 pypdf==4.2.0
     # via -r requirements.in
 python-dateutil==2.9.0.post0
@@ -378,7 +377,6 @@ rsa==4.9
     # via python-jose
 six==1.16.0
     # via
-    #   azure-core
     #   ecdsa
     #   isodate
     #   python-dateutil
