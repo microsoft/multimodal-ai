@@ -151,6 +151,7 @@ itsdangerous==2.2.0
     #   quart
 jinja2==3.1.6
     # via
+    #   -r requirements.in
     #   flask
     #   quart
 markupsafe==2.1.5
@@ -318,7 +319,7 @@ packaging==24.1
     # via opentelemetry-instrumentation-flask
 pendulum==3.0.0
     # via microsoft-kiota-serialization-json
-pillow==10.4.0
+pillow==12.1.1
     # via
     #   -r requirements.in
     #   openai-messages-token-helper
@@ -346,8 +347,6 @@ pyjwt[crypto]==2.8.0
     #   pyjwt
 pymupdf==1.24.7
     # via -r requirements.in
-pymupdfb==1.24.6
-    # via pymupdf
 pypdf==4.2.0
     # via -r requirements.in
 python-dateutil==2.9.0.post0
