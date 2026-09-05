@@ -162,6 +162,17 @@ variable "search_service_skillset_name" {
   default     = ""
 }
 
+variable "search_service_indexer_other_file_types_name" {
+  description = "Specifies indexer name in the search service for other file types."
+  type        = string
+  default     = ""
+}
+
+variable "search_service_skillset_other_file_types_name" {
+  description = "Specifies skillset name in the search service for other file types."
+  type        = string
+  default     = ""
+}
 
 variable "openai_service_name" {
   description = "Specifies the sku name of the Azure OpenAI service."

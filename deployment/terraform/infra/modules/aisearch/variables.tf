@@ -126,6 +126,12 @@ variable "search_service_indexer_name" {
   sensitive   = false
 }
 
+variable "search_service_indexer_other_file_types_name" {
+  description = "Specifies index name for other file types (.docx, .xlsx, .pptx, etc.)."
+  type        = string
+  sensitive   = false
+}
+
 variable "openai_account_id" {
   description = "Specifies the id for the AOAI account."
   type        = string
@@ -133,7 +139,13 @@ variable "openai_account_id" {
 }
 
 variable "search_service_skillset_name" {
-  description = "Specifies index name."
+  description = "Specifies skillset name."
+  type        = string
+  sensitive   = false
+}
+
+variable "search_service_skillset_other_file_types_name" {
+  description = "Specifies skillset for other file types name."
   type        = string
   sensitive   = false
 }

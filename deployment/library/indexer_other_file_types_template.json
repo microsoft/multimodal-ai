@@ -1,0 +1,32 @@
+{
+  "name": "${indexer_name}",
+  "description": "${indexer_description}",
+  "dataSourceName": "${datasource_name}",
+  "skillsetName": "${skillset_name}",
+  "targetIndexName": "${index_name}",
+  "disabled": false,
+  "schedule": null,
+  "parameters": {
+    "batchSize": 1,
+    "maxFailedItems": 0,
+    "maxFailedItemsPerBatch": 0,
+    "base64EncodeKeys": null,
+    "configuration": {
+      "parsingMode": "default",
+      "excludedFileNameExtensions": ".pdf",
+      "indexedFileNameExtensions": ".docx, .doc, .docm, .xlsx, .xls, .xlsm, .pptx, .ppt, .pptm, .msg, .txt, .csv, .eml, .epub, .gz, .xml, .json, .html, .kml, .odt, .ods, .odp, .rtf, .zip, .jpeg, .png, .bmp, .tif",
+      "failOnUnsupportedContentType": false,
+      "failOnUnprocessableDocument": false,
+      "indexStorageMetadataOnlyForOversizedDocuments": false,
+      "firstLineContainsHeaders": true,
+      "dataToExtract": "contentAndMetadata",
+      "imageAction": "generateNormalizedImages",
+      "allowSkillsetToReadFileData": false,
+      "executionEnvironment": "private"
+    }
+  },
+  "fieldMappings": [],
+  "outputFieldMappings": [],
+  "cache": null,
+  "encryptionKey": null
+}
