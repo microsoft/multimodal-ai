@@ -144,6 +144,18 @@ variable "search_service_datasource_name" {
   default     = ""
 }
 
+variable "search_service_identity" {
+  description = "Specifies the identity type for the search service."
+  type        = string
+  default     = ""
+}
+
+variable "search_service_resource_id" {
+  description = "Specifies the resource ID of the search service."
+  type        = string
+  default     = ""
+}
+
 variable "search_service_index_name" {
   description = "Specifies index name in the search service."
   type        = string
